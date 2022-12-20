@@ -1,0 +1,15 @@
+matplotlib
+numpy
+sphinx
+pytest
+coverage
+interrogate
+coverage-badge
+pytest-cov
+myst_parser
+build
+twine
+pytest-cov
+sphinx_rtd_theme
+pandas
+
