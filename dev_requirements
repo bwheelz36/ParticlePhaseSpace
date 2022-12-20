@@ -12,4 +12,5 @@ twine
 pytest-cov
 sphinx_rtd_theme
 pandas
-
+scipy
+topas2numpy
