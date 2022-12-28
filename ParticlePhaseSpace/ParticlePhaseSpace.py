@@ -15,9 +15,7 @@ import warnings
 from scipy.stats import gaussian_kde
 from scipy import constants
 from time import perf_counter
-sys.path.append(os.path.abspath("../PhaserGeometry"))
-import topas2numpy as tp
-
+from ._DataLoaders import DataLoaders
 
 class ParticlePhaseSpace:
     """
@@ -82,25 +80,11 @@ class ParticlePhaseSpace:
     """
 
     def __init__(self, verbose=False, weight_position_plot=False):
-        """
-        Data can be one of four things:
-
-        1. CST trk particle monitor
-        2. Data from SLAC
-        3. Topas ASCII phase space
-        4. Data from tibaray
-        5. Numpy array
-
-        For the third case, the data should be
-        [x y z px py pz weight]
-        with x y z in mm
-        and px py pz  in [MeV/c]
-
-        """
 
         self._c = constants.c
         self.verbose = verbose
         self._weight_position_plot = weight_position_plot  # weights plots by density. Looks better but is slow.
+        self.DataLoaders = DataLoaders()
 
         if self.verbose == True:
             self.PrintData()
@@ -539,73 +523,6 @@ class ParticlePhaseSpace:
             _mean_zOut, _std_zOut = self.__weighted_avg_and_std(self.zOut, self.weight)
             print(
                 f'Mean Z position of output data is {_mean_zOut: 3.1f} \u00B1 {_std_zOut: 1.1f} (std)')
-
-    # read in methods
-
-    def read_in_topas_data(self):
-
-
-    def read_in_tibaray_data(self):
-        """
-        Read in data from tibaray, which had header:
-
-        `x y z rxy Bx By Bz G t m q nmacro rmacro ID`
-
-        x[m] y[m] z[m] rxy[m] (positions in space)
-        Bx[v/c] By[v/c] Bz[v/c] (normalized velocity)
-        G [Lorentz factor]
-        t[time, s]
-        m[kg, mass of elementary particle of the macro particle]
-        q[Coulomb, charge of elementary particle of the macro particle]
-        nmacro[number of electrons in this macro particle]
-        rmacro[NA]
-        ID[Macro Particle ID Number]
-        """
-        warnings.warn('Read in of this file format is still under development')
-        Data = np.loadtxt(self.Data, skiprows=1)
-        self.x = Data[:, 0] * 1e3  # mm to m
-        self.y = Data[:, 1] * 1e3
-        self.z = Data[:, 2] * 1e3
-        self.TotalCurrent = .3
-        Bx = Data[:, 4]
-        By = Data[:, 5]
-        Bz = Data[:, 6]
-        Gamma = Data[:, 7]
-        t = Data[:, 8]
-        m = Data[:, 9]
-        q = Data[:, 10]
-        nmacro = Data[:, 11]
-        rmacro = Data[:, 12]
-        ID = Data[:, 13]
-
-        self.px = np.multiply(Bx, Gamma) * self._me_MeV
-        self.py = np.multiply(By, Gamma) * self._me_MeV
-        self.pz = np.multiply(Bz, Gamma) * self._me_MeV
-
-        Totm = np.sqrt((self.px ** 2 + self.py ** 2 + self.pz ** 2))
-        self.TOT_E = np.sqrt(Totm ** 2 + self._me_MeV ** 2)
-        Kin_E = np.subtract(self.TOT_E, self._me_MeV)
-        self.weight = nmacro
-        self.E = Kin_E
-
-    def read_in_pandas_data(self):
-        """
-        Read mnumpy array of the form
-        [x y z px py pz weight]
-        """
-        self.x = self.Data[:, 0]
-        self.y = self.Data[:, 1]
-        self.z = self.Data[:, 2]
-        self.px = self.Data[:, 3]
-        self.py = self.Data[:, 4]
-        self.pz = self.Data[:, 5]
-        self.weight = self.Data[:, 6]
-
-        # calculate energies
-        Totm = np.sqrt((self.px ** 2 + self.py ** 2 + self.pz ** 2))
-        self.TOT_E = np.sqrt(Totm ** 2 + self._me_MeV ** 2)
-        Kin_E = np.subtract(self.TOT_E, self._me_MeV)
-        self.E = Kin_E
 
     # export methods
 
