@@ -17,6 +17,10 @@ class _DataImportersBase(ABC):
         pass
 
     @abstractmethod
+    def __call__(self, input_data):
+        pass
+
+    @abstractmethod
     def import_data(self):
         """
         this function loads the data into the PS object
@@ -37,13 +41,20 @@ class _DataImportersBase(ABC):
 
 class _TopasImporter(_DataImportersBase):
 
+    def __call__(self, input_data):
+
+        self._input_data = input_data
+        self._check_input_data()
+        self.import_data()
+        self._check_loaded_data()
+
     def import_data(self):
         """
         Read in topas  data
         assumption is that this is in cm and MeV
         """
 
-        PhaseSpace = tp.read_ntuple(self.Data)
+        PhaseSpace = tp.read_ntuple(self._input_data)
         ParticleTypes = PhaseSpace['Particle Type (in PDG Format)']
         ParticleTypes = ParticleTypes.astype(int)
         ParticleDir = PhaseSpace['Flag to tell if Third Direction Cosine is Negative (1 means true)']
