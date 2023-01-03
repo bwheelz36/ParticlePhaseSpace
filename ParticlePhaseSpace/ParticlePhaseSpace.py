@@ -2,6 +2,7 @@
 
 # PhaseSpace.py
 import numpy as np
+import pandas as pd
 import scipy.constants
 from matplotlib import pyplot as plt
 from scipy import constants
@@ -15,113 +16,40 @@ import warnings
 from scipy.stats import gaussian_kde
 from scipy import constants
 from time import perf_counter
-from ._DataLoaders import DataLoaders
+
 
 class ParticlePhaseSpace:
     """
-    A set of functions for analysing and converting phase spaces.
-    At the moment there is an implict assumption that electron phase spaces are being used, which impacts on the conversion
-    of momentum to kinetic energy. This could be updated with minimal effort if needed.
-
-    example of using ElectronPhaseSpace class::
-
-        import os,sys
-        import numpy as np
-        sys.path.append('.')  # make sure python knows to look in the current folder
-        from PhaseSpaceAnalyser import ElectronPhaseSpace
-
-        ## please see https://github.com/bwheelz36/ElectronPhaseSpace for allowable data imports:
-
-        # Random numpy data
-        # -----------------
-        # for the purpose of the example lets just use some random data. Note that here and throughout the code the assumption
-        # is that the beam is primarily directed in the Z direction
-        Nparticles = 10000
-        x = np.random.randn(Nparticles)  # normal distributed random data
-        y = np.random.randn(Nparticles)  # normal distributed random data
-        z = np.ones(Nparticles) * 100  # let's say z = 100 mm for arguments sake
-        px = x * .01 + np.random.randn(Nparticles) * .01 # transverse momentum with some noise (MeV)
-        py = y * .01 + np.random.randn(Nparticles) * .01 # + np.random.rand(Nparticles) * .001 # transverse momentum with some noise (MeV)
-        pz = np.ones(Nparticles) * 11 + np.random.randn(Nparticles) * .1 # primary beam direction
-        Data = np.vstack((x, y, z, px, py, pz))
-        Data = np.transpose(Data)
-
-        # Read in SLAC/CST/Topas data:
-        # ---------------------------
-        # DataLoc = /path/to/data
-        # PS = ElectronPhaseSpace(DataLoc)
-
-        # read our data into an instance of ElectronPhaseSpace
-        # ----------------------------------------------------
-        PS = ElectronPhaseSpace(Data)
-
-        PS.GenerateTopasImportFile(Zoffset=-100)  # write our data to a topas phase space file, with Zoffset controlling the
-        # Z position. In the topas import, the Z position seems to behave relative to the local coordinate system of whatever
-        # component you attach the phase space import to
-        # If you want to check the z position of the output data call PrintData again:
-        PS.PrintData()
-
-        # One can also call:
-        # PS.GenerateCSTParticleImportFile(Zoffset=0)  # generates CST *.pid file
-
-        # You can also have a look at the distribution of the data
-
-        # position distribution
-        # ---------------------
-        # PS.PlotParticlePositions()
-
-        # energy distribution
-        # -------------------
-        # PS.PlotEnergyHistogram()
-
-        # phase space distribution
-        # -------------------------
-        PS.PlotPhaseSpaceX()
     """
 
-    def __init__(self, verbose=False, weight_position_plot=False):
+    def __init__(self, ps_data, verbose=False, weight_position_plot=False):
 
+        self.ps_data = ps_data
         self._c = constants.c
         self.verbose = verbose
         self._weight_position_plot = weight_position_plot  # weights plots by density. Looks better but is slow.
-        self.DataLoaders = DataLoaders()
 
         if self.verbose == True:
             self.PrintData()
 
-    def __ConvertMomentumToVelocity(self):
+    def __add__(self, other):
         """
-        I think that I may need to define the cosines in terms of velocity, and not in terms of momentum
-        as I have been doing.
-        I'm also not totally sure that i'm calculating these correctly....
+        add two phase spaces together
         """
-        self.vx = np.divide(self.px, (self.Gamma * self._me_MeV))
-        self.vy = np.divide(self.py, (self.Gamma * self._me_MeV))
-        self.vz = np.divide(self.pz, (self.Gamma * self._me_MeV))
+        pass
 
-    def __CosinesToMom(self):
+    def __sub__(self, other):
         """
-        Internal function to convert direction cosines and energy back into momentum
+        subtract phase space (remove ever
         """
-        # first calculte total momentum from total energy:
-        if self.ParticleType == 'electrons':
-            P = np.sqrt(self.E ** 2 + self._me_MeV ** 2)
-            self.TOT_E = np.sqrt(P ** 2 + self._me_MeV ** 2)
-        elif self.ParticleType == 'gamma':
-            # zero rest mass
-            P = np.sqrt(self.E ** 2)
-            self.TOT_E = np.sqrt(P ** 2)
+        pass
 
-        self.px = np.multiply(P, self.DirCosineX)
-        self.py = np.multiply(P, self.DirCosineY)
-        temp = P ** 2 - self.px ** 2 - self.py ** 2
-        if any(temp < 0):
-            logging.warning(
-                f'{np.count_nonzero(temp < 0): 1.0f} negative values found in cosine to momentum conversion. setting these to zero. '
-                'Sometimes this is a simple rounding error, but '
-                'sometimes it may be indicative of a serious error...')
-            temp[temp < 0] = 0
-        self.pz = np.sqrt(temp)
+    def __call__(self, particle_list):
+        """
+        this function allows users to seperate the phase space based on particle types
+        """
+        print('hello')
+
 
     def __weighted_median(self, data, weights):
         """
