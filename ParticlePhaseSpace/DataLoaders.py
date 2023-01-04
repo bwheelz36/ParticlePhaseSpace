@@ -1,33 +1,23 @@
 from abc import ABC, abstractmethod
-from .__particles import particles
+
 import pandas as pd
 import topas2numpy as tp
 import numpy as np
 
+from .utilities import get_rest_masses_from_pdg_codes
+import ParticlePhaseSpace.__config as cf
 
 class _DataImportersBase(ABC):
 
     def __init__(self, input_data):
-
-        self._required_column_names = ['x [mm]',
-                                       'y [mm]',
-                                       'z [mm]',
-                                       'px',
-                                       'py',
-                                       'pz',
-                                       'particle type']
-        self._allowed_column_names = ['E [MeV]',
-                                      'gamma',
-                                      'weight',
-                                      'particle id']
-        self._data = pd.DataFrame(columns=self._required_column_names)
+        self.data = pd.DataFrame(columns=cf.required_columns)
         self._input_data = input_data
         self._check_input_data()
-        self.import_data()
+        self._import_data()
         self._check_loaded_data()
 
     @abstractmethod
-    def import_data(self):
+    def _import_data(self):
         """
         this function loads the data into the PS object
         :return:
@@ -42,79 +32,64 @@ class _DataImportersBase(ABC):
         """
         pass
 
-    def _return_data(self):
-        return self._data
-
     def _check_loaded_data(self):
-        print('no data check implemented yet')
-
-    def _momentum_to_velocity(self):
         """
-        I think that I may need to define the cosines in terms of velocity, and not in terms of momentum
-        as I have been doing.
-        I'm also not totally sure that i'm calculating these correctly....
+        check that the phase space data
+        1. contains the required columns
+        2. doesn't contain any non-allowed columns
+        3. doesn't contain NaN
+        4. "particle id" should be unique
         """
-        self.vx = np.divide(self.px, (self.Gamma * self._me_MeV))
-        self.vy = np.divide(self.py, (self.Gamma * self._me_MeV))
-        self.vz = np.divide(self.pz, (self.Gamma * self._me_MeV))
+        # required columns present?
+        for col_name in cf.required_columns:
+            if not col_name in self.data.columns:
+                raise AttributeError(f'invalid data input; required column "{col_name}" is missing')
 
-    def _check_particle_types(self):
-        """
-        check that the particle types in the phase space are known particle types
-        """
-        print('not implemented')
+        # all columns allowed?
+        for col_name in self.data.columns:
+            if not col_name in cf.required_columns:
+                raise AttributeError(f'non allowed column "{col_name}" in data.')
 
-    def _get_rest_masses_from_pdg_codes(self):
-        """
-        get an array of rest masses based on the particle types in self._data
-        """
-        self._check_particle_types()
-        self._particle_rest_mass = np.zeros(len(self._data))
-        for particle_type in particles:
-            ind = particles[particle_type]['pdg_code'] == self._data['particle type']
-            self._particle_rest_mass[ind] = particles[particle_type]['rest_mass']
+        # are NaNs present?
+        if self.data.isnull().values.any():
+            raise AttributeError(f'input data may not contain NaNs')
 
+        # is every particle ID unique?
+        if not len(self.data['particle id'].unique()) == len(self.data['particle id']):
+            raise AttributeError('you have attempted to create a data set with non'
+                                 'unique "particle id" fields, which is not allwoed')
 
-
-    def _cosines_to_mom(self, DirCosineX, DirCosineY, ParticleDirection):
-        """
-        Internal function to convert direction cosines and energy back into momentum
-        """
-        # first calculte total momentum from total energy:
-
-        P = np.sqrt(self._data['E [MeV]'] ** 2 + self._particle_rest_mass ** 2)
-        self.TOT_E = np.sqrt(P ** 2 + self._particle_rest_mass ** 2)
-        px = np.multiply(P, DirCosineX)
-        py = np.multiply(P, DirCosineY)
-        pz = P ** 2 - px ** 2 - py ** 2
-
-        return px, py, pz
 
 class LoadTopasData(_DataImportersBase):
 
-    def import_data(self):
+    def _import_data(self):
         """
         Read in topas  data
         assumption is that this is in cm and MeV
+
+        this has to be tested for particle travelling in the x and y directions since topas seems to be quite confused
+        about this...
         """
-        PhaseSpace = tp.read_ntuple(self._input_data)
-        ParticleTypes = PhaseSpace['Particle Type (in PDG Format)']
-        self._data['particle type'] = ParticleTypes.astype(int)
-
-        self._data['x [mm]'] = PhaseSpace['Position X [cm]'] * 1e1
-        self._data['y [mm]'] = PhaseSpace['Position Y [cm]'] * 1e1
-        self._data['z [mm]'] = PhaseSpace['Position Z [cm]'] * 1e1
-        ParticleDir = PhaseSpace['Flag to tell if Third Direction Cosine is Negative (1 means true)']
-        DirCosineX = PhaseSpace['Direction Cosine X']
-        DirCosineY = PhaseSpace['Direction Cosine Y']
-        self._data['E [MeV]'] = PhaseSpace['Energy [MeV]']
-        self._data['weight'] = PhaseSpace['Weight']
-
+        topas_phase_space = tp.read_ntuple(self._input_data)
+        ParticleTypes = topas_phase_space['Particle Type (in PDG Format)']
+        self.data['particle type'] = ParticleTypes.astype(int)
+        self.data['x [mm]'] = topas_phase_space['Position X [cm]'] * 1e1
+        self.data['y [mm]'] = topas_phase_space['Position Y [cm]'] * 1e1
+        self.data['z [mm]'] = topas_phase_space['Position Z [cm]'] * 1e1
+        self.data['weight'] = topas_phase_space['Weight']
+        self.data['particle id'] = np.arange(len(self.data))  # may want to replace with track ID if available?
+        self.data['time [ps]'] = 0  # may want to replace with time feature if available?
         # figure out the momentums:
-        self._get_rest_masses_from_pdg_codes()
-        self._data['px'],\
-        self._data['py'],\
-        self._data['pz'] = self._cosines_to_mom(DirCosineX, DirCosineY, ParticleDir)
+        ParticleDir = topas_phase_space['Flag to tell if Third Direction Cosine is Negative (1 means true)']
+        DirCosineX = topas_phase_space['Direction Cosine X']
+        DirCosineY = topas_phase_space['Direction Cosine Y']
+        E = topas_phase_space['Energy [MeV]']
+        rest_masses = get_rest_masses_from_pdg_codes(self.data['particle type'])
+        P = np.sqrt(E ** 2 + rest_masses ** 2)
+        self.TOT_E = np.sqrt(P ** 2 + rest_masses ** 2)
+        self.data['px'] = np.multiply(P, DirCosineX)
+        self.data['py'] = np.multiply(P, DirCosineY)
+        self.data['pz'] = np.multiply((P ** 2 - self.data['px'] ** 2 - self.data['py'] ** 2), ParticleDir)
 
     def _check_input_data(self):
         """
@@ -123,4 +98,21 @@ class LoadTopasData(_DataImportersBase):
         - has valid header
         - what does topas2numpy already do?
         """
-        print('no data check implemented')
+        print('no topas data check implemented')
+
+
+class LoadPandasData(_DataImportersBase):
+    """
+    loads in pandas data; provides a general purpose interface for
+    those who do not wish to write a specific data loader for their application
+    """
+
+    def _import_data(self):
+        self.data = self._input_data
+
+    def _check_input_data(self):
+        """
+        is pandas instance
+        has required columns (probably checked elsewhere actually)
+        """
+        pass

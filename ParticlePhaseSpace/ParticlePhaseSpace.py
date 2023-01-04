@@ -2,14 +2,12 @@
 
 # PhaseSpace.py
 import numpy as np
-import pandas as pd
-import scipy.constants
 from matplotlib import pyplot as plt
-from scipy import constants
 from scipy.stats import norm
 import os, sys
-import glob
 import logging
+import inspect
+import pandas as pd
 
 logging.basicConfig(level=logging.WARNING)
 import warnings
@@ -17,40 +15,94 @@ from scipy.stats import gaussian_kde
 from scipy import constants
 from time import perf_counter
 
+import ParticlePhaseSpace.__config as cf
+from ParticlePhaseSpace.DataLoaders import _DataImportersBase
+from ParticlePhaseSpace import utilities as ps_util
+from ParticlePhaseSpace import DataLoaders
+
+class FigureSpecs:
+    """
+    Thought this might be the easiest way to ensure universal parameters accross all figures
+    """
+    LabelFontSize = 14
+    TitleFontSize = 16
+    Font = 'serif'
+    AxisFontSize = 14
+    TickFontSize = 14
+
 
 class ParticlePhaseSpace:
     """
     """
 
-    def __init__(self, ps_data, verbose=False, weight_position_plot=False):
+    def __init__(self, ps_data):
 
-        self.ps_data = ps_data
-        self._c = constants.c
-        self.verbose = verbose
-        self._weight_position_plot = weight_position_plot  # weights plots by density. Looks better but is slow.
-
-        if self.verbose == True:
-            self.PrintData()
-
-    def __add__(self, other):
-        """
-        add two phase spaces together
-        """
-        pass
-
-    def __sub__(self, other):
-        """
-        subtract phase space (remove ever
-        """
-        pass
+        if not isinstance(ps_data, _DataImportersBase):
+            raise TypeError(f'ParticlePhaseSpace must be instantiated with a valid object'
+                            f'from DataLoaders, not {type(ps_data)}')
+        self.ps_data = ps_data.data
 
     def __call__(self, particle_list):
         """
         this function allows users to seperate the phase space based on particle types
+
+        users should be able to specify strings or pdg codes.
+        if string, then we should convert to pdg code.
         """
-        print('hello')
+        if not isinstance(particle_list, list):
+            particle_list = [particle_list]
+        allowed_particles = list(cf.particle_properties.keys())
+        for particle in particle_list:
+            if not particle in allowed_particles:
+                raise Exception(f'particle type {particle} is unknown')
+        particle_data_sets = []
+        for particle in particle_list:
+            pdg_code = cf.particle_properties[particle]['pdg_code']
+            particle_data = self.ps_data.loc[self.ps_data['particle type'] == pdg_code].copy(deep=True)
+            particle_data.reset_index(inplace=True, drop=True)
+            # delete any non required columns
+            for col_name in particle_data.columns:
+                if not col_name in cf.required_columns:
+                    particle_data.drop(columns=col_name, inplace=True)
+            # create a new instance of _DataImportersBase based on particle_data
+            particle_data_loader = DataLoaders.LoadPandasData(particle_data)
+            particle_instance = ParticlePhaseSpace(particle_data_loader)
+            particle_data_sets.append(particle_instance)
 
+        if len(particle_data_sets) == 1:
+            return particle_data_sets[0]
+        else:
+            return tuple(particle_data_sets)
 
+    def __add__(self, other):
+        """
+        add two phase spaces together. requires that each phase space has
+        unique particle IDs
+        """
+        new_data = pd.concat([self.ps_data, other.ps_data])
+
+        for col_name in new_data.columns:
+            if not col_name in cf.required_columns:
+                new_data.drop(columns=col_name, inplace=True)
+        new_data_loader = DataLoaders.LoadPandasData(new_data)
+        new_instance = ParticlePhaseSpace(new_data_loader)
+        return new_instance
+
+    def __sub__(self, other):
+        """
+        subtract phase space (remove every particle in other from self)
+        """
+        new_data = pd.merge(self.ps_data, other.ps_data, how='outer', indicator=True)\
+            .query("_merge != 'both'")\
+            .drop('_merge', axis=1)\
+            .reset_index(drop=True)
+        for col_name in new_data.columns:
+            if not col_name in cf.required_columns:
+                new_data.drop(columns=col_name, inplace=True)
+        new_data_loader = DataLoaders.LoadPandasData(new_data)
+        new_instance = ParticlePhaseSpace(new_data_loader)
+        return new_instance
+    
     def __weighted_median(self, data, weights):
         """
         calculate a weighted median
@@ -137,18 +189,6 @@ class ParticlePhaseSpace:
         self.twiss_beta = self.x2 / self.twiss_epsilon
         self.twiss_gamma = self.xp2 / self.twiss_epsilon
 
-    def __CheckEnergyCalculation(self):
-        """
-        For the SLAC data, if we understand the units correctly, we should be able to recover the energy from the momentum....
-        """
-        Totm = np.sqrt((self.px ** 2 + self.py ** 2 + self.pz ** 2))
-        self.TOT_E = np.sqrt(Totm ** 2 + self._me_MeV ** 2)
-        Kin_E = np.subtract(self.TOT_E, self._me_MeV)
-
-        E_error = max(self.E - Kin_E)
-        if E_error > .01:
-            sys.exit('Energy check failed: read in of data is wrong.')
-
     def __CalculateBetaAndGamma(self):
         """
         Calculate the beta and gamma factors from the momentum data
@@ -223,6 +263,25 @@ class ParticlePhaseSpace:
 
         f.close
 
+    def _set_single_species_status(self):
+        """
+        checks whether phase space has a single particle series and set a boolean flag
+        """
+        n_unique_particle_species = len(np.unique(self.ps_data['particle type']))
+        if n_unique_particle_species > 1:
+            self._single_species = False
+        else:
+            self._single_species = True
+
+    def _assert_single_species_status(self):
+        """
+        raises an error if phase space is not single specied
+        """
+        self._set_single_species_status()
+        if not self._single_species:
+            raise AttributeError(f'{inspect.stack()[1][3]} can only be used on single species phase spaces;'
+                                 f'the current phase space contains {n_unique_particle_species}')
+
     # public methods
 
     def PlotPhaseSpaceX(self):
@@ -258,27 +317,26 @@ class ParticlePhaseSpace:
         plt.grid(True)
         plt.show()
 
-    def PlotEnergyHistogram(self):
+    def plot_energy_histogram(self, n_bins=100, title=None):
 
-        try:
-            test = self.Eaxs
-        except AttributeError:
-            self.Efig, self.Eaxs = plt.subplots()
-        n, bins, patches = self.Eaxs.hist(self.E, bins=1000, weights=self.weight)
-        # self.fig.set_size_inches(10, 5)
-        self.Eaxs.set_xlabel('Energy [Mev]', fontsize=self.FigureSpecs.LabelFontSize)
-        self.Eaxs.set_ylabel('N counts', fontsize=self.FigureSpecs.LabelFontSize)
-        plot_title = self.OutputFile
-        self.Eaxs.set_title(plot_title, fontsize=self.FigureSpecs.TitleFontSize)
-        # self.Eaxs.tick_params(axis="y", labelsize=14)
-        # self.Eaxs.tick_params(axis="x", labelsize=14)
+        self._set_single_species_status()
+        if not self._single_species:
+            warnings.warn('this phase space consists of multiple particle species, all of '
+                          'which are represented in this energy histogram')
+        Efig, axs = plt.subplots()
+        if not 'E [MeV]' in self.ps_data.columns:
+            self.fill_kinetic_E()
 
-        # self.Eaxs.set_xlim([0, 10.5])
+        n, bins, patches = axs.hist(self.ps_data['E [MeV]'], bins=n_bins, weights=self.ps_data['weight'])
+        axs.set_xlabel('Energy [MeV]', fontsize=FigureSpecs.LabelFontSize)
+        axs.set_ylabel('N counts', fontsize=FigureSpecs.LabelFontSize)
+        axs.set_title(title, fontsize=FigureSpecs.TitleFontSize)
+        axs.tick_params(axis="y", labelsize=FigureSpecs.TickFontSize)
+        axs.tick_params(axis="x", labelsize=FigureSpecs.TickFontSize)
         plt.tight_layout()
         plt.show()
-        self.Eaxs.set_title(plot_title, fontsize=self.FigureSpecs.TitleFontSize)
 
-    def PlotParticlePositions(self):
+    def PlotParticlePositions(self, weight_position_plot=True):
 
         try:
             test = self.axs[0]
@@ -286,7 +344,7 @@ class ParticlePhaseSpace:
             self.fig, self.axs = plt.subplots(1, 2)
             self.fig.set_size_inches(10, 5)
 
-        if self._weight_position_plot:
+        if weight_position_plot:
             _kde_data_grid = 150 ** 2
             print('generating weighted scatter plot...')
 
@@ -341,7 +399,7 @@ class ParticlePhaseSpace:
             # self.PosHistAxs[0].set_xlim([-2, 2])
             # Plot the PDF.
             mu, std = norm.fit(self.x)
-            xmin, xmax = self.PosHistAxs[0].get_xlim()
+            xmin, xmax = self.PosHistAxs[0].fill_xlim()
             x = np.linspace(xmin, xmax, 100)
             p = norm.pdf(x, mu, std)
             self.PosHistAxs[0].plot(x, p, 'k', linewidth=2)
@@ -354,7 +412,7 @@ class ParticlePhaseSpace:
             # self.PosHistAxs[1].set_xlim([-2, 2])
             # Plot the PDF.
             mu, std = norm.fit(self.y)
-            xmin, xmax = self.PosHistAxs[1].get_xlim()
+            xmin, xmax = self.PosHistAxs[1].fill_xlim()
             x = np.linspace(xmin, xmax, 100)
             p = norm.pdf(x, mu, std)
             self.PosHistAxs[1].plot(x, p * n.max(), 'k', linewidth=2)
@@ -452,177 +510,54 @@ class ParticlePhaseSpace:
             print(
                 f'Mean Z position of output data is {_mean_zOut: 3.1f} \u00B1 {_std_zOut: 1.1f} (std)')
 
-    # export methods
-
-    def export_to_cst_pid(self, Zoffset=None):
+    def reset_phase_space(self):
         """
-        Generate a phase space which can be directly imported into CST
-        For a constant emission model: generate a .pid ascii file
-        Below is the example from CST:
-
-        % Use always SI units.
-        % The momentum (mom) is equivalent to beta* gamma.
-        %
-        % Columns: pos_x  pos_y  pos_z  mom_x  mom_y  mom_z  mass  charge  current
-
-        1.0e-3   4.0e-3  -1.0e-3   1.0   2.0   1.0   9.11e-31  -1.6e-19   1.0e-6
-        2.0e-3   4.0e-3   1.0e-3   1.0   2.0   1.0   9.11e-31  -1.6e-19   1.0e-6
-        3.0e-3   2.0e-3   1.0e-3   1.0   2.0   2.0   9.11e-31  -1.6e-19   1.0e-6
-        4.0e-3   4.0e-3   5.0e-3   1.0   2.0   1.0   9.11e-31  -1.6e-19   2.0e-6
+        reduce the phase space to only the required columns
         """
-        warnings.warn('I havent tested this function for a very long time, so please verify that it works..')
-        # Split the original file and extract the file name
-        NparticlesToWrite = np.size(self.x)  # use this to create a smaller PID flie for easier trouble shooting
-        WritefilePath = self.OutputDataLoc + '/' + self.OutputFile + '.pid'
-        # generate other information required by pid file:
+        pass
 
-        Charge = self.weight * constants.elementary_charge * -1
-        Mass = self.weight * constants.electron_mass
-        total_weight = self.weight.sum()
-        relative_weight = self.weight/total_weight
-        Current = self.TotalCurrent * relative_weight # very crude approximation!!
-        x = self.x * 1e-3  ## convert to m
-        y = self.y * 1e-3
-        if Zoffset == None:
-            # Zoffset is an optional parameter to change the starting location of the particle beam (which
-            # assume propogates in the Z direction)
-            self.zOut = self.z * 1e-3
-        else:
-            self.zOut = (self.z + Zoffset) * 1e-3
-        px = self.px / self._me_MeV
-        py = self.py / self._me_MeV
-        pz = self.pz / self._me_MeV
-        # generate PID file
-        Data = [x[0:NparticlesToWrite], y[0:NparticlesToWrite], self.zOut[0:NparticlesToWrite],
-                px[0:NparticlesToWrite], py[0:NparticlesToWrite], pz[0:NparticlesToWrite],
-                Mass[0:NparticlesToWrite], Charge[0:NparticlesToWrite], Current[0:NparticlesToWrite]]
-
-        Data = np.transpose(Data)
-        np.savetxt(WritefilePath, Data, fmt='%01.3e', delimiter='      ')
-
-    def export_to_cst_pit(self, Zoffset=None):
+    def get_reduced_phase_space(self):
         """
-        % Use always SI units.
-        % The momentum (mom) is equivalent to beta * gamma.
-        % The data need not to be chronological ordered.
-        %
-        % Columns: pos_x  pos_y  pos_z  mom_x  mom_y  mom_z  mass  charge  charge(macro)  time
-
-        1.0e-3   4.0e-3  -1.0e-3   1.0   2.0   1.0   9.11e-31  -1.6e-19   -2.6e-15   0e-6
-        2.0e-3   4.0e-3   1.0e-3   1.0   2.0   1.0   9.11e-31  -1.6e-19   -3.9e-15   1e-6
-        3.0e-3   2.0e-3   1.0e-3   1.0   2.0   2.0   9.11e-31  -1.6e-19   -3.9e-15   2e-6
-        4.0e-3   4.0e-3   5.0e-3   1.0   2.0   1.0   9.11e-31  -1.6e-19   -2.6e-15   3e-6
+        return a new phase space object which samples from the larger phase space
         """
+        pass
 
-        warnings.warn('I havent tested this function for a very long time, so please verify that it works..')
-        # Split the original file and extract the file name
-        NparticlesToWrite = np.size(self.x)  # use this to create a smaller PID flie for easier trouble shooting
-        WritefilePath = self.OutputDataLoc + '/' + self.OutputFile + '.pid'
-        # generate other information required by pid file:
-
-        Charge = self.weight * constants.elementary_charge * -1
-        Mass = self.weight * constants.electron_mass
-        Weight = self.weight
-        x = self.x * 1e-3  ## convert to m
-        y = self.y * 1e-3
-        if Zoffset == None:
-            # Zoffset is an optional parameter to change the starting location of the particle beam (which
-            # assume propogates in the Z direction)
-            self.zOut = self.z * 1e-3
-        else:
-            self.zOut = (self.z + Zoffset) * 1e-3
-        px = self.px / self._me_MeV
-        py = self.py / self._me_MeV
-        pz = self.pz / self._me_MeV
-        time = np.zeros(self.x.shape)
-
-        # generate PID file
-        Data = [x[0:NparticlesToWrite], y[0:NparticlesToWrite], self.zOut[0:NparticlesToWrite],
-                px[0:NparticlesToWrite], py[0:NparticlesToWrite], pz[0:NparticlesToWrite],
-                Mass[0:NparticlesToWrite], Charge[0:NparticlesToWrite], Weight[0:NparticlesToWrite],
-                time[0:NparticlesToWrite]]
-
-        Data = np.transpose(Data)
-        np.savetxt(WritefilePath, Data, fmt='%01.3e', delimiter='      ')
-
-    def export_to_comsol(self, Zoffset=None):
+    def fill_gamma(self):
         """
-        Generate a phase space which can be directly imported into CST
-        For a constant emission model: generate a .pid ascii file
-        Below is the example from CST:
-
-        % Use always SI units.
-        % The momentum (mom) is equivalent to beta* gamma.
-        %
-        % Columns: pos_x  pos_y  pos_z  mom_x  mom_y  mom_z  mass  charge  current
-
-        1.0e-3   4.0e-3  -1.0e-3   1.0   2.0   1.0   9.11e-31  -1.6e-19   1.0e-6
-        2.0e-3   4.0e-3   1.0e-3   1.0   2.0   1.0   9.11e-31  -1.6e-19   1.0e-6
-        3.0e-3   2.0e-3   1.0e-3   1.0   2.0   2.0   9.11e-31  -1.6e-19   1.0e-6
-        4.0e-3   4.0e-3   5.0e-3   1.0   2.0   1.0   9.11e-31  -1.6e-19   2.0e-6
+        so we either add these into a new
         """
-        # Split the original file and extract the file name
-        NparticlesToWrite = np.size(self.x)  # use this to create a smaller PID flie for easier trouble shooting
-        WritefilePath = self.OutputDataLoc + '/' + self.OutputFile + '.txt'
-        # generate other information required by pid file:
+        pass
 
-        x = self.x * 1e-3  ## convert to m
-        y = self.y * 1e-3
-        if Zoffset == None:
-            # Zoffset is an optional parameter to change the starting location of the particle beam (which
-            # assume propogates in the Z direction)
-            self.zOut = self.z
-        else:
-            self.zOut = (self.z + Zoffset)
-        # generate PID file
-        Data = [x, y, self.zOut, self.vx*self._c, self.vy*self._c, self.vz*self._c]
-
-        Data = np.transpose(Data)
-        np.savetxt(WritefilePath, Data, fmt='%01.12e', delimiter='      ')
-
-    def export_to_topas(self, Zoffset=None):
+    def fill_kinetic_E(self):
         """
-        Convert Phase space into format appropriate for topas.
-        You can read more about the required format
-        `Here <https://topas.readthedocs.io/en/latest/parameters/scoring/phasespace.html>`_
-
-        :param Zoffset: number to add to the Z position of each particle. To move it upstream, Zoffset should be negative.
-         No check is made for units, the user has to figure this out themselves! If Zoffset=None, the read in X value
-         will be used.
-        :type Zoffset: None or double
+        adds kinetic energy into self.ps_data
         """
-        print('generating topas data file')
-        import platform
-        if 'windows' in platform.system().lower():
-            warnings.warn('to generate a file that topas will accept, you need to do this from linux. I think'
-                          'its the line endings.')
-        WritefilePath = self.OutputDataLoc + '/' + self.OutputFile + '_tpsImport.phsp'
+        rest_masses = ps_util.get_rest_masses_from_pdg_codes(self.ps_data['particle type'])
+        Totm = np.sqrt((self.ps_data['px'] ** 2 + self.ps_data['py'] ** 2 + self.ps_data['pz'] ** 2))
+        TOT_E = np.sqrt(Totm ** 2 + rest_masses ** 2)
+        Kin_E = np.subtract(TOT_E, rest_masses)
+        self.ps_data['E [MeV]'] = Kin_E
 
-        # write the header file:
-        self.__GenerateTopasHeaderFile()
+    def fill_velocity(self):
+        """
+        I think that I may need to define the cosines in terms of velocity, and not in terms of momentum
+        as I have been doing.
+        I'm also not totally sure that i'm calculating these correctly....
+        """
+        self.vx = np.divide(self.px, (self.Gamma * self._me_MeV))
+        self.vy = np.divide(self.py, (self.Gamma * self._me_MeV))
+        self.vz = np.divide(self.pz, (self.Gamma * self._me_MeV))
+    
+    def set_units(self):
+        pass
+    
+    def get_units(self):
+        pass
 
-        # generare the required data and put it all in an ndrray
-        self.__ConvertMomentumToVelocity()
-        DirCosX, DirCosY = self.__CalculateDirectionCosines()
-        Weight = self.weight  # i think weight is scaled relative to particle type
-        # Weight = np.ones(len(self.x))  # i think weight is scaled relative to particle type
-        ParticleType = 11 * np.ones(len(self.x))  # 11 is the particle ID for electrons
-        ThirdDirectionFlag = np.zeros(len(self.x))  # not really sure what this means.
-        FirstParticleFlag = np.ones(
-            len(self.x))  # don't actually know what this does but as we import a pure phase space
-        if Zoffset == None:
-            # Zoffset is an optional parameter to change the starting location of the particle beam (which
-            # assume propogates in the Z direction)
-            self.zOut = self.z
-        else:
-            self.zOut = self.z + Zoffset
-
-        # Nb: topas seems to require units of cm
-        Data = [self.x * 0.1, self.y * 0.1, self.zOut * 0.1, DirCosX, DirCosY, self.E, Weight,
-                ParticleType, ThirdDirectionFlag, FirstParticleFlag]
-
-        # write the data to a text file
-        Data = np.transpose(Data)
-        FormatSpec = ['%11.5f', '%11.5f', '%11.5f', '%11.5f', '%11.5f', '%11.5f', '%11.5f', '%2d', '%2d', '%2d']
-        np.savetxt(WritefilePath, Data, fmt=FormatSpec, delimiter='      ')
-        print('success')
+    def particle_report(self):
+        """
+        print some statistics about the particles
+        - particle types
+        - energy of each
+        """
+        pass
