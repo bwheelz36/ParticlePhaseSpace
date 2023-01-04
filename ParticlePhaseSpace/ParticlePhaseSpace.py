@@ -554,10 +554,19 @@ class ParticlePhaseSpace:
     def get_units(self):
         pass
 
-    def particle_report(self):
+    def report(self):
         """
         print some statistics about the particles
         - particle types
         - energy of each
         """
-        pass
+        if not 'E [MeV]' in self.ps_data.columns:
+            self.fill_kinetic_E()
+        print(f'total number of particles in phase space: {self.ps_data.shape[0]}')
+        unique_particles = self.ps_data['particle type'].unique()
+        print(f'number of unique particle species: {len(unique_particles): d}')
+        for particle in unique_particles:
+            ind = self.ps_data['particle type'] == particle
+            print(f'    {np.count_nonzero(ind): d} {cf.particle_properties[particle]["name"]}'
+                  f'\n        min energy {self.ps_data.loc[ind]["E [MeV]"].min()} MeV'
+                  f'\n        max energy {self.ps_data.loc[ind]["E [MeV]"].max()} MeV')

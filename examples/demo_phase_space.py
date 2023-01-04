@@ -8,7 +8,7 @@ from pathlib import Path
 test_data_loc = Path(r'coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp').absolute()
 ps_data = DataLoaders.LoadTopasData(test_data_loc)
 PS = ParticlePhaseSpace(ps_data)
-
+PS.report()
 electrons_only = PS('electrons')
 gamma_only, positrons_only = PS(['gammas', 'positrons'])
 # we can add these back together using the + operator:

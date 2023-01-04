@@ -89,7 +89,9 @@ class LoadTopasData(_DataImportersBase):
         self.TOT_E = np.sqrt(P ** 2 + rest_masses ** 2)
         self.data['px'] = np.multiply(P, DirCosineX)
         self.data['py'] = np.multiply(P, DirCosineY)
-        self.data['pz'] = np.multiply((P ** 2 - self.data['px'] ** 2 - self.data['py'] ** 2), ParticleDir)
+        temp = P ** 2 - self.data['px'] ** 2 - self.data['py'] ** 2
+        ParticleDir = [1 if elem else -1 for elem in ParticleDir]
+        self.data['pz'] = np.multiply(np.sqrt(temp), ParticleDir)
 
     def _check_input_data(self):
         """

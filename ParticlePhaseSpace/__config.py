@@ -25,10 +25,10 @@ required_columns = ['x [mm]',
 allowed_columns = ['E [MeV]']
 
 q = constants.elementary_charge
-# calculate rest masses in eV
-electron_rest_mass = constants.electron_mass * constants.c ** 2 / constants.elementary_charge  # in eV
-proton_rest_mass = constants.proton_mass * constants.c ** 2 / constants.elementary_charge  # in eV
-neutron_rest_mass = constants.neutron_mass * constants.c ** 2 / constants.elementary_charge  # in eV
+# calculate rest masses in MeV
+electron_rest_mass = 1e-6 * constants.electron_mass * constants.c ** 2 / constants.elementary_charge  # in eV
+proton_rest_mass = 1e-6 * constants.proton_mass * constants.c ** 2 / constants.elementary_charge  # in eV
+neutron_rest_mass = 1e-6 * constants.neutron_mass * constants.c ** 2 / constants.elementary_charge  # in eV
 
 particle_properties = {
     'electrons':
@@ -53,12 +53,20 @@ particle_properties = {
          'pdg_code': int(2112)}
 }
 
+
+
 # set up aliases with pdf codes
 particle_properties[11] = particle_properties['electrons']
 particle_properties[-11] = particle_properties['positrons']
 particle_properties[2212] = particle_properties['protons']
 particle_properties[22] = particle_properties['gammas']
 particle_properties[2112] = particle_properties['neutrons']
+
+# add each string key as a 'name' field for ease of use with pdg codes:
+for key in particle_properties.keys():
+    if isinstance(key, str):
+        particle_properties[key]['name'] = key
+
 
 # check that there are the same number of aliases as entries
 keys = list(particle_properties.keys())
