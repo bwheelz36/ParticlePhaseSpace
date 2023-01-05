@@ -58,7 +58,7 @@ class ParticlePhaseSpace:
         particle_data_sets = []
         for particle in particle_list:
             pdg_code = cf.particle_properties[particle]['pdg_code']
-            particle_data = self.ps_data.loc[self.ps_data['particle type'] == pdg_code].copy(deep=True)
+            particle_data = self.ps_data.loc[self.ps_data['particle type [pdg_code]'] == pdg_code].copy(deep=True)
             particle_data.reset_index(inplace=True, drop=True)
             # delete any non required columns
             for col_name in particle_data.columns:
@@ -102,7 +102,7 @@ class ParticlePhaseSpace:
         new_data_loader = DataLoaders.LoadPandasData(new_data)
         new_instance = ParticlePhaseSpace(new_data_loader)
         return new_instance
-    
+
     def __weighted_median(self, data, weights):
         """
         calculate a weighted median
@@ -174,20 +174,7 @@ class ParticlePhaseSpace:
         q75, q25 = self.__weighted_quantile(self.E, [0.25, 0.75], sample_weight=self.weight)
         self.EnergySpreadIQR = q75 - q25
 
-    def __CalculateTwissParameters(self):
-        """
-        Calculate the twiss parameters
-        """
-        # Calculate in X direction
-        self.x2 = np.average(np.square(self.x), weights=self.weight)
-        self.xp = np.divide(self.px, self.pz) * 1e3
-        self.xp2 = np.average(np.square(self.xp), weights=self.weight)
-        self.x_xp = np.average(np.multiply(self.x, self.xp), weights=self.weight)
 
-        self.twiss_epsilon = np.sqrt((self.x2 * self.xp2) - (self.x_xp ** 2)) * np.pi
-        self.twiss_alpha = -self.x_xp / self.twiss_epsilon
-        self.twiss_beta = self.x2 / self.twiss_epsilon
-        self.twiss_gamma = self.xp2 / self.twiss_epsilon
 
     def __CalculateBetaAndGamma(self):
         """
@@ -267,7 +254,7 @@ class ParticlePhaseSpace:
         """
         checks whether phase space has a single particle series and set a boolean flag
         """
-        n_unique_particle_species = len(np.unique(self.ps_data['particle type']))
+        n_unique_particle_species = len(np.unique(self.ps_data['particle type [pdg_code]']))
         if n_unique_particle_species > 1:
             self._single_species = False
         else:
@@ -282,7 +269,204 @@ class ParticlePhaseSpace:
             raise AttributeError(f'{inspect.stack()[1][3]} can only be used on single species phase spaces;'
                                  f'the current phase space contains {n_unique_particle_species}')
 
+    def _check_ps_data_format(self):
+        """
+        check that the phase space remains consisten with what is mandated in __config
+        :return:
+        """
+
+        all_allowed_columns = cf.required_columns + cf.allowed_columns
+        for col_name in self.ps_data.columns:
+            if not col_name in all_allowed_columns:
+                raise AttributeError(f'non allowed column name {col_name} in ps_data')
+
     # public methods
+
+    def plot_energy_histogram(self, n_bins=100, title=None):
+        """
+        generate a histogram plot of paritcle energies.
+        Each particle spcies present in the phase space is overlaid
+        on the same plot.
+
+        :param n_bins: number of bins in histogram
+        :param title: title of histogram
+        :return: None
+        """
+        Efig, axs = plt.subplots()
+        if not 'Ek [MeV]' in self.ps_data.columns:
+            self.fill_kinetic_E()
+        unique_particles = self.ps_data['particle type [pdg_code]'].unique()
+        legend = []
+        for particle in unique_particles:
+            legend.append(cf.particle_properties[particle]['name'])
+            ind = self.ps_data['particle type [pdg_code]'] == particle
+            Eplot = self.ps_data['Ek [MeV]'][ind]
+            n, bins, patches = axs.hist(Eplot, bins=n_bins, weights=self.ps_data['weight'][ind], alpha=.5)
+
+        axs.set_xlabel('Energy [MeV]', fontsize=FigureSpecs.LabelFontSize)
+        axs.set_ylabel('N counts', fontsize=FigureSpecs.LabelFontSize)
+        if title:
+            axs.set_title(title, fontsize=FigureSpecs.TitleFontSize)
+        axs.tick_params(axis="y", labelsize=FigureSpecs.TickFontSize)
+        axs.tick_params(axis="x", labelsize=FigureSpecs.TickFontSize)
+        axs.legend(legend)
+        plt.tight_layout()
+        plt.show()
+
+    def plot_position_histogram(self, n_bins=100, alpha=0.5):
+        """
+        plot a histogram of particle positions in x, y, z.
+        a new histogram is generated for each particle species.
+        histograms are overlaid.
+
+        :return: None
+        """
+        fig, axs = plt.subplots(1, 3)
+        fig.set_size_inches(15, 5)
+        unique_particles = self.ps_data['particle type [pdg_code]'].unique()
+        legend = []
+        for particle in unique_particles:
+            legend.append(cf.particle_properties[particle]['name'])
+            ind = self.ps_data['particle type [pdg_code]'] == particle
+            x_plot = self.ps_data['x [mm]'][ind]
+            y_plot = self.ps_data['y [mm]'][ind]
+            z_plot = self.ps_data['z [mm]'][ind]
+            axs[0].hist(x_plot, bins=n_bins, weights=self.ps_data['weight'][ind], alpha=alpha)
+            axs[1].hist(y_plot, bins=n_bins, weights=self.ps_data['weight'][ind], alpha=alpha)
+            axs[2].hist(z_plot, bins=n_bins, weights=self.ps_data['weight'][ind], alpha=alpha)
+
+        axs[0].set_xlabel('x [mm]')
+        axs[0].set_ylabel('counts')
+        axs[0].set_title('x [mm]')
+        axs[0].legend(legend)
+
+        axs[1].set_xlabel('y [mm]')
+        axs[1].set_ylabel('counts')
+        axs[1].set_title('y [mm]')
+
+        axs[2].set_xlabel('Z position [mm]')
+        axs[2].set_ylabel('counts')
+        axs[2].set_title('z [mm]')
+
+        plt.tight_layout()
+        plt.show()
+
+    def report(self):
+        """
+        print a sumary of the phase space to the screen.
+        """
+        if not 'Ek [MeV]' in self.ps_data.columns:
+            self.fill_kinetic_E()
+        print(f'total number of particles in phase space: {self.ps_data.shape[0]}')
+        unique_particles = self.ps_data['particle type [pdg_code]'].unique()
+        print(f'number of unique particle species: {len(unique_particles): d}')
+        for particle in unique_particles:
+            ind = self.ps_data['particle type [pdg_code]'] == particle
+            print(f'    {np.count_nonzero(ind): d} {cf.particle_properties[particle]["name"]}'
+                  f'\n        min energy {self.ps_data.loc[ind]["Ek [MeV]"].min()} MeV'
+                  f'\n        max energy {self.ps_data.loc[ind]["Ek [MeV]"].max()} MeV')
+
+    def fill_kinetic_E(self):
+        """
+        adds kinetic energy into self.ps_data
+        """
+        if not hasattr(self,'_rest_masses'):
+            self.fill_rest_mass()
+        Totm = np.sqrt(self.ps_data['px [MeV/c]'] ** 2 + self.ps_data['py [MeV/c]'] ** 2 + self.ps_data['pz [MeV/c]'] ** 2)
+        TOT_E = np.sqrt(Totm ** 2 + self.ps_data['rest mass [MeV/c^2]'] ** 2)
+        Kin_E = np.subtract(TOT_E, self.ps_data['rest mass [MeV/c^2]'])
+        self.ps_data['Ek [MeV]'] = Kin_E
+        self._check_ps_data_format()
+
+    def fill_rest_mass(self):
+        """
+        add rest mass data to self.ps_data
+        :return: 
+        """
+        self.ps_data['rest mass [MeV/c^2]'] = ps_util.get_rest_masses_from_pdg_codes(self.ps_data['particle type [pdg_code]'])
+        self._check_ps_data_format()
+
+    def fill_velocity(self):
+        """
+        add velocities into self.ps_data
+        """
+        if not 'rest mass [MeV/c^2]' in self.ps_data.columns:
+            self.fill_rest_mass()
+        if not 'gamma' in self.ps_data.columns:
+            self.fill_beta_and_gamma()
+        self.ps_data['vx [m/s]'] = np.divide(self.ps_data['px [MeV/c]'], (self.ps_data['gamma'] * self.ps_data['rest mass [MeV/c^2]']))
+        self.ps_data['vy [m/s]'] = np.divide(self.ps_data['py [MeV/c]'], (self.ps_data['gamma'] * self.ps_data['rest mass [MeV/c^2]']))
+        self.ps_data['vz [m/s]'] = np.divide(self.ps_data['pz [MeV/c]'], (self.ps_data['gamma'] * self.ps_data['rest mass [MeV/c^2]']))
+        self._check_ps_data_format()
+    
+    def fill_beta_and_gamma(self):
+        """
+        add the relatavistic beta and gamma factors into self.ps_data
+        """
+        if not 'Ek [MeV]' in self.ps_data.columns:
+            self.fill_kinetic_E()
+        if not 'rest mass [MeV/c^2]' in self.ps_data.columns:
+            self.fill_rest_mass()
+        TOT_P = np.sqrt(self.ps_data['px [MeV/c]'] ** 2 + self.ps_data['py [MeV/c]'] ** 2 + self.ps_data['pz [MeV/c]'] ** 2)
+        self.ps_data['beta'] = np.divide(TOT_P, self.ps_data['Ek [MeV]'] + self.ps_data['rest mass [MeV/c^2]'])
+        self.ps_data['gamma'] = 1 / np.sqrt(1 - np.square(self.ps_data['beta']))
+        self._check_ps_data_format()
+
+    def get_downsampled_phase_space(self, downsample_factor=10):
+        """
+        return a new phase space object which randomlt samples from the larger phase space.
+        the new phase space has size 'original data/downsample_factor'. the data is shuffled
+        before being randomly sampled.
+
+        :param downsample_factor: the factor to downsample the phase space by
+        """
+        new_data = self.ps_data.sample(frac=1).reset_index(drop=True)  # this shuffles the data
+        new_data = new_data.sample(frac=1/downsample_factor, ignore_index=True)
+        for col_name in new_data.columns:
+            if not col_name in cf.required_columns:
+                new_data.drop(columns=col_name, inplace=True)
+        new_data_loader = DataLoaders.LoadPandasData(new_data)
+        new_instance = ParticlePhaseSpace(new_data_loader)
+        return new_instance
+
+    def project_particles(self, direction='z', distance=100):
+        """
+        Update the positions of each particle by projecting it forward/back by distance.
+
+        This serves as a crude approximation to more advanced particle transport codes, but gives
+        an indication of where the particles would end up in the absence of other forces.
+        When this function is recalled, any dervied quantities will be deleted as it is too hard to check
+        that they all remain correct.
+
+        :param direction: the direction to project in. 'x', 'y', or 'z'
+        :param distance: how far to project
+        :return: None
+        """
+        if not 'vx [m/s]' in self.ps_data.columns:
+            self.fill_velocity()
+
+        if direction == 'z':
+            self.ps_data['x [mm]'] = self.ps_data['x [mm]'] + np.divide(self.ps_data['vx [m/s]'], self.ps_data['vz [m/s']) * distance
+            self.ps_data['y [mm]'] = self.ps_data['y [mm]'] + np.divide(self.ps_data['vy [m/s]'], self.ps_data['vz [m/s']) * distance
+            self.ps_data['z [mm]'] = self.ps_data['z [mm]'] + distance
+        else:
+            raise NotImplementedError('havent coded the other directions yet')
+
+        self.reset_phase_space()  # safest to get rid of any derived quantities
+
+    def reset_phase_space(self):
+        """
+        reduce self.ps_data to only the required columns
+        delete any other dervied quantities such as twiss parameters
+        this can be called whenever you want to reduce the memory footprint, or whenever
+        you have perfored some operation which may have invalidiated derived metrics
+        """
+        for col_name in self.ps_data.columns:
+            if not col_name in cf.required_columns:
+                self.ps_data.drop(columns=col_name, inplace=True)
+
+
+    ###############################
 
     def PlotPhaseSpaceX(self):
 
@@ -315,25 +499,6 @@ class ParticlePhaseSpace:
         plt.title(TitleString)
 
         plt.grid(True)
-        plt.show()
-
-    def plot_energy_histogram(self, n_bins=100, title=None):
-
-        self._set_single_species_status()
-        if not self._single_species:
-            warnings.warn('this phase space consists of multiple particle species, all of '
-                          'which are represented in this energy histogram')
-        Efig, axs = plt.subplots()
-        if not 'E [MeV]' in self.ps_data.columns:
-            self.fill_kinetic_E()
-
-        n, bins, patches = axs.hist(self.ps_data['E [MeV]'], bins=n_bins, weights=self.ps_data['weight'])
-        axs.set_xlabel('Energy [MeV]', fontsize=FigureSpecs.LabelFontSize)
-        axs.set_ylabel('N counts', fontsize=FigureSpecs.LabelFontSize)
-        axs.set_title(title, fontsize=FigureSpecs.TitleFontSize)
-        axs.tick_params(axis="y", labelsize=FigureSpecs.TickFontSize)
-        axs.tick_params(axis="x", labelsize=FigureSpecs.TickFontSize)
-        plt.tight_layout()
         plt.show()
 
     def PlotParticlePositions(self, weight_position_plot=True):
@@ -385,59 +550,6 @@ class ParticlePhaseSpace:
         plt.tight_layout()
         plt.show()
 
-    def PlotPositionHistogram(self):
-
-        try:
-            test = self.self.PosHistAxs[0]
-        except AttributeError:
-            self.fig, self.PosHistAxs = plt.subplots(1, 2)
-            self.fig.set_size_inches(10, 5)
-
-            n, bins, patches = self.PosHistAxs[0].hist(self.x, bins=100, density=True)
-            self.PosHistAxs[0].set_xlabel('X position [mm]')
-            self.PosHistAxs[0].set_ylabel('counts')
-            # self.PosHistAxs[0].set_xlim([-2, 2])
-            # Plot the PDF.
-            mu, std = norm.fit(self.x)
-            xmin, xmax = self.PosHistAxs[0].fill_xlim()
-            x = np.linspace(xmin, xmax, 100)
-            p = norm.pdf(x, mu, std)
-            self.PosHistAxs[0].plot(x, p, 'k', linewidth=2)
-            title = "Fit results: mu = %.2f,  std = %.2f" % (mu, std)
-            self.PosHistAxs[0].set_title(title)
-
-            n, bins, patches = self.PosHistAxs[1].hist(self.y, bins=100)
-            self.PosHistAxs[1].set_xlabel('X position [mm]')
-            self.PosHistAxs[1].set_ylabel('counts')
-            # self.PosHistAxs[1].set_xlim([-2, 2])
-            # Plot the PDF.
-            mu, std = norm.fit(self.y)
-            xmin, xmax = self.PosHistAxs[1].fill_xlim()
-            x = np.linspace(xmin, xmax, 100)
-            p = norm.pdf(x, mu, std)
-            self.PosHistAxs[1].plot(x, p * n.max(), 'k', linewidth=2)
-            title = "Fit results: mu = %.2f,  std = %.2f" % (mu, std)
-            self.PosHistAxs[1].set_title(title)
-
-            plt.tight_layout()
-            plt.show()
-
-    def ProjectParticles(self, zdiff):
-        """
-        Update the X,Y,Z position of each particle by projecting it forward/back by zdiff.
-
-        This serves as a crude approximation to more advanced particle transport codes, but can be used to quickly
-        check results
-        """
-        self.x = self.x + np.divide(self.vx, self.vz) * zdiff
-        self.y = self.y + np.divide(self.vy, self.vz) * zdiff
-        self.z = self.z + zdiff
-
-        # update the info on particle distribution
-        self.__CalculateBetaAndGamma()
-        self.__CalculateTwissParameters()  # at the moment just caclculates transverse phse space in X.
-        self.__AnalyseEnergyDistribution()
-
     def AssessDensityVersusR(self, Rvals=None):
         """
         Crude code to assess how many particles are in a certain radius
@@ -481,92 +593,17 @@ class ParticlePhaseSpace:
 
         self.rad_prop = rad_prop
 
-    def PrintData(self):
+    def CalculateTwissParameters(self):
         """
-        can be used to print info to the termainl
+        Calculate the twiss parameters
         """
-        if (self.DataType == 'topas') or (self.DataType == 'SLAC') or (self.DataType == 'CST'):
-            Filepath, filename = os.path.split(self.Data)
-            print(f'\nFor file: {filename}')
-        print(
-            f'\u03C0\u03B5: {self.twiss_epsilon: 1.1f} mm mrad, \u03B1: {self.twiss_alpha: 1.1f}, \u0392: {self.twiss_beta: 1.1f}, '
-            f'\u03B3: {self.twiss_gamma: 1.1f}')
-        print(f'Median energy: {self.medianEnergy: 1.2f} MeV \u00B1 {self.EnergySpreadIQR: 1.2f} (IQR) ')
-        print(f'Mean energy: {self.meanEnergy: 1.2f} MeV \u00B1 {self.stdEnergy: 1.2f} (std) ')
-        _mean_z, _std_z = self.__weighted_avg_and_std(self.z, self.weight)
-        print(f'Mean Z position of input data is {_mean_z: 3.1f} mm \u00B1 {_std_z: 1.1f} (std)')
-        medianEnergy = self.medianEnergy
-        CutOff = .05
-        ind = np.logical_and(self.E > (medianEnergy - (.05 * medianEnergy)),
-                             self.E < (medianEnergy + (.05 * medianEnergy)))
-        weighted_ind = np.multiply(ind, self.weight)
-        weighted_percent = np.sum(weighted_ind) * 100 / np.sum(self.weight)
+        # Calculate in X direction
+        self.x2 = np.average(np.square(self.x), weights=self.weight)
+        self.xp = np.divide(self.px, self.pz) * 1e3
+        self.xp2 = np.average(np.square(self.xp), weights=self.weight)
+        self.x_xp = np.average(np.multiply(self.x, self.xp), weights=self.weight)
 
-        print(
-            f'{weighted_percent:1.1f} % of particles are within \u00B1 5% of the median dose ({medianEnergy: 1.1f} MeV) ')
-
-        if hasattr(self, 'zOut'):
-            _mean_zOut, _std_zOut = self.__weighted_avg_and_std(self.zOut, self.weight)
-            print(
-                f'Mean Z position of output data is {_mean_zOut: 3.1f} \u00B1 {_std_zOut: 1.1f} (std)')
-
-    def reset_phase_space(self):
-        """
-        reduce the phase space to only the required columns
-        """
-        pass
-
-    def get_reduced_phase_space(self):
-        """
-        return a new phase space object which samples from the larger phase space
-        """
-        pass
-
-    def fill_gamma(self):
-        """
-        so we either add these into a new
-        """
-        pass
-
-    def fill_kinetic_E(self):
-        """
-        adds kinetic energy into self.ps_data
-        """
-        rest_masses = ps_util.get_rest_masses_from_pdg_codes(self.ps_data['particle type'])
-        Totm = np.sqrt(self.ps_data['px'] ** 2 + self.ps_data['py'] ** 2 + self.ps_data['pz'] ** 2)
-        TOT_E = np.sqrt(Totm ** 2 + rest_masses ** 2)
-        Kin_E = np.subtract(TOT_E, rest_masses)
-        self.ps_data['E [MeV]'] = Kin_E
-
-    def fill_velocity(self):
-        """
-        I think that I may need to define the cosines in terms of velocity, and not in terms of momentum
-        as I have been doing.
-        I'm also not totally sure that i'm calculating these correctly....
-        """
-        self.vx = np.divide(self.px, (self.Gamma * self._me_MeV))
-        self.vy = np.divide(self.py, (self.Gamma * self._me_MeV))
-        self.vz = np.divide(self.pz, (self.Gamma * self._me_MeV))
-    
-    def set_units(self):
-        pass
-    
-    def get_units(self):
-        pass
-
-    def report(self):
-        """
-        print some statistics about the particles
-        - particle types
-        - energy of each
-        """
-        if not 'E [MeV]' in self.ps_data.columns:
-            self.fill_kinetic_E()
-        print(f'total number of particles in phase space: {self.ps_data.shape[0]}')
-        unique_particles = self.ps_data['particle type'].unique()
-        print(f'number of unique particle species: {len(unique_particles): d}')
-        for particle in unique_particles:
-            ind = self.ps_data['particle type'] == particle
-            print(f'    {np.count_nonzero(ind): d} {cf.particle_properties[particle]["name"]}'
-                  f'\n        min energy {self.ps_data.loc[ind]["E [MeV]"].min()} MeV'
-                  f'\n        max energy {self.ps_data.loc[ind]["E [MeV]"].max()} MeV')
+        self.twiss_epsilon = np.sqrt((self.x2 * self.xp2) - (self.x_xp ** 2)) * np.pi
+        self.twiss_alpha = -self.x_xp / self.twiss_epsilon
+        self.twiss_beta = self.x2 / self.twiss_epsilon
+        self.twiss_gamma = self.xp2 / self.twiss_epsilon

@@ -14,21 +14,27 @@ particle_properties are described in the following format
 required_columns = ['x [mm]',
                     'y [mm]',
                     'z [mm]',
-                    'px',
-                    'py',
-                    'pz',
-                    'particle type',
+                    'px [MeV/c]',
+                    'py [MeV/c]',
+                    'pz [MeV/c]',
+                    'particle type [pdg_code]',
                     'weight',
                     'particle id',
                     'time [ps]']
 
-allowed_columns = ['E [MeV]']
+allowed_columns = ['Ek [MeV]',
+                   'rest mass [MeV/c^2]',
+                   'gamma',
+                   'beta',
+                   'vx [m/s]',
+                   'vy [m/s]',
+                   'vz [m/s]']
 
 q = constants.elementary_charge
 # calculate rest masses in MeV
-electron_rest_mass = 1e-6 * constants.electron_mass * constants.c ** 2 / constants.elementary_charge  # in eV
-proton_rest_mass = 1e-6 * constants.proton_mass * constants.c ** 2 / constants.elementary_charge  # in eV
-neutron_rest_mass = 1e-6 * constants.neutron_mass * constants.c ** 2 / constants.elementary_charge  # in eV
+electron_rest_mass = 1e-6 * constants.electron_mass * constants.c ** 2 / constants.elementary_charge  # in MeV
+proton_rest_mass = 1e-6 * constants.proton_mass * constants.c ** 2 / constants.elementary_charge  # in MeV
+neutron_rest_mass = 1e-6 * constants.neutron_mass * constants.c ** 2 / constants.elementary_charge  # in MeV
 
 particle_properties = {
     'electrons':
