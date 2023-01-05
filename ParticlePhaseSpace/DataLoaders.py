@@ -85,8 +85,8 @@ class LoadTopasData(_DataImportersBase):
         DirCosineY = topas_phase_space['Direction Cosine Y']
         E = topas_phase_space['Energy [MeV]']
         rest_masses = get_rest_masses_from_pdg_codes(self.data['particle type'])
-        P = np.sqrt(E ** 2 + rest_masses ** 2)
-        self.TOT_E = np.sqrt(P ** 2 + rest_masses ** 2)
+
+        TOT_E = np.sqrt(P ** 2 + rest_masses ** 2)
         self.data['px'] = np.multiply(P, DirCosineX)
         self.data['py'] = np.multiply(P, DirCosineY)
         temp = P ** 2 - self.data['px'] ** 2 - self.data['py'] ** 2

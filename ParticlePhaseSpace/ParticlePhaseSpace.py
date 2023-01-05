@@ -533,7 +533,7 @@ class ParticlePhaseSpace:
         adds kinetic energy into self.ps_data
         """
         rest_masses = ps_util.get_rest_masses_from_pdg_codes(self.ps_data['particle type'])
-        Totm = np.sqrt((self.ps_data['px'] ** 2 + self.ps_data['py'] ** 2 + self.ps_data['pz'] ** 2))
+        Totm = np.sqrt(self.ps_data['px'] ** 2 + self.ps_data['py'] ** 2 + self.ps_data['pz'] ** 2)
         TOT_E = np.sqrt(Totm ** 2 + rest_masses ** 2)
         Kin_E = np.subtract(TOT_E, rest_masses)
         self.ps_data['E [MeV]'] = Kin_E
