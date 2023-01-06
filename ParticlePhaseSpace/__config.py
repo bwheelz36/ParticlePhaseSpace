@@ -5,22 +5,22 @@ This module simply hods a dictionary object which defines
 the allowed particle types which can be imported
 
 definitions should match
-https://pdg.lbl.gov/2012/mcdata/mc_particle_id_contents.html
+
 
 particle_properties are described in the following format
 {particle_name: {
 """
 
-required_columns = ['x [mm]',
-                    'y [mm]',
-                    'z [mm]',
-                    'px [MeV/c]',
-                    'py [MeV/c]',
-                    'pz [MeV/c]',
-                    'particle type [pdg_code]',
-                    'weight',
-                    'particle id',
-                    'time [ps]']
+required_columns = ['x [mm]',  # x position of each particle
+                    'y [mm]',  # y position of each particle
+                    'z [mm]',  # z position of each particle
+                    'px [MeV/c]',  # x momentum of each particle
+                    'py [MeV/c]',  # y momentum of each particle
+                    'pz [MeV/c]',  # z momentum of each particle
+                    'particle type [pdg_code]',  # [pdg code](https://pdg.lbl.gov/2012/mcdata/mc_particle_id_contents.html) for each particle
+                    'weight',  # statistical weight of each particle (defaults to 1)
+                    'particle id',  # id of each particle
+                    'time [ps]']  # time each particle was scored
 
 allowed_columns = ['Ek [MeV]',
                    'rest mass [MeV/c^2]',

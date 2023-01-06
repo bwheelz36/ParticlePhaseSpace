@@ -1,9 +1,8 @@
 from abc import ABC, abstractmethod
-
 import pandas as pd
 import topas2numpy as tp
 import numpy as np
-
+from pathlib import Path
 from .utilities import get_rest_masses_from_pdg_codes
 import ParticlePhaseSpace.__config as cf
 import warnings
@@ -115,12 +114,11 @@ class LoadTopasData(_DataImportersBase):
 
     def _check_input_data(self):
         """
-        - is file
-        - is valid extension
-        - has valid header
-        - what does topas2numpy already do?
+        In this case, just check that the file exists.
+        The rest of the checks are handles inside topas2nupy
         """
-        warnings.warn('no topas data check implemented')
+        if not Path(self._input_data).is_file():
+            raise FileNotFoundError(f'input data file {self._import_data()} does not exist')
 
 
 class LoadPandasData(_DataImportersBase):
@@ -137,7 +135,6 @@ class LoadPandasData(_DataImportersBase):
         is pandas instance
         """
         assert isinstance(self._input_data, pd.DataFrame)
-
 
 
 class LoadCST_trk_Data(_DataImportersBase):

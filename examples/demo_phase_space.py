@@ -1,4 +1,3 @@
-
 from ParticlePhaseSpace import DataLoaders
 from ParticlePhaseSpace.ParticlePhaseSpace import ParticlePhaseSpace
 from pathlib import Path
@@ -15,6 +14,8 @@ PS = ParticlePhaseSpace(ps_data)
 PS.report()
 # generate new phase spaces based on different particle species
 electrons_only = PS('electrons')
+electrons_only.print_twiss_parameters(file_name=Path('twiss_data.json').absolute())
+electrons_only.plot_particle_positions(weight_position_plot=True)
 gamma_only, positrons_only = PS(['gammas', 'positrons'])
 # we can add these back together using the + operator:
 all_particles = electrons_only + gamma_only + positrons_only
@@ -24,7 +25,7 @@ try:
     doubled = electrons_only + electrons_only
 except:
     print('that didnt work')
-# or we can create a phase space by subtracting one set of particles from the rest:
+# we can also create a phase space by subtracting one set of particles from the rest:
 electrons_and_gamma = all_particles - positrons_only
-
+# if our data is large, we can downsample it for quicker analysis
 downsampled = PS.get_downsampled_phase_space(downsample_factor=10)

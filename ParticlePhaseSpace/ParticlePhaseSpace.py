@@ -14,7 +14,8 @@ import warnings
 from scipy.stats import gaussian_kde
 from scipy import constants
 from time import perf_counter
-
+import json
+from pathlib import Path
 import ParticlePhaseSpace.__config as cf
 from ParticlePhaseSpace.DataLoaders import _DataImportersBase
 from ParticlePhaseSpace import utilities as ps_util
@@ -41,6 +42,7 @@ class ParticlePhaseSpace:
             raise TypeError(f'ParticlePhaseSpace must be instantiated with a valid object'
                             f'from DataLoaders, not {type(ps_data)}')
         self.ps_data = ps_data.data
+        self.twiss_parameters = {}
 
     def __call__(self, particle_list):
         """
@@ -103,7 +105,7 @@ class ParticlePhaseSpace:
         new_instance = ParticlePhaseSpace(new_data_loader)
         return new_instance
 
-    def __weighted_median(self, data, weights):
+    def _weighted_median(self, data, weights):
         """
         calculate a weighted median
         @author Jack Peterson (jack@tinybike.net)
@@ -127,7 +129,7 @@ class ParticlePhaseSpace:
                 w_median = s_data[idx + 1]
         return w_median
 
-    def __weighted_avg_and_std(self, values, weights):
+    def _weighted_avg_and_std(self, values, weights):
         """
         credit: https://stackoverflow.com/questions/2413522/weighted-standard-deviation-in-numpy
         Return the weighted average and standard deviation.
@@ -139,7 +141,7 @@ class ParticlePhaseSpace:
         variance = np.average((values - average) ** 2, weights=weights)
         return (average, np.sqrt(variance))
 
-    def __weighted_quantile(self, values, quantiles, sample_weight=None):
+    def _weighted_quantile(self, values, quantiles, sample_weight=None):
         """
         credit: https://stackoverflow.com/questions/21844024/weighted-percentile-using-numpy
 
@@ -167,107 +169,14 @@ class ParticlePhaseSpace:
         weighted_quantiles /= np.sum(sample_weight)
         return np.interp(quantiles, weighted_quantiles, values)
 
-    def __AnalyseEnergyDistribution(self):
-        self.meanEnergy, self.stdEnergy = self.__weighted_avg_and_std(self.E, self.weight)
-        self.medianEnergy = self.__weighted_median(self.E, self.weight)
-        self.EnergySpreadSTD = np.std(np.multiply(self.E, self.weight))
-        q75, q25 = self.__weighted_quantile(self.E, [0.25, 0.75], sample_weight=self.weight)
-        self.EnergySpreadIQR = q75 - q25
-
-
-
-    def __CalculateBetaAndGamma(self):
-        """
-        Calculate the beta and gamma factors from the momentum data
-
-        input momentum is assumed to be in units of MeV/c
-        I need to figure out if BetaX and BetaY make sense, or it's just Beta
-        """
-
-        if self.ParticleType == 'gamma':
-            # then this stuff makes no sense
-            return
-
-        self.TOT_P = np.sqrt(self.px ** 2 + self.py ** 2 + self.pz ** 2)
-        self.Beta = np.divide(self.TOT_P, self.TOT_E)
-        self.Gamma = 1 / np.sqrt(1 - np.square(self.Beta))
-
-    def __CalculateDirectionCosines(self):
-        """
-        Calculate direction cosines, which are required for topas import:
-
-        U (direction cosine of momentum with respect to X)
-        V (direction cosine of momentum with respect to Y)
-
-        nb: using velocity or momentum seem to give the same results
-
-        """
-        V = np.sqrt(self.px ** 2 + self.py ** 2 + self.pz ** 2)
-        U = self.px / V
-        V = self.py / V
-        return U, V
-
-    def __GenerateTopasHeaderFile(self):
-        """
-        Generate the header file required for a topas phase space source.
-        This is only intended to be used from within the class (private method)
-        """
-
-        WritefilePath = self.OutputDataLoc + '/' + self.OutputFile + '_tpsImport.header'
-
-        ParticlesInPhaseSpace = str(len(self.x))
-        TopasHeader = []
-
-        TopasHeader.append('TOPAS ASCII Phase Space\n')
-        TopasHeader.append('Number of Original Histories: ' + ParticlesInPhaseSpace)
-        TopasHeader.append('Number of Original Histories that Reached Phase Space: ' + ParticlesInPhaseSpace)
-        TopasHeader.append('Number of Scored Particles: ' + ParticlesInPhaseSpace + '\n')
-        TopasHeader.append('Columns of data are as follows:')
-        TopasHeader.append(' 1: Position X [cm]')
-        TopasHeader.append(' 2: Position Y [cm]')
-        TopasHeader.append(' 3: Position Z [cm]')
-        TopasHeader.append(' 4: Direction Cosine X')
-        TopasHeader.append(' 5: Direction Cosine Y')
-        TopasHeader.append(' 6: Energy [MeV]')
-        TopasHeader.append(' 7: Weight')
-        TopasHeader.append(' 8: Particle Type (in PDG Format)')
-        TopasHeader.append(' 9: Flag to tell if Third Direction Cosine is Negative (1 means true)')
-        TopasHeader.append(' 10: Flag to tell if this is the First Scored Particle from this History (1 means true)\n')
-        TopasHeader.append('Number of e-: ' + ParticlesInPhaseSpace + '\n')
-        TopasHeader.append('Minimum Kinetic Energy of e-: ' + str(min(self.E)) + ' MeV\n')
-        TopasHeader.append('Maximum Kinetic Energy of e-: ' + str(max(self.E)) + ' MeV')
-
-        # open file:
-        try:
-            f = open(WritefilePath, 'w')
-        except FileNotFoundError:
-            sys.exit('couldnt open file for writing')
-
-        # Write file line by line:
-        for Line in TopasHeader:
-            f.write(Line)
-            f.write('\n')
-
-        f.close
-
-    def _set_single_species_status(self):
-        """
-        checks whether phase space has a single particle series and set a boolean flag
-        """
-        n_unique_particle_species = len(np.unique(self.ps_data['particle type [pdg_code]']))
-        if n_unique_particle_species > 1:
-            self._single_species = False
-        else:
-            self._single_species = True
-
     def _assert_single_species_status(self):
         """
         raises an error if phase space is not single specied
         """
-        self._set_single_species_status()
-        if not self._single_species:
+        n_unique_particle_species = len(np.unique(self.ps_data['particle type [pdg_code]']))
+        if n_unique_particle_species > 1:
             raise AttributeError(f'{inspect.stack()[1][3]} can only be used on single species phase spaces;'
-                                 f'the current phase space contains {n_unique_particle_species}')
+                                 f'the current phase space contains {n_unique_particle_species} different particle species')
 
     def _check_ps_data_format(self):
         """
@@ -279,6 +188,14 @@ class ParticlePhaseSpace:
         for col_name in self.ps_data.columns:
             if not col_name in all_allowed_columns:
                 raise AttributeError(f'non allowed column name {col_name} in ps_data')
+
+    def _calculate_energy_statistics(self, ps_data):
+        meanEnergy, stdEnergy = self._weighted_avg_and_std(ps_data['Ek [MeV]'], ps_data['weight'])
+        medianEnergy = self._weighted_median(ps_data['Ek [MeV]'], ps_data['weight'])
+        EnergySpreadSTD = np.std(np.multiply(ps_data['Ek [MeV]'], ps_data['weight']))
+        q75, q25 = self._weighted_quantile(ps_data['Ek [MeV]'], [0.25, 0.75], sample_weight=ps_data['weight'])
+        EnergySpreadIQR = q25 - q75
+        return meanEnergy, medianEnergy, EnergySpreadSTD, EnergySpreadIQR
 
     # public methods
 
@@ -351,6 +268,82 @@ class ParticlePhaseSpace:
         plt.tight_layout()
         plt.show()
 
+    def plot_particle_positions(self, beam_direction='z', weight_position_plot=False,
+                                xlim=None, ylim=None):
+        """
+        produce a scatter plot of particle positions.
+        one plot is produced for each unique species.
+
+        :param beam_direction: the direction the beam is travelling in. "x", "y", or "z" (default)
+        :type beam_direction: str, optional
+        :param weight_position_plot: if True, a gaussian kde is used to weight the particle
+            positions. This can produce very informative and useful plots, but also be very slow.
+            If it is slow, you could try downsampling the phase space first using get_downsampled_phase_space
+        :type weight_position_plot: bool
+        :param xlim: set the xlim for all plots, e.g. [-2,2]
+        :type xlim: list or None, optional
+        :param ylim: set the ylim for all plots, e.g. [-2,2]
+        :type ylim: list or None, optional
+        :return:
+        """
+
+        unique_particles = self.ps_data['particle type [pdg_code]'].unique()
+        fig, axs = plt.subplots(1, len(unique_particles), squeeze=False)
+        fig.set_size_inches(5*len(unique_particles), 5)
+        n_axs = 0
+        for particle in unique_particles:
+            ind = self.ps_data['particle type [pdg_code]'] == particle
+            ps_data = self.ps_data.loc[ind]
+            axs_title = cf.particle_properties[particle]['name']
+            if beam_direction == 'x':
+                x_data = ps_data['y [mm]']
+                y_data = ps_data['z [mm]']
+                x_label = 'y [mm]'
+                y_label = 'z [mm]'
+            elif beam_direction == 'y':
+                x_data = ps_data['x [mm]']
+                y_data = ps_data['z [mm]']
+                x_label = 'x [mm]'
+                y_label = 'z [mm]'
+            elif beam_direction == 'z':
+                x_data = ps_data['x [mm]']
+                y_data = ps_data['y [mm]']
+                x_label = 'x [mm]'
+                y_label = 'y [mm]'
+            else:
+                raise NotImplementedError('beam_direction must be "x", "y", or "z"')
+
+            if weight_position_plot:
+                _kde_data_grid = 150 ** 2
+                print('generating weighted scatter plot...can be slow...')
+                xy = np.vstack([x_data, y_data])
+                k = gaussian_kde(xy, weights=self.ps_data['weight'][ind])
+                if x_data.shape[0] > _kde_data_grid:
+                    # in this case we can downsample for display
+                    down_sample_factor = np.round(x_data.shape[0] / _kde_data_grid)
+                    print(f'down sampling scatter plot data by factor of {down_sample_factor}')
+                    rng = np.random.default_rng()
+                    rng.shuffle(xy)  # operates in place for some confusing reason
+                    xy = rng.choice(xy, int(x_data.shape[0] / down_sample_factor), replace=False, axis=1, shuffle=False)
+                z = k(xy)
+                z = z / max(z)
+                axs[0, n_axs].scatter(xy[0], xy[1], c=z, s=1)
+
+            else:
+                axs[0, n_axs].scatter(x_data, y_data, s=1, c=self.ps_data['weight'][ind])
+            axs[0, n_axs].set_aspect(1)
+            axs[0, n_axs].set_title(axs_title, fontsize=FigureSpecs.TitleFontSize)
+            axs[0, n_axs].set_xlabel(x_label, fontsize=FigureSpecs.LabelFontSize)
+            axs[0, n_axs].set_ylabel(y_label, fontsize=FigureSpecs.LabelFontSize)
+            if xlim:
+                axs[0, n_axs].set_xlim(xlim)
+            if ylim:
+                axs[0, n_axs].set_ylim(ylim)
+            n_axs = n_axs+1
+
+        plt.tight_layout()
+        plt.show()
+
     def report(self):
         """
         print a sumary of the phase space to the screen.
@@ -362,7 +355,12 @@ class ParticlePhaseSpace:
         print(f'number of unique particle species: {len(unique_particles): d}')
         for particle in unique_particles:
             ind = self.ps_data['particle type [pdg_code]'] == particle
+            ps_data = self.ps_data.loc[ind]
+            meanEnergy, medianEnergy, EnergySpreadSTD, EnergySpreadIQR = self._calculate_energy_statistics(ps_data)
             print(f'    {np.count_nonzero(ind): d} {cf.particle_properties[particle]["name"]}'
+                  f'\n        mean energy: {meanEnergy: 1.2f} MeV'
+                  f'\n        median energy: {medianEnergy: 1.2f} MeV'
+                  f'\n        Energy spread IQR: {EnergySpreadIQR: 1.2f} MeV'
                   f'\n        min energy {self.ps_data.loc[ind]["Ek [MeV]"].min()} MeV'
                   f'\n        max energy {self.ps_data.loc[ind]["Ek [MeV]"].max()} MeV')
 
@@ -429,6 +427,62 @@ class ParticlePhaseSpace:
         new_instance = ParticlePhaseSpace(new_data_loader)
         return new_instance
 
+    def calculate_twiss_parameters(self, beam_direction='z'):
+        """
+        Calculate the twiss parameters
+        """
+        self._assert_single_species_status()
+        if beam_direction == 'x':
+            intersection_columns = ['x [mm]', 'px [MeV/c]']
+            direction_columns = [['x [mm]', 'px [MeV/c]'], ['y [mm]', 'py [MeV/c]']]
+        elif beam_direction == 'y':
+            intersection_columns = ['y [mm]', 'py [MeV/c]']
+            direction_columns = [['x [mm]', 'px [MeV/c]'], ['z [mm]', 'pz [MeV/c]']]
+        elif beam_direction == 'z':
+            intersection_columns = ['z [mm]', 'pz [MeV/c]']
+            direction_columns = [['x [mm]', 'px [MeV/c]'], ['y [mm]', 'py [MeV/c]']]
+        else:
+            raise NotImplementedError('beam direction must be "x", "y", or "z"')
+
+        for calc_dir in direction_columns:
+            x2 = np.average(np.square(self.ps_data[calc_dir[0]]), weights=self.ps_data['weight'])
+            xp = np.divide(self.ps_data[calc_dir[0]], self.ps_data[intersection_columns[1]]) * 1e3
+            xp2 = np.average(np.square(xp), weights=self.ps_data['weight'])
+            x_xp = np.average(np.multiply(self.ps_data[calc_dir[0]], xp), weights=self.ps_data['weight'])
+
+            epsilon = np.sqrt((x2 * xp2) - (x_xp ** 2)) * np.pi
+            alpha = -x_xp / epsilon
+            beta = x2 / epsilon
+            gamma = xp2 / epsilon
+
+            self.twiss_parameters[calc_dir[0][0]] = {'epsilon': epsilon,
+                                                     'alpha': alpha,
+                                                     'beta': beta,
+                                                     'gamma': gamma}
+
+    def print_twiss_parameters(self, file_name=None):
+        """
+        prints the twiss parameters if they exist
+        they are always printed to the screen.
+        if filename is specified, they are also saved to file as json
+
+        :param file_name: filename to write twiss data to. should be absolute
+            path to an existing directory
+        :return:
+        """
+        if not self.twiss_parameters:
+            self.calculate_twiss_parameters()
+        twiss_data = pd.DataFrame(self.twiss_parameters)
+        print(twiss_data)
+        if file_name:
+            file_name = Path(file_name)
+            if not file_name.parent.is_dir():
+                raise NotADirectoryError(f'{file_name.parent} is not a directory')
+            if not file_name.suffix == '.json':
+                file_name = file_name.parent / (file_name.name + '.json')
+            with open('data.json', 'w') as fp:
+                json.dump(self.twiss_parameters, fp)
+
     def project_particles(self, direction='z', distance=100):
         """
         Update the positions of each particle by projecting it forward/back by distance.
@@ -465,6 +519,7 @@ class ParticlePhaseSpace:
             if not col_name in cf.required_columns:
                 self.ps_data.drop(columns=col_name, inplace=True)
 
+        self.twiss_parameters = {}
 
     ###############################
 
@@ -499,55 +554,6 @@ class ParticlePhaseSpace:
         plt.title(TitleString)
 
         plt.grid(True)
-        plt.show()
-
-    def PlotParticlePositions(self, weight_position_plot=True):
-
-        try:
-            test = self.axs[0]
-        except AttributeError:
-            self.fig, self.axs = plt.subplots(1, 2)
-            self.fig.set_size_inches(10, 5)
-
-        if weight_position_plot:
-            _kde_data_grid = 150 ** 2
-            print('generating weighted scatter plot...')
-
-            xy = np.vstack([self.x, self.y])
-            k = gaussian_kde(xy, weights=self.weight)
-            _end_time = perf_counter()
-
-            if self.x.shape[0] > _kde_data_grid:
-                down_sample_factor = np.round(self.x.shape[0] / _kde_data_grid)
-                print(f'down sampling scatter plot data by factor of {down_sample_factor}')
-                # in this case we can downsample the grid...
-                rng = np.random.default_rng()
-                rng.shuffle(xy)  # operates in place for some confusing reason
-                xy = rng.choice(xy, np.int(self.x.shape[0] / down_sample_factor), replace=False, axis=1, shuffle=False)
-            z = k(xy)
-
-
-            z = z / max(z)
-            SP = self.axs[0].scatter(xy[0], xy[1], c=z, s=1)
-            self.axs[0].set_aspect(1)
-            # self.fig.colorbar(SP,ax=self.axs[0])
-            self.axs[0].set_title('Particle Positions', fontsize=self.FigureSpecs.TitleFontSize)
-            self.axs[0].set_xlim([-2, 2])
-            self.axs[0].set_ylim([-2, 2])
-            self.axs[0].set_xlabel('X position [mm]', fontsize=self.FigureSpecs.LabelFontSize)
-            self.axs[0].set_ylabel('Y position [mm]', fontsize=self.FigureSpecs.LabelFontSize)
-            plt.show()
-            plt.tight_layout()
-        else:
-            self.axs[0].set_title('Particle Positions', fontsize=self.FigureSpecs.TitleFontSize)
-            self.axs[0].scatter(self.x, self.y, s=1, c=self.weight)
-            self.axs[0].set_xlabel('X position [mm]', fontsize=self.FigureSpecs.LabelFontSize)
-            self.axs[0].set_ylabel('Y position [mm]', fontsize=self.FigureSpecs.LabelFontSize)
-
-        self.axs[1].hist(self.x, bins=100, weights=self.weight)
-        self.axs[1].set_xlabel('X position [mm]', fontsize=self.FigureSpecs.LabelFontSize)
-        self.axs[1].set_ylabel('counts', fontsize=self.FigureSpecs.LabelFontSize)
-        plt.tight_layout()
         plt.show()
 
     def AssessDensityVersusR(self, Rvals=None):
@@ -592,18 +598,3 @@ class ParticlePhaseSpace:
                 rad_prop.append(np.count_nonzero(ind) * 100 / numparticles)
 
         self.rad_prop = rad_prop
-
-    def CalculateTwissParameters(self):
-        """
-        Calculate the twiss parameters
-        """
-        # Calculate in X direction
-        self.x2 = np.average(np.square(self.x), weights=self.weight)
-        self.xp = np.divide(self.px, self.pz) * 1e3
-        self.xp2 = np.average(np.square(self.xp), weights=self.weight)
-        self.x_xp = np.average(np.multiply(self.x, self.xp), weights=self.weight)
-
-        self.twiss_epsilon = np.sqrt((self.x2 * self.xp2) - (self.x_xp ** 2)) * np.pi
-        self.twiss_alpha = -self.x_xp / self.twiss_epsilon
-        self.twiss_beta = self.x2 / self.twiss_epsilon
-        self.twiss_gamma = self.xp2 / self.twiss_epsilon

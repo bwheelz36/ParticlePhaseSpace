@@ -173,3 +173,77 @@ def export_to_topas(self, Zoffset=None):
     FormatSpec = ['%11.5f', '%11.5f', '%11.5f', '%11.5f', '%11.5f', '%11.5f', '%11.5f', '%2d', '%2d', '%2d']
     np.savetxt(WritefilePath, Data, fmt=FormatSpec, delimiter='      ')
     print('success')
+
+def _CalculateBetaAndGamma(self):
+    """
+    Calculate the beta and gamma factors from the momentum data
+
+    input momentum is assumed to be in units of MeV/c
+    I need to figure out if BetaX and BetaY make sense, or it's just Beta
+    """
+
+    if self.ParticleType == 'gamma':
+        # then this stuff makes no sense
+        return
+
+    self.TOT_P = np.sqrt(self.px ** 2 + self.py ** 2 + self.pz ** 2)
+    self.Beta = np.divide(self.TOT_P, self.TOT_E)
+    self.Gamma = 1 / np.sqrt(1 - np.square(self.Beta))
+
+def _CalculateDirectionCosines(self):
+    """
+    Calculate direction cosines, which are required for topas import:
+
+    U (direction cosine of momentum with respect to X)
+    V (direction cosine of momentum with respect to Y)
+
+    nb: using velocity or momentum seem to give the same results
+
+    """
+    V = np.sqrt(self.px ** 2 + self.py ** 2 + self.pz ** 2)
+    U = self.px / V
+    V = self.py / V
+    return U, V
+
+def _GenerateTopasHeaderFile(self):
+    """
+    Generate the header file required for a topas phase space source.
+    This is only intended to be used from within the class (private method)
+    """
+
+    WritefilePath = self.OutputDataLoc + '/' + self.OutputFile + '_tpsImport.header'
+
+    ParticlesInPhaseSpace = str(len(self.x))
+    TopasHeader = []
+
+    TopasHeader.append('TOPAS ASCII Phase Space\n')
+    TopasHeader.append('Number of Original Histories: ' + ParticlesInPhaseSpace)
+    TopasHeader.append('Number of Original Histories that Reached Phase Space: ' + ParticlesInPhaseSpace)
+    TopasHeader.append('Number of Scored Particles: ' + ParticlesInPhaseSpace + '\n')
+    TopasHeader.append('Columns of data are as follows:')
+    TopasHeader.append(' 1: Position X [cm]')
+    TopasHeader.append(' 2: Position Y [cm]')
+    TopasHeader.append(' 3: Position Z [cm]')
+    TopasHeader.append(' 4: Direction Cosine X')
+    TopasHeader.append(' 5: Direction Cosine Y')
+    TopasHeader.append(' 6: Energy [MeV]')
+    TopasHeader.append(' 7: Weight')
+    TopasHeader.append(' 8: Particle Type (in PDG Format)')
+    TopasHeader.append(' 9: Flag to tell if Third Direction Cosine is Negative (1 means true)')
+    TopasHeader.append(' 10: Flag to tell if this is the First Scored Particle from this History (1 means true)\n')
+    TopasHeader.append('Number of e-: ' + ParticlesInPhaseSpace + '\n')
+    TopasHeader.append('Minimum Kinetic Energy of e-: ' + str(min(self.E)) + ' MeV\n')
+    TopasHeader.append('Maximum Kinetic Energy of e-: ' + str(max(self.E)) + ' MeV')
+
+    # open file:
+    try:
+        f = open(WritefilePath, 'w')
+    except FileNotFoundError:
+        sys.exit('couldnt open file for writing')
+
+    # Write file line by line:
+    for Line in TopasHeader:
+        f.write(Line)
+        f.write('\n')
+
+    f.close
