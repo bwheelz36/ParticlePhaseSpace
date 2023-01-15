@@ -460,7 +460,7 @@ class ParticlePhaseSpace:
                                                      'beta': beta,
                                                      'gamma': gamma}
 
-    def print_twiss_parameters(self, file_name=None):
+    def print_twiss_parameters(self, file_name=None, beam_direction='z'):
         """
         prints the twiss parameters if they exist
         they are always printed to the screen.
@@ -470,8 +470,7 @@ class ParticlePhaseSpace:
             path to an existing directory
         :return:
         """
-        if not self.twiss_parameters:
-            self.calculate_twiss_parameters()
+        self.calculate_twiss_parameters(beam_direction=beam_direction)
         twiss_data = pd.DataFrame(self.twiss_parameters)
         print(twiss_data)
         if file_name:
@@ -483,7 +482,7 @@ class ParticlePhaseSpace:
             with open('data.json', 'w') as fp:
                 json.dump(self.twiss_parameters, fp)
 
-    def project_particles(self, direction='z', distance=100):
+    def project_particles(self, beam_direction='z', distance=100):
         """
         Update the positions of each particle by projecting it forward/back by distance.
 
@@ -499,7 +498,7 @@ class ParticlePhaseSpace:
         if not 'vx [m/s]' in self.ps_data.columns:
             self.fill_velocity()
 
-        if direction == 'z':
+        if beam_direction == 'z':
             self.ps_data['x [mm]'] = self.ps_data['x [mm]'] + np.divide(self.ps_data['vx [m/s]'], self.ps_data['vz [m/s']) * distance
             self.ps_data['y [mm]'] = self.ps_data['y [mm]'] + np.divide(self.ps_data['vy [m/s]'], self.ps_data['vz [m/s']) * distance
             self.ps_data['z [mm]'] = self.ps_data['z [mm]'] + distance
@@ -521,13 +520,12 @@ class ParticlePhaseSpace:
 
         self.twiss_parameters = {}
 
-    ###############################
+    def PlotPhaseSpaceX(self, beam_direction='z'):
 
-    def PlotPhaseSpaceX(self):
-
+        self.calculate_twiss_parameters(beam_direction=beam_direction)
         if self.weight.max() > 1:
             warnings.warn('this plot does not take into account particle weights')
-        plt.figure()
+        fig, axs = plt.subplots(nrows=1, ncols=2)
 
         #plot phase elipse
         xq = np.linspace(min(self.x), max(self.x), 1000)
@@ -555,6 +553,10 @@ class ParticlePhaseSpace:
 
         plt.grid(True)
         plt.show()
+
+
+    ###############################
+
 
     def AssessDensityVersusR(self, Rvals=None):
         """

@@ -44,7 +44,6 @@ def export_to_cst_pid(self, Zoffset=None):
     Data = np.transpose(Data)
     np.savetxt(WritefilePath, Data, fmt='%01.3e', delimiter='      ')
 
-
 def export_to_cst_pit(self, Zoffset=None):
     """
     % Use always SI units.
@@ -90,7 +89,6 @@ def export_to_cst_pit(self, Zoffset=None):
     Data = np.transpose(Data)
     np.savetxt(WritefilePath, Data, fmt='%01.3e', delimiter='      ')
 
-
 def export_to_comsol(self, Zoffset=None):
     """
     Generate a phase space which can be directly imported into CST
@@ -125,7 +123,6 @@ def export_to_comsol(self, Zoffset=None):
 
     Data = np.transpose(Data)
     np.savetxt(WritefilePath, Data, fmt='%01.12e', delimiter='      ')
-
 
 def export_to_topas(self, Zoffset=None):
     """
