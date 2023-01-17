@@ -14,3 +14,4 @@ sphinx_rtd_theme
 pandas
 scipy
 topas2numpy
+myst_nb

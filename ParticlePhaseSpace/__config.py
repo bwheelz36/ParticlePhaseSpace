@@ -59,20 +59,12 @@ particle_properties = {
          'pdg_code': int(2112)}
 }
 
-
-
 # set up aliases with pdf codes
 particle_properties[11] = particle_properties['electrons']
 particle_properties[-11] = particle_properties['positrons']
 particle_properties[2212] = particle_properties['protons']
 particle_properties[22] = particle_properties['gammas']
 particle_properties[2112] = particle_properties['neutrons']
-
-# add each string key as a 'name' field for ease of use with pdg codes:
-for key in particle_properties.keys():
-    if isinstance(key, str):
-        particle_properties[key]['name'] = key
-
 
 # check that there are the same number of aliases as entries
 keys = list(particle_properties.keys())
@@ -82,5 +74,12 @@ if not n_integer_keys == n_string_keys:
     raise Exception('particle aliasing is not properly set up;'
                     'there must be the same number of integer and string keys')
 
-# finally, you can add any further string aliases:
+# add each string key as a 'name' field for ease of use with pdg codes:
+for key in particle_properties.keys():
+    if isinstance(key, str):
+        particle_properties[key]['name'] = key
+
+# finally, add any further string aliases:
 particle_properties['photons'] = particle_properties['gammas']
+
+

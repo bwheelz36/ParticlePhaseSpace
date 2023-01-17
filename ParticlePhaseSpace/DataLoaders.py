@@ -56,8 +56,8 @@ class _DataImportersBase(ABC):
 
         # is every particle ID unique?
         if not len(self.data['particle id'].unique()) == len(self.data['particle id']):
-            raise AttributeError('you have attempted to create a data set with non'
-                                 'unique "particle id" fields, which is not allwoed')
+            raise Exception('you have attempted to create a data set with non'
+                                 'unique "particle id" fields, which is not allowed')
 
     def _check_energy_consistency(self, Ek):
         """

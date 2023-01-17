@@ -12,8 +12,12 @@
 #
 import os
 import sys
+import shutil
 # sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('..'))
+
+# copy the latest example files:
+# shutil.copy('../examples/')
 
 # -- Project information -----------------------------------------------------
 
@@ -31,7 +35,8 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.coverage',
     'sphinx.ext.githubpages',
-    'myst_parser']
+    'myst_parser',
+    'nbsphinx']
 
 source_suffix = {
     '.rst': 'restructuredtext',

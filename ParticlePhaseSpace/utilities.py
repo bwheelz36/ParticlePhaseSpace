@@ -6,7 +6,7 @@ def _check_particle_types(pdg_codes):
     """
     check that the particle types in the phase space are known particle types
     """
-    print('not implemented')
+    print('particle type check not implemented')
 
 def get_rest_masses_from_pdg_codes(pdg_codes):
     """
