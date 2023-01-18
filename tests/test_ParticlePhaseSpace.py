@@ -3,8 +3,8 @@ from pathlib import Path
 import json
 import numpy as np
 import pandas as pd
-this_file_loc = Path(__file__).parent
-sys.path.insert(0, this_file_loc.parent)
+this_file_loc = Path(__file__)
+sys.path.insert(0, str(this_file_loc.parent.parent))
 from ParticlePhaseSpace import DataLoaders
 from ParticlePhaseSpace import PhaseSpace
 import ParticlePhaseSpace.__phase_space_config__ as ps_cfg
