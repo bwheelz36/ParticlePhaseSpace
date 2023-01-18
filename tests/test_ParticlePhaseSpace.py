@@ -11,7 +11,7 @@ import ParticlePhaseSpace.__phase_space_config__ as ps_cfg
 import ParticlePhaseSpace.__particle_config__ as particle_cfg
 
 test_data_loc = Path('test_data/coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp').absolute()
-if not test_data_loc.isfile():
+if not test_data_loc.is_file():
     print('im a stinky poohead')
 data = DataLoaders.LoadTopasData(test_data_loc)
 PS = PhaseSpace(data)
