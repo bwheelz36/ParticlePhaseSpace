@@ -12,7 +12,7 @@ Data Loaders
 Particle Phase Space
 --------------------
 
-.. automodule:: ParticlePhaseSpace.ParticlePhaseSpace
+.. automodule:: ParticlePhaseSpace._ParticlePhaseSpace
    :members:
 
 Data Exporters
