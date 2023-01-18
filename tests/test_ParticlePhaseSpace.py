@@ -3,16 +3,17 @@ from pathlib import Path
 import json
 import numpy as np
 import pandas as pd
-this_file_loc = Path(__file__)
-sys.path.insert(0, str(this_file_loc.parent.parent))
+this_file_loc = Path(__file__).parent
+sys.path.insert(0, str(this_file_loc.parent))
 from ParticlePhaseSpace import DataLoaders
 from ParticlePhaseSpace import PhaseSpace
 import ParticlePhaseSpace.__phase_space_config__ as ps_cfg
 import ParticlePhaseSpace.__particle_config__ as particle_cfg
 
-test_data_loc = Path('test_data/coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp')
-data = DataLoaders.LoadTopasData(test_data_loc)
+test_data_loc = this_file_loc / 'test_data'
+data = DataLoaders.LoadTopasData(test_data_loc / 'coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp')
 PS = PhaseSpace(data)
+
 
 def test_all_allowed_columns_can_be_filled():
 
@@ -40,7 +41,7 @@ def test_twiss():
 
     PS.calculate_twiss_parameters(beam_direction='z')
     # compare with previous calc
-    with open('test_data/twiss_stability.json') as f:
+    with open(test_data_loc / 'twiss_stability.json') as f:
         old_data = json.load(f)
 
     for particle_key in old_data:
@@ -79,5 +80,5 @@ def test_reset_phase_space():
 def test_get_particle_density():
 
     particle_density = PS.assess_density_versus_r()
-    old_density = pd.read_csv('test_data/particle_density.csv', index_col=0).squeeze("columns")
+    old_density = pd.read_csv(test_data_loc / 'particle_density.csv', index_col=0).squeeze("columns")
     np.allclose(particle_density, old_density)
