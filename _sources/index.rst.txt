@@ -10,7 +10,7 @@ Contents
    :maxdepth: 2
    :caption: Contents:
 
-   /import_analyse_export
+   /basic_example
    /code_docs
 
 Indices and tables
