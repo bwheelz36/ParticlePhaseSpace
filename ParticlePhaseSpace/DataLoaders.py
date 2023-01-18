@@ -8,10 +8,19 @@ import ParticlePhaseSpace.__phase_space_config__ as ps_cfg
 import ParticlePhaseSpace.__particle_config__ as particle_cfg
 import warnings
 
+
 class _DataImportersBase(ABC):
 
-    def __init__(self, input_data):
-        self.data = pd.DataFrame(columns=ps_cfg.required_columns)
+    def __init__(self, input_data, particle_type=None):
+        self.data = pd.DataFrame()
+
+        if particle_type:
+            allowed_particles = [el for el in list(particle_cfg.particle_properties.keys()) if isinstance(el, str)]
+            if not particle_type in allowed_particles:
+                raise Exception(f'unknown particle type: {particle_type}.'
+                                f'allowed particles are {allowed_particles}')
+        self._particle_type = particle_type
+
         self._input_data = input_data
         self._check_input_data()
         self._import_data()
@@ -120,7 +129,8 @@ class LoadTopasData(_DataImportersBase):
         """
         if not Path(self._input_data).is_file():
             raise FileNotFoundError(f'input data file {self._import_data()} does not exist')
-
+        if self._particle_type:
+            warnings.warn('particle type is ignored in topas read in')
 
 class LoadPandasData(_DataImportersBase):
     """
@@ -167,3 +177,31 @@ class LoadCST_trk_Data(_DataImportersBase):
 
     def _check_input_data(self):
         warnings.warn('cst data read in check not implemented')
+
+
+class Load_Opera_dat_file(_DataImportersBase):
+
+    def _check_input_data(self):
+
+        if not self._particle_type:
+            raise AttributeError('to import opera data please specify a particle type')
+        if not Path(self._input_data).is_file():
+            raise FileNotFoundError(f'input data file {self._import_data()} does not exist')
+        if not Path(self._input_data).suffix == '.dat':
+            raise Exception('appears wrong file type is being used')
+
+    def _import_data(self):
+
+        Data = np.loadtxt(self._input_data)
+        self.data['x [mm]'] = Data[:, 1]
+        self.data['y [mm]'] = Data[:, 2]
+        self.data['z [mm]'] = Data[:, 3]
+        self.data['px [MeV/c]'] = Data[:, 4]
+        self.data['py [MeV/c]'] = Data[:, 5]
+        self.data['pz [MeV/c]'] = Data[:, 6]
+        self.data['particle type [pdg_code]'] = particle_cfg.particle_properties[self._particle_type]['pdg_code']
+        self.data['weight'] = np.ones(Data.shape[0])
+        self.data['time [ps]'] = np.zeros(Data.shape[0])
+        self.data['particle id'] = np.arange(Data.shape[0])
+
+

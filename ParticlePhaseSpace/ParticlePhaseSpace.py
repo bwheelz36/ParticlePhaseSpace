@@ -518,7 +518,7 @@ class PhaseSpace:
             self.twiss_parameters[particle_name] = {}
             for calc_dir in direction_columns:
                 x2 = np.average(np.square(self._ps_data[calc_dir[0]]), weights=self._ps_data['weight'])
-                xp = np.divide(self._ps_data[calc_dir[0]], self._ps_data[intersection_columns[1]])
+                xp = np.divide(self._ps_data[calc_dir[1]], self._ps_data[intersection_columns[1]])
                 xp2 = np.average(np.square(xp), weights=self._ps_data['weight'])
                 x_xp = np.average(np.multiply(self._ps_data[calc_dir[0]], xp), weights=self._ps_data['weight'])
 
