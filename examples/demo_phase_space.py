@@ -15,8 +15,8 @@ DataExporters.Topas_Exporter(PS, output_location=Path('.').absolute(), output_na
 
 ps_data = DataLoaders.LoadTopasData(Path(r'test.phsp'))
 PS2 = PhaseSpace(ps_data)
-
-
+PS.print_twiss_parameters(beam_direction='z')
+PS.plot_particle_positions()
 
 # # print report ro the screen
 # PS.report()
@@ -34,3 +34,7 @@ PS2 = PhaseSpace(ps_data)
 # electrons_and_gamma = all_particles - positrons_only
 # # if our data is large, we can downsample it for quicker analysis
 # downsampled = PS.get_downsampled_phase_space(downsample_factor=10)
+
+from ParticlePhaseSpace import DataExporters
+
+DataExporters.Topas_Exporter(PS, output_location=Path('.'), output_name='test_export')

@@ -7,7 +7,7 @@ from ParticlePhaseSpace import __phase_space_config__ as ps_cfg
 from ParticlePhaseSpace import __particle_config__ as particle_cfg
 import warnings
 
-class _DataExporterBase(ABC):
+class _DataExportersBase(ABC):
 
     def __init__(self, PhaseSpaceInstance: PhaseSpace, output_location: (str, Path), output_name: str):
 
@@ -73,7 +73,7 @@ class _DataExporterBase(ABC):
         pass
 
 
-class Topas_Exporter(_DataExporterBase):
+class Topas_Exporter(_DataExportersBase):
     """
     output the phase space to topas ascii format:
     https://topas.readthedocs.io/en/latest/parameters/source/phasespace.html
@@ -198,7 +198,27 @@ class Topas_Exporter(_DataExporterBase):
         f.close()
 
 
+class NewDataExporter(_DataExportersBase):
 
+    def _define_required_columns(self):
+        self._required_columns = ['x [mm]', 'y [mm]', 'z [mm]', 'px [MeV/c]', 'py [MeV/c]', 'pz [MeV/c]', 'Ek [MeV]']
+
+    def _export_data(self):
+
+        if not Path(self._output_name).suffix == '.dat':
+            _output_name = str(self._output_name) + '.dat'
+        else:
+            _output_name = self._output_name
+        WritefilePath = Path(self._output_location) / _output_name
+
+        header = 'x (mm)\ty (mm)\tz (mm)\tpx (MeV/c)\tpy (MeV/c)\tpz (MeV/c)\tE (MeV)'
+        Data = [self._PS.ps_data['x [mm]'].to_numpy(), self._PS.ps_data['y [mm]'].to_numpy(), self._PS.ps_data['z [mm]'].to_numpy(),
+                self._PS.ps_data['px [MeV/c]'].to_numpy(), self._PS.ps_data['py [MeV/c]'].to_numpy(),
+                self._PS.ps_data['pz [MeV/c]'].to_numpy(),
+                self._PS.ps_data['Ek [MeV]'].to_numpy()]
+        Data = np.transpose(Data)
+        FormatSpec = ['%11.5f', '%11.5f', '%11.5f', '%11.5f', '%11.5f', '%11.5f', '%11.5f']
+        np.savetxt(WritefilePath, Data, fmt=FormatSpec, delimiter='      ', header=header, comments='')
 
 
 
