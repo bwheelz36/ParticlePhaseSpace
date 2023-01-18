@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # copy the latest example files:
 this_file_loc = Path(__file__).parent
-shutil.copy('../examples/import_analyse_export.ipynb', this_file_loc)
+shutil.copy(this_file_loc.parent / 'examples' / 'import_analyse_export.ipynb', this_file_loc)
 
 # -- Project information -----------------------------------------------------
 
