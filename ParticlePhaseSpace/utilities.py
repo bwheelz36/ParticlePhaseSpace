@@ -14,7 +14,11 @@ def _check_particle_types(pdg_codes):
 
 def get_rest_masses_from_pdg_codes(pdg_codes):
     """
-    get an array of rest masses based on the particle types in self.data
+    get a list of rest masses associated with each particle in pdg_codes
+
+    :param pdg_codes: particle codes defined in `pdg integers <https://pdg.lbl.gov/2007/reviews/montecarlorpp.pdf>`_
+    :type pdg_codes: array_like
+    :return: particle_rest_mass: numpy array of particle rest mass in MeV/c^2
     """
     _check_particle_types(np.unique(pdg_codes))
     particle_rest_mass = np.zeros(len(pdg_codes))
