@@ -400,6 +400,95 @@ class PhaseSpace:
         plt.tight_layout()
         plt.show()
 
+    def plot_transverse_trace_space(self, beam_direction='z', plot_twiss_ellipse=True):
+
+        self.calculate_twiss_parameters(beam_direction=beam_direction)
+        fig, axs = plt.subplots(nrows=len(self._unique_particles), ncols=2, squeeze=False)
+        row = 0
+        for particle in self._unique_particles:
+            particle_name = particle_cfg.particle_properties[particle]['name']
+            ind = self._ps_data['particle type [pdg_code]'] == particle
+            ps_data = self._ps_data.loc[ind]
+            if beam_direction == 'z':
+                x_data_1 = ps_data['x [mm]']
+                div_data_1 = np.divide(ps_data['px [MeV/c]'], ps_data['pz [MeV/c]'])
+                x_label_1 = 'x [mm]'
+                y_label_1 = "x' [mrad]"
+                title_1 = particle_name + ': x'
+                weight = ps_data['weight']
+                elipse_parameters_1 = self.twiss_parameters[particle_name]['x']
+
+                x_data_2 = ps_data['y [mm]']
+                div_data_2 = np.divide(ps_data['py [MeV/c]'], ps_data['pz [MeV/c]'])
+                x_label_2 = 'y [mm]'
+                y_label_2 = "y' [mrad]"
+                title_2 = particle_name  + ': y'
+                elipse_parameters_2 = self.twiss_parameters[particle_name ]['y']
+            elif beam_direction == 'x':
+                x_data_1 = ps_data['y [mm]']
+                div_data_1 = np.divide(ps_data['py [MeV/c]'], ps_data['px [MeV/c]'])
+                x_label_1 = 'y [mm]'
+                y_label_1 = "y' [mrad]"
+                title_1 = particle_name + ': x'
+                weight = ps_data['weight']
+                elipse_parameters_1 = self.twiss_parameters[particle_name]['y']
+
+                x_data_2 = ps_data['z [mm]']
+                div_data_2 = np.divide(ps_data['pz [MeV/c]'], ps_data['px [MeV/c]'])
+                x_label_2 = 'z [mm]'
+                y_label_2 = "z' [mrad]"
+                title_2 = particle_name + ': y'
+                elipse_parameters_2 = self.twiss_parameters[particle_name]['z']
+            elif beam_direction == 'y':
+                x_data_1 = ps_data['x [mm]']
+                div_data_1 = np.divide(ps_data['px [MeV/c]'], ps_data['py [MeV/c]'])
+                x_label_1 = 'x [mm]'
+                y_label_1 = "x' [mrad]"
+                title_1 = particle_name + ': x'
+                weight = ps_data['weight']
+                elipse_parameters_1 = self.twiss_parameters[particle_name]['x']
+
+                x_data_2 = ps_data['z [mm]']
+                div_data_2 = np.divide(ps_data['pz [MeV/c]'], ps_data['py [MeV/c]'])
+                x_label_2 = 'z [mm]'
+                y_label_2 = "z' [mrad]"
+                title_2 = particle_name + ': y'
+                elipse_parameters_2 = self.twiss_parameters[particle_name]['z']
+            else:
+                raise NotImplementedError(f'beam_direction must be "x", "y", or "z", not {beam_direction}')
+
+
+            axs[row, 0].scatter(x_data_1, div_data_1, s=1, marker='.', c=weight)
+            axs[row, 0].set_xlabel(x_label_1)
+            axs[row, 0].set_ylabel(y_label_1)
+            axs[row, 0].set_title(title_1)
+            if plot_twiss_ellipse:
+                twiss_X, twiss_Y = self._get_ellipse_xy_points(elipse_parameters_1, x_data_1.min(), x_data_1.max(),
+                                                               div_data_1.min(), div_data_1.max())
+                axs[row, 0].scatter(twiss_X, twiss_Y, c='r')
+                # axs[row, 0].set_xlim([3*np.min(twiss_X), 3*np.max(twiss_X)])
+                # axs[row, 0].set_ylim([3 * np.min(twiss_Y), 3 * np.max(twiss_Y)])
+            axs[row, 0].grid()
+
+            if plot_twiss_ellipse:
+                twiss_X, twiss_Y = self._get_ellipse_xy_points(elipse_parameters_2, x_data_2.min(), x_data_2.max(),
+                                                               div_data_2.min(), div_data_2.max())
+                axs[row, 1].scatter(twiss_X, twiss_Y, c='r')
+            axs[row, 1].scatter(x_data_2, div_data_2, s=1, marker='.', c=weight)
+            axs[row, 1].set_xlabel(x_label_2)
+            axs[row, 1].set_ylabel(y_label_2)
+            axs[row, 1].set_title(title_2)
+            axs[row, 1].grid()
+            row = row + 1
+        # plt.ylim([ymin, ymax])
+        # plt.xlim([xmin, xmax])
+        # TitleString = "\u03C0\u03B5: %1.1f mm mrad, \u03B1: %1.1f, \u03B2: %1.1f, \u03B3: %1.1f" % \
+        #               (self.twiss_epsilon, self.twiss_alpha, self.twiss_beta, self.twiss_gamma)
+        # plt.title(TitleString)
+
+        plt.tight_layout()
+        plt.show()
+
     def report(self):
         """
         print a sumary of the phase space to the screen.
@@ -452,7 +541,7 @@ class PhaseSpace:
         self._ps_data['vy [m/s]'] = np.divide(self._ps_data['py [MeV/c]'], (self._ps_data['gamma'] * self._ps_data['rest mass [MeV/c^2]']))
         self._ps_data['vz [m/s]'] = np.divide(self._ps_data['pz [MeV/c]'], (self._ps_data['gamma'] * self._ps_data['rest mass [MeV/c^2]']))
         self._check_ps_data_format()
-    
+
     def fill_beta_and_gamma(self):
         """
         add the relatavistic beta and gamma factors into self._ps_data
@@ -599,135 +688,42 @@ class PhaseSpace:
 
         self.twiss_parameters = {}
 
-
-    ###############################
-
-    def AssessDensityVersusR(self, Rvals=None):
+    def assess_density_versus_r(self, Rvals=None, verbose=True, beam_direction='z'):
         """
         Crude code to assess how many particles are in a certain radius
 
         If ROI = None,  then all particles are assessed.
         Otherwise, use ROI = [zval, radius] to only include particles that would be within radius r at distance z from
         the read in location
+
+        :param Rvals: list of rvals to assess in mm, e.g. np.linspace(0, 2, 21)
+        :param verbose: prints data to screen if True
+        :return density_data: a dataframe containing the roi vals and the proportion of particles inside
         """
 
-        if self.weight.max() > 1:
-            warnings.warn('The AssessDensityVersusR function has not been updated for weighted particles')
+        if self.ps_data['weight'].max() > 1:
+            warnings.warn('AssessDensityVersusR function ignores particle weights')
+
         if Rvals is None:
             # pick a default
             Rvals = np.linspace(0, 2, 21)
+        if beam_direction == 'x':
+            r = np.sqrt(self.ps_data['z [mm]']**2 + self.ps_data['y [mm]']**2)
+        elif beam_direction == 'y':
+            r = np.sqrt(self.ps_data['x [mm]']**2 + self.ps_data['z [mm]']**2)
+        elif beam_direction == 'z':
+            r = np.sqrt(self.ps_data['x [mm]']**2 + self.ps_data['y [mm]']**2)
 
-        r = np.sqrt(self.x ** 2 + self.y ** 2)
-        numparticles = self.x.shape[0]
+
+        numparticles = self.ps_data['x [mm]'].shape[0]
         rad_prop = []
 
-        if self.verbose:
-            if self.ROI == None:
-                print(f'Assessing particle density versus R for all particles')
-            else:
-                print(f'Assessing particle density versus R for particles projected to be within a radius of'
-                      f' {self.ROI[1]} at a distance of {self.ROI[0]}')
-
         for rcheck in Rvals:
-            if self.ROI == None:
-                Rind = r <= rcheck
-                rad_prop.append(np.count_nonzero(Rind) * 100 / numparticles)
-            else:
-                # apply the additional ROI filter by projecting x,y to the relevant z position
-                Xproj = np.multiply(self.ROI[0], np.divide(self.px, self.pz)) + self.x
-                Yproj = np.multiply(self.ROI[0], np.divide(self.py, self.pz)) + self.y
-                Rproj = np.sqrt(Xproj ** 2 + Yproj ** 2)
-                ROIind = Rproj <= self.ROI[1]
+            Rind = r < rcheck
+            rad_prop.append(np.count_nonzero(Rind) * 100 / numparticles)
 
-                Rind = r <= rcheck
-                ind = np.multiply(ROIind, Rind)
-                rad_prop.append(np.count_nonzero(ind) * 100 / numparticles)
+        density_data = pd.DataFrame({'roi [mm]': Rvals, '% particles inside': rad_prop})
+        if verbose:
+            print(density_data)
+        return density_data
 
-        self.rad_prop = rad_prop
-
-    def PlotTransverseTraceSpace(self, beam_direction='z', plot_twiss_ellipse=True):
-
-        self.calculate_twiss_parameters(beam_direction=beam_direction)
-        fig, axs = plt.subplots(nrows=len(self._unique_particles), ncols=2, squeeze=False)
-        row = 0
-        for particle in self._unique_particles:
-            particle_name = particle_cfg.particle_properties[particle]['name']
-            ind = self._ps_data['particle type [pdg_code]'] == particle
-            ps_data = self._ps_data.loc[ind]
-            if beam_direction == 'z':
-                x_data_1 = ps_data['x [mm]']
-                div_data_1 = np.divide(ps_data['px [MeV/c]'], ps_data['pz [MeV/c]'])
-                x_label_1 = 'x [mm]'
-                y_label_1 = "x' [mrad]"
-                title_1 = particle_name + ': x'
-                weight = ps_data['weight']
-                elipse_parameters_1 = self.twiss_parameters[particle_name]['x']
-
-                x_data_2 = ps_data['y [mm]']
-                div_data_2 = np.divide(ps_data['py [MeV/c]'], ps_data['pz [MeV/c]'])
-                x_label_2 = 'y [mm]'
-                y_label_2 = "y' [mrad]"
-                title_2 = particle_name  + ': y'
-                elipse_parameters_2 = self.twiss_parameters[particle_name ]['y']
-            elif beam_direction == 'x':
-                x_data_1 = ps_data['y [mm]']
-                div_data_1 = np.divide(ps_data['py [MeV/c]'], ps_data['px [MeV/c]'])
-                x_label_1 = 'y [mm]'
-                y_label_1 = "y' [mrad]"
-                title_1 = particle_name + ': x'
-                weight = ps_data['weight']
-                elipse_parameters_1 = self.twiss_parameters[particle_name]['y']
-
-                x_data_2 = ps_data['z [mm]']
-                div_data_2 = np.divide(ps_data['pz [MeV/c]'], ps_data['px [MeV/c]'])
-                x_label_2 = 'z [mm]'
-                y_label_2 = "z' [mrad]"
-                title_2 = particle_name + ': y'
-                elipse_parameters_2 = self.twiss_parameters[particle_name]['z']
-            elif beam_direction == 'y':
-                x_data_1 = ps_data['x [mm]']
-                div_data_1 = np.divide(ps_data['px [MeV/c]'], ps_data['py [MeV/c]'])
-                x_label_1 = 'x [mm]'
-                y_label_1 = "x' [mrad]"
-                title_1 = particle_name + ': x'
-                weight = ps_data['weight']
-                elipse_parameters_1 = self.twiss_parameters[particle_name]['x']
-
-                x_data_2 = ps_data['z [mm]']
-                div_data_2 = np.divide(ps_data['pz [MeV/c]'], ps_data['py [MeV/c]'])
-                x_label_2 = 'z [mm]'
-                y_label_2 = "z' [mrad]"
-                title_2 = particle_name + ': y'
-                elipse_parameters_2 = self.twiss_parameters[particle_name]['z']
-            else:
-                raise NotImplementedError(f'beam_direction must be "x", "y", or "z", not {beam_direction}')
-
-            if plot_twiss_ellipse:
-                twiss_X, twiss_Y = self._get_ellipse_xy_points(elipse_parameters_1, x_data_1.min(), x_data_1.max(),
-                                                               div_data_1.min(), div_data_1.max())
-                xmin, xmax, ymin, ymax = plt.axis()
-                axs[row, 0].scatter(twiss_X, twiss_Y, c='r')
-            axs[row, 0].scatter(x_data_1, div_data_1, s=1, marker='.', c=weight)
-            axs[row, 0].set_xlabel(x_label_1)
-            axs[row, 0].set_ylabel(y_label_1)
-            axs[row, 0].set_title(title_1)
-            axs[row, 0].grid()
-
-            if plot_twiss_ellipse:
-                twiss_X, twiss_Y = self._get_ellipse_xy_points(elipse_parameters_2, x_data_2.min(), x_data_2.max(),
-                                                               div_data_2.min(), div_data_2.max())
-                axs[row, 1].scatter(twiss_X, twiss_Y, c='r')
-            axs[row, 1].scatter(x_data_2, div_data_2, s=1, marker='.', c=weight)
-            axs[row, 1].set_xlabel(x_label_2)
-            axs[row, 1].set_ylabel(y_label_2)
-            axs[row, 1].set_title(title_2)
-            axs[row, 1].grid()
-            row = row + 1
-        # plt.ylim([ymin, ymax])
-        # plt.xlim([xmin, xmax])
-        # TitleString = "\u03C0\u03B5: %1.1f mm mrad, \u03B1: %1.1f, \u03B2: %1.1f, \u03B3: %1.1f" % \
-        #               (self.twiss_epsilon, self.twiss_alpha, self.twiss_beta, self.twiss_gamma)
-        # plt.title(TitleString)
-
-        plt.tight_layout()
-        plt.show()
