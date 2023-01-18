@@ -10,7 +10,7 @@ Contents
    :maxdepth: 2
    :caption: Contents:
 
-   /basic_example
+   /examples
    /code_docs
 
 Indices and tables

@@ -47,8 +47,8 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Code Documentation" href="code_docs.html" />
-    <link rel="prev" title="ParticlePhaseSpace" href="index.html" /> 
+    <link rel="next" title="Writing a new data loader" href="new_data_loader.html" />
+    <link rel="prev" title="Examples" href="examples.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -95,8 +95,17 @@
             
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Import data</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#Seperating,-adding,-and-subtracting-phase-space-objects">Seperating, adding, and subtracting phase space objects</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="examples.html">Examples</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Import data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Basic-analytics">Basic analytics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Seperating,-adding,-and-subtracting-phase-space-objects">Seperating, adding, and subtracting phase space objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Twiss-parameters">Twiss parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Manipulating-data-in-the-phase-space">Manipulating data in the phase space</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Exporting-the-data">Exporting the data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="new_data_loader.html">Writing a new data loader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="new_data_exporter.html">Writing a new data exporter</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="code_docs.html">Code Documentation</a></li>
@@ -147,6 +156,8 @@
   <ul class="wy-breadcrumbs">
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="examples.html">Examples</a> &raquo;</li>
         
       <li>Import data</li>
     
@@ -448,42 +459,36 @@ div.rendered_html tbody tr:hover {
 </style>
 <section id="Import-data">
 <h1>Import data<a class="headerlink" href="#Import-data" title="Permalink to this heading">¶</a></h1>
-<p>to import data, we use an instance of the DataLoaders class:</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<p>to import data, we use an instance of the DataLoaders class. In this example, we will work with topas data. For a list of all currently available data importers, see <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/code_docs.html#module-ParticlePhaseSpace.DataLoaders">here</a>; for instructions on writing new data importers see <a href="#id1"><span class="problematic" id="id2">`here &lt;&gt;`__</span></a></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>from pathlib import Path
 import sys
 sys.path.append(&#39;../&#39;)
 from ParticlePhaseSpace import DataLoaders
-from ParticlePhaseSpace.ParticlePhaseSpace import ParticlePhaseSpace
+from ParticlePhaseSpace import PhaseSpace
 
-test_data_loc = Path(r&#39;../examples/coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp&#39;).absolute()
+test_data_loc = Path(r&#39;../tests/test_data/coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp&#39;).absolute()
 ps_data = DataLoaders.LoadTopasData(test_data_loc)
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-particle type check not implemented
-</pre></div></div>
-</div>
-<p>Once we have a DataLoader instance, we can pass it to ParticlePhaseSpace for analysis.3 Note that while we are using topas data in this example, any DataLoader will guarantee data that can be passed to ParticlePhaseSpace. For a full list of current DataLoaders, see HERE. For notes on writing new DataLoaders, see HERE.</p>
+<p>Once we have a DataLoader instance, we can pass it to ParticlePhaseSpace for analysis:</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>PS = ParticlePhaseSpace(ps_data)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>PS = PhaseSpace(ps_data)
 </pre></div>
 </div>
 </div>
-<p>Once we have an instance of ParticlePhaseSpace, we can perform some analysis:</p>
+<section id="Basic-analytics">
+<h2>Basic analytics<a class="headerlink" href="#Basic-analytics" title="Permalink to this heading">¶</a></h2>
+<p>Once we have an instance of ParticlePhaseSpace, we can perform some analysis.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>PS.report()  # prints a summary of the data
@@ -495,7 +500,6 @@ particle type check not implemented
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-particle type check not implemented
 total number of particles in phase space: 311489
 number of unique particle species:  3
      308280 gammas
@@ -520,7 +524,7 @@ number of unique particle species:  3
 </div>
 <p>You can see that this phase space consists of three different particle species. We can also generate plots for energy, and particle positions:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>PS.plot_energy_histogram()
@@ -535,7 +539,7 @@ number of unique particle species:  3
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>PS.plot_position_histogram()
@@ -550,7 +554,7 @@ number of unique particle species:  3
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>PS.plot_particle_positions()
@@ -564,11 +568,13 @@ number of unique particle species:  3
 <img alt="_images/basic_example_9_0.png" src="_images/basic_example_9_0.png" />
 </div>
 </div>
+<p>Note that in the plot above, particles with different weights are plotted with different colors. You can also produce a weighted scatterplot by setting <code class="docutils literal notranslate"><span class="pre">weight_position_plot=True</span></code> however this is very slow with large datasets.</p>
+</section>
 <section id="Seperating,-adding,-and-subtracting-phase-space-objects">
 <h2>Seperating, adding, and subtracting phase space objects<a class="headerlink" href="#Seperating,-adding,-and-subtracting-phase-space-objects" title="Permalink to this heading">¶</a></h2>
 <p>You can easily add, subtract, and seperate phase space objects:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>electron_PS = PS(&#39;electrons&#39;)  # this generates a phase space with only the electrons
@@ -578,24 +584,16 @@ electron_PS.plot_energy_histogram()
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-particle type check not implemented
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/basic_example_11_1.png" src="_images/basic_example_11_1.png" />
+<img alt="_images/basic_example_12_0.png" src="_images/basic_example_12_0.png" />
 </div>
 </div>
 <p>You can also pass a list of particles to get multiple phase spaces at once:</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>gamma_PS, positron_PS = PS([&#39;gammas&#39;, &#39;positrons&#39;])  # you can also pass a list
@@ -604,7 +602,7 @@ particle type check not implemented
 </div>
 <p>You can subtract one phase space from another. For example, the following will produce a new phase space object where all the gamma particles are removed:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>no_gamma_PS = PS - gamma_PS
@@ -612,24 +610,16 @@ no_gamma_PS.plot_energy_histogram()
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-particle type check not implemented
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/basic_example_15_1.png" src="_images/basic_example_15_1.png" />
+<img alt="_images/basic_example_16_0.png" src="_images/basic_example_16_0.png" />
 </div>
 </div>
 <p>You can also add phase spaces together:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>Original_PS = no_gamma_PS + gamma_PS
@@ -637,59 +627,119 @@ Original_PS.plot_energy_histogram()
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/basic_example_18_0.png" src="_images/basic_example_18_0.png" />
+</div>
+</div>
+<p>However: you cannot add identical particles into an existing phase space. If you really want to do this, you will need to update the particle_ID field first.</p>
+</section>
+<section id="Twiss-parameters">
+<h2>Twiss parameters<a class="headerlink" href="#Twiss-parameters" title="Permalink to this heading">¶</a></h2>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Courant%E2%80%93Snyder_parameters">Twiss parameters</a> or courant-snyder parameters are commonly used to describe the distribution of particles in a transverse phase space. You can calculate, save, and plot the twiss parameters:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>PS.print_twiss_parameters(beam_direction=&#39;z&#39;)  # calculate the RMS twiss parameters
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+===================================================
+                 TWISS PARAMETERS
+===================================================
+
+gammas:
+                x         y
+epsilon  2.582455  2.741279
+alpha   -0.622287 -0.527946
+beta     8.585998  9.027061
+gamma    0.161570  0.141655
+
+electrons:
+                x         y
+epsilon  2.582455  2.741279
+alpha   -0.622287 -0.527946
+beta     8.585998  9.027061
+gamma    0.161570  0.141655
+
+positrons:
+                x         y
+epsilon  2.582455  2.741279
+alpha   -0.622287 -0.527946
+beta     8.585998  9.027061
+gamma    0.161570  0.141655
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>PS.plot_transverse_trace_space()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/basic_example_22_0.png" src="_images/basic_example_22_0.png" />
+</div>
+</div>
+<p>The above plot shows what is sometimes called a ‘trace space’ which is plot of position (x) versus divergence (x’ = px/pz). The Red ellipse represents the space enclosed by the RMS twiss parameters, which should enclode 37% of the beam.</p>
+</section>
+<section id="Manipulating-data-in-the-phase-space">
+<h2>Manipulating data in the phase space<a class="headerlink" href="#Manipulating-data-in-the-phase-space" title="Permalink to this heading">¶</a></h2>
+<p>For some research purposes you may wish to manipulate the data in the phase space - for instance, change the z value of all particles because different simulation codes use different coordinate system. This is very possible with this code; you can directly change all data fields by directly interacting with the pandas data stored at <code class="docutils literal notranslate"><span class="pre">PhaseSpace.ps_data</span></code>. Whenever you change ps_data, all columns except for the <a class="reference external" href="add%20link">required columns</a> will be deleted. As such, you can only manipulate
+the required columns. Following this, you can use the various <code class="docutils literal notranslate"><span class="pre">fill</span></code> methods to recalculate any additional data.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># zero the z coordinate
+PS.ps_data[&#39;z [mm]&#39;] = PS.ps_data[&#39;z [mm]&#39;] - PS.ps_data[&#39;z [mm]&#39;].mean()
+# double the pz momentum:
+PS.ps_data[&#39;pz [MeV/c]&#39;] = PS.ps_data[&#39;pz [MeV/c]&#39;] * 2
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Exporting-the-data">
+<h2>Exporting the data<a class="headerlink" href="#Exporting-the-data" title="Permalink to this heading">¶</a></h2>
+<p>Similarly to the data import stage we use an instance of <code class="docutils literal notranslate"><span class="pre">ParticlePhaseSpace.ataLoaders</span></code> to export the data. You can see the currently available data exporters <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/code_docs.html#module-ParticlePhaseSpace.DataExporters">here</a>, and you see a demonstration of writing a new data exporter <a href="#id1"><span class="problematic" id="id3">`here &lt;&gt;`__</span></a>. At the time of writing, I had only written the topas exporter, so again this is what I will use in this example:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>from ParticlePhaseSpace import DataExporters
+
+DataExporters.Topas_Exporter(PS, output_location=Path(&#39;.&#39;), output_name=&#39;test_export&#39;)
+</pre></div>
+</div>
+</div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-particle type check not implemented
+generating topas data file
+success
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="_images/basic_example_17_1.png" src="_images/basic_example_17_1.png" />
-</div>
-</div>
-<p>However: you cannot add identical particles into an existing phase space. If you really want to do this, you need to update the particle_ID field first:</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>this_wont_work = electron_PS + electron_PS
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">Exception</span>                                 Traceback (most recent call last)
-Cell <span class="ansi-green-fg">In[17], line 1</span>
-<span class="ansi-green-fg">----&gt; 1</span> this_wont_work <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">electron_PS</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">+</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">electron_PS</span>
-
-File <span class="ansi-green-fg">~/Documents/python/ParticlePhaseSpace/examples/../ParticlePhaseSpace/ParticlePhaseSpace.py:104</span>, in <span class="ansi-cyan-fg">ParticlePhaseSpace.__add__</span><span class="ansi-blue-fg">(self, other)</span>
-<span class="ansi-green-intense-fg ansi-bold">    102</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> col_name <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> cf<span style="color: rgb(98,98,98)">.</span>required_columns:
-<span class="ansi-green-intense-fg ansi-bold">    103</span>         new_data<span style="color: rgb(98,98,98)">.</span>drop(columns<span style="color: rgb(98,98,98)">=</span>col_name, inplace<span style="color: rgb(98,98,98)">=</span><span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
-<span class="ansi-green-fg">--&gt; 104</span> new_data_loader <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">DataLoaders</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">LoadPandasData</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">new_data</span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    105</span> new_instance <span style="color: rgb(98,98,98)">=</span> ParticlePhaseSpace(new_data_loader)
-<span class="ansi-green-intense-fg ansi-bold">    106</span> <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> new_instance
-
-File <span class="ansi-green-fg">~/Documents/python/ParticlePhaseSpace/examples/../ParticlePhaseSpace/DataLoaders.py:17</span>, in <span class="ansi-cyan-fg">_DataImportersBase.__init__</span><span class="ansi-blue-fg">(self, input_data)</span>
-<span class="ansi-green-intense-fg ansi-bold">     15</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_check_input_data()
-<span class="ansi-green-intense-fg ansi-bold">     16</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_import_data()
-<span class="ansi-green-fg">---&gt; 17</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">_check_loaded_data</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>
-
-File <span class="ansi-green-fg">~/Documents/python/ParticlePhaseSpace/examples/../ParticlePhaseSpace/DataLoaders.py:59</span>, in <span class="ansi-cyan-fg">_DataImportersBase._check_loaded_data</span><span class="ansi-blue-fg">(self)</span>
-<span class="ansi-green-intense-fg ansi-bold">     57</span> <span style="color: rgb(95,135,135)"># is every particle ID unique?</span>
-<span class="ansi-green-intense-fg ansi-bold">     58</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> <span style="color: rgb(0,135,0)">len</span>(<span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>data[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">particle id</span><span style="color: rgb(175,0,0)">&#39;</span>]<span style="color: rgb(98,98,98)">.</span>unique()) <span style="color: rgb(98,98,98)">==</span> <span style="color: rgb(0,135,0)">len</span>(<span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>data[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">particle id</span><span style="color: rgb(175,0,0)">&#39;</span>]):
-<span class="ansi-green-fg">---&gt; 59</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">Exception</span>(<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">you have attempted to create a data set with non</span><span style="color: rgb(175,0,0)">&#39;</span>
-<span class="ansi-green-intense-fg ansi-bold">     60</span>                          <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">unique </span><span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">particle id</span><span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)"> fields, which is not allowed</span><span style="color: rgb(175,0,0)">&#39;</span>)
-
-<span class="ansi-red-fg">Exception</span>: you have attempted to create a data set with nonunique &#34;particle id&#34; fields, which is not allowed
+&lt;ParticlePhaseSpace.DataExporters.Topas_Exporter at 0x7f556ebcefd0&gt;
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
@@ -709,8 +759,8 @@ File <span class="ansi-green-fg">~/Documents/python/ParticlePhaseSpace/examples/
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="code_docs.html" class="btn btn-neutral float-right" title="Code Documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="index.html" class="btn btn-neutral float-left" title="ParticlePhaseSpace" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="new_data_loader.html" class="btn btn-neutral float-right" title="Writing a new data loader" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="examples.html" class="btn btn-neutral float-left" title="Examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

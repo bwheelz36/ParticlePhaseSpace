@@ -45,7 +45,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Import data" href="basic_example.html" /> 
+    <link rel="prev" title="Writing a new data exporter" href="new_data_exporter.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -92,13 +92,11 @@
             
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="basic_example.html">Import data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Code Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-ParticlePhaseSpace.DataLoaders">Data Loaders</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#ParticlePhaseSpace.DataLoaders.LoadCST_trk_Data"><code class="docutils literal notranslate"><span class="pre">LoadCST_trk_Data</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ParticlePhaseSpace.DataLoaders.LoadPandasData"><code class="docutils literal notranslate"><span class="pre">LoadPandasData</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ParticlePhaseSpace.DataLoaders.LoadTopasData"><code class="docutils literal notranslate"><span class="pre">LoadTopasData</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#ParticlePhaseSpace.DataLoaders.Load_Opera_dat_file"><code class="docutils literal notranslate"><span class="pre">Load_Opera_dat_file</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-ParticlePhaseSpace._ParticlePhaseSpace">Particle Phase Space</a><ul>
@@ -124,6 +122,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-ParticlePhaseSpace.DataExporters">Data Exporters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ParticlePhaseSpace.DataExporters.NewDataExporter"><code class="docutils literal notranslate"><span class="pre">NewDataExporter</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ParticlePhaseSpace.DataExporters.Topas_Exporter"><code class="docutils literal notranslate"><span class="pre">Topas_Exporter</span></code></a></li>
 </ul>
 </li>
@@ -226,11 +225,6 @@
 <section id="module-ParticlePhaseSpace.DataLoaders">
 <span id="data-loaders"></span><h2>Data Loaders<a class="headerlink" href="#module-ParticlePhaseSpace.DataLoaders" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
-<dt class="sig sig-object py" id="ParticlePhaseSpace.DataLoaders.LoadCST_trk_Data">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ParticlePhaseSpace.DataLoaders.</span></span><span class="sig-name descname"><span class="pre">LoadCST_trk_Data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace.DataLoaders.LoadCST_trk_Data" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py class">
 <dt class="sig sig-object py" id="ParticlePhaseSpace.DataLoaders.LoadPandasData">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ParticlePhaseSpace.DataLoaders.</span></span><span class="sig-name descname"><span class="pre">LoadPandasData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace.DataLoaders.LoadPandasData" title="Permalink to this definition">¶</a></dt>
 <dd><p>loads in pandas data; provides a general purpose interface for
@@ -240,11 +234,6 @@ those who do not wish to write a specific data loader for their application</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="ParticlePhaseSpace.DataLoaders.LoadTopasData">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ParticlePhaseSpace.DataLoaders.</span></span><span class="sig-name descname"><span class="pre">LoadTopasData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace.DataLoaders.LoadTopasData" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="ParticlePhaseSpace.DataLoaders.Load_Opera_dat_file">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ParticlePhaseSpace.DataLoaders.</span></span><span class="sig-name descname"><span class="pre">Load_Opera_dat_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace.DataLoaders.Load_Opera_dat_file" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </section>
@@ -445,6 +434,11 @@ you have perfored some operation which may have invalidiated derived metrics</p>
 <section id="module-ParticlePhaseSpace.DataExporters">
 <span id="data-exporters"></span><h2>Data Exporters<a class="headerlink" href="#module-ParticlePhaseSpace.DataExporters" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
+<dt class="sig sig-object py" id="ParticlePhaseSpace.DataExporters.NewDataExporter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ParticlePhaseSpace.DataExporters.</span></span><span class="sig-name descname"><span class="pre">NewDataExporter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">PhaseSpaceInstance:</span> <span class="pre">~ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_location:</span> <span class="pre">(&lt;class</span> <span class="pre">'str'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">&lt;class</span> <span class="pre">'pathlib.Path'&gt;)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_name:</span> <span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace.DataExporters.NewDataExporter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="ParticlePhaseSpace.DataExporters.Topas_Exporter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ParticlePhaseSpace.DataExporters.</span></span><span class="sig-name descname"><span class="pre">Topas_Exporter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">PhaseSpaceInstance:</span> <span class="pre">~ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_location:</span> <span class="pre">(&lt;class</span> <span class="pre">'str'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">&lt;class</span> <span class="pre">'pathlib.Path'&gt;)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_name:</span> <span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace.DataExporters.Topas_Exporter" title="Permalink to this definition">¶</a></dt>
 <dd><p>output the phase space to topas ascii format:
@@ -467,7 +461,7 @@ you have perfored some operation which may have invalidiated derived metrics</p>
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="basic_example.html" class="btn btn-neutral float-left" title="Import data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="new_data_exporter.html" class="btn btn-neutral float-left" title="Writing a new data exporter" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
