@@ -13,11 +13,13 @@
 import os
 import sys
 import shutil
+from pathlib import Path
 # sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('..'))
 
 # copy the latest example files:
-# shutil.copy('../examples/')
+this_file_loc = Path(__file__).parent
+shutil.copy('../examples/import_analyse_export.ipynb', this_file_loc)
 
 # -- Project information -----------------------------------------------------
 

@@ -10,7 +10,7 @@ Contents
    :maxdepth: 2
    :caption: Contents:
 
-   /TopasExample
+   /import_analyse_export
    /code_docs
 
 Indices and tables

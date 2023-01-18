@@ -1,4 +1,39 @@
-def export_to_cst_pid(self, Zoffset=None):
+import platform
+from ParticlePhaseSpace import PhaseSpace
+from pathlib import Path
+from abc import ABC, abstractproperty
+
+class _DataExporterBase(ABC):
+
+    def __init__(self, PhaseSpaceInstance: PhaseSpace):
+
+        self._PS = PhaseSpaceInstance
+        self._required_columns = None
+
+    def _check_required_columns_allowed(self):
+
+    def _fill_required_columns(self):
+
+        for col in self._required_columns:
+            if not col in self._PS.ps_data.columns:
+                if col == 'Ek [MeV]':
+                    self._PS.fill_kinetic_E()
+                elif col == 'rest mass [MeV/c^2]':
+                    self._PS.fill_rest_mass()
+                elif col in 'gamma, beta':
+                    self._PS.fill_beta_and_gamma()
+                elif col in 'vx [m/s], vy [m/s], vz [m/s]':
+                    self._PS.fill_velocity()
+                elif col in 'Direction Cosine X, Direction Cosine Y, Direction Cosine Z':
+                    self._PS.fill_direction_cosines()
+                else:
+                    raise Exception(f'unable to fill required column {col}')
+
+
+
+
+
+def export_to_cst_pid(self, z_offset=None):
     """
     Generate a phase space which can be directly imported into CST
     For a constant emission model: generate a .pid ascii file
@@ -27,12 +62,12 @@ def export_to_cst_pid(self, Zoffset=None):
     Current = self.TotalCurrent * relative_weight  # very crude approximation!!
     x = self.x * 1e-3  ## convert to m
     y = self.y * 1e-3
-    if Zoffset == None:
-        # Zoffset is an optional parameter to change the starting location of the particle beam (which
+    if z_offset == None:
+        # z_offset is an optional parameter to change the starting location of the particle beam (which
         # assume propogates in the Z direction)
         self.zOut = self.z * 1e-3
     else:
-        self.zOut = (self.z + Zoffset) * 1e-3
+        self.zOut = (self.z + z_offset) * 1e-3
     px = self.px / self._me_MeV
     py = self.py / self._me_MeV
     pz = self.pz / self._me_MeV
@@ -44,7 +79,7 @@ def export_to_cst_pid(self, Zoffset=None):
     Data = np.transpose(Data)
     np.savetxt(WritefilePath, Data, fmt='%01.3e', delimiter='      ')
 
-def export_to_cst_pit(self, Zoffset=None):
+def export_to_cst_pit(self, z_offset=None):
     """
     % Use always SI units.
     % The momentum (mom) is equivalent to beta * gamma.
@@ -69,12 +104,12 @@ def export_to_cst_pit(self, Zoffset=None):
     Weight = self.weight
     x = self.x * 1e-3  ## convert to m
     y = self.y * 1e-3
-    if Zoffset == None:
-        # Zoffset is an optional parameter to change the starting location of the particle beam (which
+    if z_offset == None:
+        # z_offset is an optional parameter to change the starting location of the particle beam (which
         # assume propogates in the Z direction)
         self.zOut = self.z * 1e-3
     else:
-        self.zOut = (self.z + Zoffset) * 1e-3
+        self.zOut = (self.z + z_offset) * 1e-3
     px = self.px / self._me_MeV
     py = self.py / self._me_MeV
     pz = self.pz / self._me_MeV
@@ -89,7 +124,7 @@ def export_to_cst_pit(self, Zoffset=None):
     Data = np.transpose(Data)
     np.savetxt(WritefilePath, Data, fmt='%01.3e', delimiter='      ')
 
-def export_to_comsol(self, Zoffset=None):
+def export_to_comsol(self, z_offset=None):
     """
     Generate a phase space which can be directly imported into CST
     For a constant emission model: generate a .pid ascii file
@@ -112,35 +147,44 @@ def export_to_comsol(self, Zoffset=None):
 
     x = self.x * 1e-3  ## convert to m
     y = self.y * 1e-3
-    if Zoffset == None:
-        # Zoffset is an optional parameter to change the starting location of the particle beam (which
+    if z_offset == None:
+        # z_offset is an optional parameter to change the starting location of the particle beam (which
         # assume propogates in the Z direction)
         self.zOut = self.z
     else:
-        self.zOut = (self.z + Zoffset)
+        self.zOut = (self.z + z_offset)
     # generate PID file
     Data = [x, y, self.zOut, self.vx * self._c, self.vy * self._c, self.vz * self._c]
 
     Data = np.transpose(Data)
     np.savetxt(WritefilePath, Data, fmt='%01.12e', delimiter='      ')
 
-def export_to_topas(self, Zoffset=None):
+def export_to_topas(PhaseSpaceInstance: PhaseSpace, output_location: (str, Path), output_name: str):
     """
     Convert Phase space into format appropriate for topas.
     You can read more about the required format
     `Here <https://topas.readthedocs.io/en/latest/parameters/scoring/phasespace.html>`_
 
-    :param Zoffset: number to add to the Z position of each particle. To move it upstream, Zoffset should be negative.
-     No check is made for units, the user has to figure this out themselves! If Zoffset=None, the read in X value
+    :param z_offset: number to add to the Z position of each particle. To move it upstream, z_offset should be negative.
+     No check is made for units, the user has to figure this out themselves! If z_offset=None, the read in X value
      will be used.
-    :type Zoffset: None or double
+    :type z_offset: None or double
     """
-    print('generating topas data file')
-    import platform
+
+
     if 'windows' in platform.system().lower():
-        warnings.warn('to generate a file that topas will accept, you need to do this from linux. I think'
-                      'its the line endings.')
-    WritefilePath = self.OutputDataLoc + '/' + self.OutputFile + '_tpsImport.phsp'
+        raise Exception('to generate a valid file, please use a unix-based system')
+    print('generating topas data file')
+    assert isinstance(PhaseSpaceInstance, PhaseSpace)
+    required_columns = ['x [mm]', 'y [mm]', 'z [mm]', 'DirCosX', 'DirCosY', 'Ek [MeV]', 'weight', 'particle id']
+
+
+
+
+    if not output_name[-5:] == 'phsp':
+        pass
+
+    WritefilePath = Path(output_location) / output_name
 
     # write the header file:
     self.__GenerateTopasHeaderFile()
@@ -154,12 +198,12 @@ def export_to_topas(self, Zoffset=None):
     ThirdDirectionFlag = np.zeros(len(self.x))  # not really sure what this means.
     FirstParticleFlag = np.ones(
         len(self.x))  # don't actually know what this does but as we import a pure phase space
-    if Zoffset == None:
-        # Zoffset is an optional parameter to change the starting location of the particle beam (which
+    if z_offset == None:
+        # z_offset is an optional parameter to change the starting location of the particle beam (which
         # assume propogates in the Z direction)
         self.zOut = self.z
     else:
-        self.zOut = self.z + Zoffset
+        self.zOut = self.z + z_offset
 
     # Nb: topas seems to require units of cm
     Data = [self.x * 0.1, self.y * 0.1, self.zOut * 0.1, DirCosX, DirCosY, self.E, Weight,
@@ -170,37 +214,6 @@ def export_to_topas(self, Zoffset=None):
     FormatSpec = ['%11.5f', '%11.5f', '%11.5f', '%11.5f', '%11.5f', '%11.5f', '%11.5f', '%2d', '%2d', '%2d']
     np.savetxt(WritefilePath, Data, fmt=FormatSpec, delimiter='      ')
     print('success')
-
-def _CalculateBetaAndGamma(self):
-    """
-    Calculate the beta and gamma factors from the momentum data
-
-    input momentum is assumed to be in units of MeV/c
-    I need to figure out if BetaX and BetaY make sense, or it's just Beta
-    """
-
-    if self.ParticleType == 'gamma':
-        # then this stuff makes no sense
-        return
-
-    self.TOT_P = np.sqrt(self.px ** 2 + self.py ** 2 + self.pz ** 2)
-    self.Beta = np.divide(self.TOT_P, self.TOT_E)
-    self.Gamma = 1 / np.sqrt(1 - np.square(self.Beta))
-
-def _CalculateDirectionCosines(self):
-    """
-    Calculate direction cosines, which are required for topas import:
-
-    U (direction cosine of momentum with respect to X)
-    V (direction cosine of momentum with respect to Y)
-
-    nb: using velocity or momentum seem to give the same results
-
-    """
-    V = np.sqrt(self.px ** 2 + self.py ** 2 + self.pz ** 2)
-    U = self.px / V
-    V = self.py / V
-    return U, V
 
 def _GenerateTopasHeaderFile(self):
     """

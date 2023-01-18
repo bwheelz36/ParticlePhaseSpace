@@ -4,13 +4,14 @@ import topas2numpy as tp
 import numpy as np
 from pathlib import Path
 from .utilities import get_rest_masses_from_pdg_codes
-import ParticlePhaseSpace.__config as cf
+import ParticlePhaseSpace.__phase_space_config__ as ps_cfg
+import ParticlePhaseSpace.__particle_config__ as particle_cfg
 import warnings
 
 class _DataImportersBase(ABC):
 
     def __init__(self, input_data):
-        self.data = pd.DataFrame(columns=cf.required_columns)
+        self.data = pd.DataFrame(columns=ps_cfg.required_columns)
         self._input_data = input_data
         self._check_input_data()
         self._import_data()
@@ -41,13 +42,13 @@ class _DataImportersBase(ABC):
         4. "particle id" should be unique
         """
         # required columns present?
-        for col_name in cf.required_columns:
+        for col_name in ps_cfg.required_columns:
             if not col_name in self.data.columns:
                 raise AttributeError(f'invalid data input; required column "{col_name}" is missing')
 
         # all columns allowed?
         for col_name in self.data.columns:
-            if not col_name in cf.required_columns:
+            if not col_name in ps_cfg.required_columns:
                 raise AttributeError(f'non allowed column "{col_name}" in data.')
 
         # are NaNs present?

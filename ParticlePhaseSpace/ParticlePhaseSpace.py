@@ -16,7 +16,8 @@ from scipy import constants
 from time import perf_counter
 import json
 from pathlib import Path
-import ParticlePhaseSpace.__config as cf
+import ParticlePhaseSpace.__phase_space_config__ as ps_cfg
+import ParticlePhaseSpace.__particle_config__ as particle_cfg
 from ParticlePhaseSpace.DataLoaders import _DataImportersBase
 from ParticlePhaseSpace import utilities as ps_util
 from ParticlePhaseSpace import DataLoaders
@@ -32,7 +33,7 @@ class FigureSpecs:
     TickFontSize = 14
 
 
-class ParticlePhaseSpace:
+class PhaseSpace:
     """
     """
 
@@ -64,26 +65,26 @@ class ParticlePhaseSpace:
             # nb: check for str instead of int as lots of different int types, so will assume
             # we have ints here and raise error if failure
             try:
-                new_particle_list = [cf.particle_properties[particle]['name'] for particle in particle_list]
+                new_particle_list = [particle_cfg.particle_properties[particle]['name'] for particle in particle_list]
             except KeyError:
                 raise Exception('unable to convert input particle_list to valid data, please check')
             particle_list = new_particle_list
-        allowed_particles = list(cf.particle_properties.keys())
+        allowed_particles = list(particle_cfg.particle_properties.keys())
         for particle in particle_list:
             if not particle in allowed_particles:
                 raise Exception(f'particle type {particle} is unknown')
         particle_data_sets = []
         for particle in particle_list:
-            pdg_code = cf.particle_properties[particle]['pdg_code']
+            pdg_code = particle_cfg.particle_properties[particle]['pdg_code']
             particle_data = self._ps_data.loc[self._ps_data['particle type [pdg_code]'] == pdg_code].copy(deep=True)
             particle_data.reset_index(inplace=True, drop=True)
             # delete any non required columns
             for col_name in particle_data.columns:
-                if not col_name in cf.required_columns:
+                if not col_name in ps_cfg.required_columns:
                     particle_data.drop(columns=col_name, inplace=True)
             # create a new instance of _DataImportersBase based on particle_data
             particle_data_loader = DataLoaders.LoadPandasData(particle_data)
-            particle_instance = ParticlePhaseSpace(particle_data_loader)
+            particle_instance = PhaseSpace(particle_data_loader)
             particle_data_sets.append(particle_instance)
 
         if len(particle_data_sets) == 1:
@@ -99,10 +100,10 @@ class ParticlePhaseSpace:
         new_data = pd.concat([self._ps_data, other.ps_data])
 
         for col_name in new_data.columns:
-            if not col_name in cf.required_columns:
+            if not col_name in ps_cfg.required_columns:
                 new_data.drop(columns=col_name, inplace=True)
         new_data_loader = DataLoaders.LoadPandasData(new_data)
-        new_instance = ParticlePhaseSpace(new_data_loader)
+        new_instance = PhaseSpace(new_data_loader)
         return new_instance
 
     def __sub__(self, other):
@@ -114,10 +115,10 @@ class ParticlePhaseSpace:
             .drop('_merge', axis=1)\
             .reset_index(drop=True)
         for col_name in new_data.columns:
-            if not col_name in cf.required_columns:
+            if not col_name in ps_cfg.required_columns:
                 new_data.drop(columns=col_name, inplace=True)
         new_data_loader = DataLoaders.LoadPandasData(new_data)
-        new_instance = ParticlePhaseSpace(new_data_loader)
+        new_instance = PhaseSpace(new_data_loader)
         return new_instance
 
     @property
@@ -134,6 +135,7 @@ class ParticlePhaseSpace:
         self._ps_data = new_data_frame
         self.reset_phase_space()
         self._assert_unique_particle_ids()
+        self._check_ps_data_format()
         self._unique_particles = self._ps_data['particle type [pdg_code]'].unique()
 
     def _assert_unique_particle_ids(self):
@@ -211,11 +213,11 @@ class ParticlePhaseSpace:
 
     def _check_ps_data_format(self):
         """
-        check that the phase space remains consisten with what is mandated in __config
+        check that the phase space remains consistent with what is mandated in __config
         :return:
         """
 
-        all_allowed_columns = cf.required_columns + cf.allowed_columns
+        all_allowed_columns = ps_cfg.required_columns + ps_cfg.allowed_columns
         for col_name in self._ps_data.columns:
             if not col_name in all_allowed_columns:
                 raise AttributeError(f'non allowed column name {col_name} in ps_data')
@@ -270,7 +272,7 @@ class ParticlePhaseSpace:
             self.fill_kinetic_E()
         legend = []
         for particle in self._unique_particles:
-            legend.append(cf.particle_properties[particle]['name'])
+            legend.append(particle_cfg.particle_properties[particle]['name'])
             ind = self._ps_data['particle type [pdg_code]'] == particle
             Eplot = self._ps_data['Ek [MeV]'][ind]
             n, bins, patches = axs.hist(Eplot, bins=n_bins, weights=self._ps_data['weight'][ind], alpha=.5)
@@ -297,7 +299,7 @@ class ParticlePhaseSpace:
         fig.set_size_inches(15, 5)
         legend = []
         for particle in self._unique_particles:
-            legend.append(cf.particle_properties[particle]['name'])
+            legend.append(particle_cfg.particle_properties[particle]['name'])
             ind = self._ps_data['particle type [pdg_code]'] == particle
             x_plot = self._ps_data['x [mm]'][ind]
             y_plot = self._ps_data['y [mm]'][ind]
@@ -348,7 +350,7 @@ class ParticlePhaseSpace:
         for particle in self._unique_particles:
             ind = self._ps_data['particle type [pdg_code]'] == particle
             ps_data = self._ps_data.loc[ind]
-            axs_title = cf.particle_properties[particle]['name']
+            axs_title = particle_cfg.particle_properties[particle]['name']
             if beam_direction == 'x':
                 x_data = ps_data['y [mm]']
                 y_data = ps_data['z [mm]']
@@ -411,7 +413,7 @@ class ParticlePhaseSpace:
             ind = self._ps_data['particle type [pdg_code]'] == particle
             ps_data = self._ps_data.loc[ind]
             meanEnergy, medianEnergy, EnergySpreadSTD, EnergySpreadIQR = self._calculate_energy_statistics(ps_data)
-            print(f'    {np.count_nonzero(ind): d} {cf.particle_properties[particle]["name"]}'
+            print(f'    {np.count_nonzero(ind): d} {particle_cfg.particle_properties[particle]["name"]}'
                   f'\n        mean energy: {meanEnergy: 1.2f} MeV'
                   f'\n        median energy: {medianEnergy: 1.2f} MeV'
                   f'\n        Energy spread IQR: {EnergySpreadIQR: 1.2f} MeV'
@@ -464,6 +466,21 @@ class ParticlePhaseSpace:
         self._ps_data['gamma'] = 1 / np.sqrt(1 - np.square(self._ps_data['beta']))
         self._check_ps_data_format()
 
+    def fill_direction_cosines(self):
+        """
+        Calculate direction cosines, which are required for topas import:
+        U (direction cosine of momentum with respect to X)
+        V (direction cosine of momentum with respect to Y)
+        :return:
+        """
+        if not 'vx [m/s]' in self._ps_data.columns:
+            self.fill_velocity()
+        V = np.sqrt(self._ps_data['vx [m/s]'] ** 2 + self._ps_data['vy [m/s]'] ** 2 + self._ps_data['vz [m/s]'] ** 2)
+        self._ps_data['Direction Cosine X'] = self._ps_data['vx [m/s]'] / V
+        self._ps_data['Direction Cosine Y'] = self._ps_data['vy [m/s]'] / V
+        self._ps_data['Direction Cosine Z'] = self._ps_data['vz [m/s]'] / V
+        self._check_ps_data_format()
+
     def get_downsampled_phase_space(self, downsample_factor=10):
         """
         return a new phase space object which randomlt samples from the larger phase space.
@@ -475,10 +492,10 @@ class ParticlePhaseSpace:
         new_data = self._ps_data.sample(frac=1).reset_index(drop=True)  # this shuffles the data
         new_data = new_data.sample(frac=1/downsample_factor, ignore_index=True)
         for col_name in new_data.columns:
-            if not col_name in cf.required_columns:
+            if not col_name in ps_cfg.required_columns:
                 new_data.drop(columns=col_name, inplace=True)
         new_data_loader = DataLoaders.LoadPandasData(new_data)
-        new_instance = ParticlePhaseSpace(new_data_loader)
+        new_instance = PhaseSpace(new_data_loader)
         return new_instance
 
     def calculate_twiss_parameters(self, beam_direction='z'):
@@ -498,7 +515,7 @@ class ParticlePhaseSpace:
         else:
             raise NotImplementedError('beam direction must be "x", "y", or "z"')
         for particle in self._unique_particles:
-            particle_name = cf.particle_properties[particle]['name']
+            particle_name = particle_cfg.particle_properties[particle]['name']
             self.twiss_parameters[particle_name] = {}
             for calc_dir in direction_columns:
                 x2 = np.average(np.square(self._ps_data[calc_dir[0]]), weights=self._ps_data['weight'])
@@ -540,7 +557,7 @@ class ParticlePhaseSpace:
             print('                 TWISS PARAMETERS                  ')
             print('===================================================')
             for particle in self._unique_particles:
-                particle_name = cf.particle_properties[particle]['name']
+                particle_name = particle_cfg.particle_properties[particle]['name']
                 print(f'\n{particle_name}:')
                 data = pd.DataFrame(self.twiss_parameters[particle_name])
                 print(data)
@@ -578,10 +595,56 @@ class ParticlePhaseSpace:
         you have perfored some operation which may have invalidiated derived metrics
         """
         for col_name in self._ps_data.columns:
-            if not col_name in cf.required_columns:
+            if not col_name in ps_cfg.required_columns:
                 self._ps_data.drop(columns=col_name, inplace=True)
 
         self.twiss_parameters = {}
+
+
+    ###############################
+
+    def AssessDensityVersusR(self, Rvals=None):
+        """
+        Crude code to assess how many particles are in a certain radius
+
+        If ROI = None,  then all particles are assessed.
+        Otherwise, use ROI = [zval, radius] to only include particles that would be within radius r at distance z from
+        the read in location
+        """
+
+        if self.weight.max() > 1:
+            warnings.warn('The AssessDensityVersusR function has not been updated for weighted particles')
+        if Rvals is None:
+            # pick a default
+            Rvals = np.linspace(0, 2, 21)
+
+        r = np.sqrt(self.x ** 2 + self.y ** 2)
+        numparticles = self.x.shape[0]
+        rad_prop = []
+
+        if self.verbose:
+            if self.ROI == None:
+                print(f'Assessing particle density versus R for all particles')
+            else:
+                print(f'Assessing particle density versus R for particles projected to be within a radius of'
+                      f' {self.ROI[1]} at a distance of {self.ROI[0]}')
+
+        for rcheck in Rvals:
+            if self.ROI == None:
+                Rind = r <= rcheck
+                rad_prop.append(np.count_nonzero(Rind) * 100 / numparticles)
+            else:
+                # apply the additional ROI filter by projecting x,y to the relevant z position
+                Xproj = np.multiply(self.ROI[0], np.divide(self.px, self.pz)) + self.x
+                Yproj = np.multiply(self.ROI[0], np.divide(self.py, self.pz)) + self.y
+                Rproj = np.sqrt(Xproj ** 2 + Yproj ** 2)
+                ROIind = Rproj <= self.ROI[1]
+
+                Rind = r <= rcheck
+                ind = np.multiply(ROIind, Rind)
+                rad_prop.append(np.count_nonzero(ind) * 100 / numparticles)
+
+        self.rad_prop = rad_prop
 
     def PlotTransverseTraceSpace(self, beam_direction='z', plot_twiss_ellipse=True):
 
@@ -589,7 +652,7 @@ class ParticlePhaseSpace:
         fig, axs = plt.subplots(nrows=len(self._unique_particles), ncols=2, squeeze=False)
         row = 0
         for particle in self._unique_particles:
-            particle_name = cf.particle_properties[particle]['name']
+            particle_name = particle_cfg.particle_properties[particle]['name']
             ind = self._ps_data['particle type [pdg_code]'] == particle
             ps_data = self._ps_data.loc[ind]
             if beam_direction == 'z':
@@ -669,48 +732,3 @@ class ParticlePhaseSpace:
 
         plt.tight_layout()
         plt.show()
-
-    ###############################
-
-    def AssessDensityVersusR(self, Rvals=None):
-        """
-        Crude code to assess how many particles are in a certain radius
-
-        If ROI = None,  then all particles are assessed.
-        Otherwise, use ROI = [zval, radius] to only include particles that would be within radius r at distance z from
-        the read in location
-        """
-
-        if self.weight.max() > 1:
-            warnings.warn('The AssessDensityVersusR function has not been updated for weighted particles')
-        if Rvals is None:
-            # pick a default
-            Rvals = np.linspace(0, 2, 21)
-
-        r = np.sqrt(self.x ** 2 + self.y ** 2)
-        numparticles = self.x.shape[0]
-        rad_prop = []
-
-        if self.verbose:
-            if self.ROI == None:
-                print(f'Assessing particle density versus R for all particles')
-            else:
-                print(f'Assessing particle density versus R for particles projected to be within a radius of'
-                      f' {self.ROI[1]} at a distance of {self.ROI[0]}')
-
-        for rcheck in Rvals:
-            if self.ROI == None:
-                Rind = r <= rcheck
-                rad_prop.append(np.count_nonzero(Rind) * 100 / numparticles)
-            else:
-                # apply the additional ROI filter by projecting x,y to the relevant z position
-                Xproj = np.multiply(self.ROI[0], np.divide(self.px, self.pz)) + self.x
-                Yproj = np.multiply(self.ROI[0], np.divide(self.py, self.pz)) + self.y
-                Rproj = np.sqrt(Xproj ** 2 + Yproj ** 2)
-                ROIind = Rproj <= self.ROI[1]
-
-                Rind = r <= rcheck
-                ind = np.multiply(ROIind, Rind)
-                rad_prop.append(np.count_nonzero(ind) * 100 / numparticles)
-
-        self.rad_prop = rad_prop
