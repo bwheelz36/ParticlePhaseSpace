@@ -1,16 +1,43 @@
 import platform
+import numpy as np
 from ParticlePhaseSpace import PhaseSpace
 from pathlib import Path
-from abc import ABC, abstractproperty
+from abc import ABC, abstractmethod
+from ParticlePhaseSpace import __phase_space_config__ as ps_cfg
+from ParticlePhaseSpace import __particle_config__ as particle_cfg
+import warnings
 
 class _DataExporterBase(ABC):
 
-    def __init__(self, PhaseSpaceInstance: PhaseSpace):
+    def __init__(self, PhaseSpaceInstance: PhaseSpace, output_location: (str, Path), output_name: str):
 
+        if not isinstance(PhaseSpaceInstance, PhaseSpace):
+            raise TypeError(f'PhaseSpaceInstance must be an instance of ParticlePhaseSpace.PhaseSpace,'
+                            f'not {type(PhaseSpaceInstance)}')
         self._PS = PhaseSpaceInstance
-        self._required_columns = None
+        self._output_location = Path(output_location)
+        self._check_output_location_exists()
+        self._output_name = output_name
+        self._required_columns = []  # filled in _define_required_columns
+        self._define_required_columns()
+        self._check_required_columns_allowed()
+        self._fill_required_columns()
+        self._export_data()
+
+    def _check_output_location_exists(self):
+        if not self._output_location.is_dir():
+            raise FileNotFoundError(f'output_location should be an existing path;'
+                                    f'\n{self._output_location}\n does not exist')
 
     def _check_required_columns_allowed(self):
+        """
+        check that the columns that are required for data export are actually allowed
+        :return:
+        """
+        allowed_columns = ps_cfg.required_columns + ps_cfg.allowed_columns
+        for col in self._required_columns:
+            if not col in allowed_columns:
+                raise AttributeError(f'column: "{col}" is required for export, but is not an allowed column name.')
 
     def _fill_required_columns(self):
 
@@ -29,231 +56,149 @@ class _DataExporterBase(ABC):
                 else:
                     raise Exception(f'unable to fill required column {col}')
 
-
-
-
-
-def export_to_cst_pid(self, z_offset=None):
-    """
-    Generate a phase space which can be directly imported into CST
-    For a constant emission model: generate a .pid ascii file
-    Below is the example from CST:
-
-    % Use always SI units.
-    % The momentum (mom) is equivalent to beta* gamma.
-    %
-    % Columns: pos_x  pos_y  pos_z  mom_x  mom_y  mom_z  mass  charge  current
-
-    1.0e-3   4.0e-3  -1.0e-3   1.0   2.0   1.0   9.11e-31  -1.6e-19   1.0e-6
-    2.0e-3   4.0e-3   1.0e-3   1.0   2.0   1.0   9.11e-31  -1.6e-19   1.0e-6
-    3.0e-3   2.0e-3   1.0e-3   1.0   2.0   2.0   9.11e-31  -1.6e-19   1.0e-6
-    4.0e-3   4.0e-3   5.0e-3   1.0   2.0   1.0   9.11e-31  -1.6e-19   2.0e-6
-    """
-    warnings.warn('I havent tested this function for a very long time, so please verify that it works..')
-    # Split the original file and extract the file name
-    NparticlesToWrite = np.size(self.x)  # use this to create a smaller PID flie for easier trouble shooting
-    WritefilePath = self.OutputDataLoc + '/' + self.OutputFile + '.pid'
-    # generate other information required by pid file:
-
-    Charge = self.weight * constants.elementary_charge * -1
-    Mass = self.weight * constants.electron_mass
-    total_weight = self.weight.sum()
-    relative_weight = self.weight / total_weight
-    Current = self.TotalCurrent * relative_weight  # very crude approximation!!
-    x = self.x * 1e-3  ## convert to m
-    y = self.y * 1e-3
-    if z_offset == None:
-        # z_offset is an optional parameter to change the starting location of the particle beam (which
-        # assume propogates in the Z direction)
-        self.zOut = self.z * 1e-3
-    else:
-        self.zOut = (self.z + z_offset) * 1e-3
-    px = self.px / self._me_MeV
-    py = self.py / self._me_MeV
-    pz = self.pz / self._me_MeV
-    # generate PID file
-    Data = [x[0:NparticlesToWrite], y[0:NparticlesToWrite], self.zOut[0:NparticlesToWrite],
-            px[0:NparticlesToWrite], py[0:NparticlesToWrite], pz[0:NparticlesToWrite],
-            Mass[0:NparticlesToWrite], Charge[0:NparticlesToWrite], Current[0:NparticlesToWrite]]
-
-    Data = np.transpose(Data)
-    np.savetxt(WritefilePath, Data, fmt='%01.3e', delimiter='      ')
-
-def export_to_cst_pit(self, z_offset=None):
-    """
-    % Use always SI units.
-    % The momentum (mom) is equivalent to beta * gamma.
-    % The data need not to be chronological ordered.
-    %
-    % Columns: pos_x  pos_y  pos_z  mom_x  mom_y  mom_z  mass  charge  charge(macro)  time
-
-    1.0e-3   4.0e-3  -1.0e-3   1.0   2.0   1.0   9.11e-31  -1.6e-19   -2.6e-15   0e-6
-    2.0e-3   4.0e-3   1.0e-3   1.0   2.0   1.0   9.11e-31  -1.6e-19   -3.9e-15   1e-6
-    3.0e-3   2.0e-3   1.0e-3   1.0   2.0   2.0   9.11e-31  -1.6e-19   -3.9e-15   2e-6
-    4.0e-3   4.0e-3   5.0e-3   1.0   2.0   1.0   9.11e-31  -1.6e-19   -2.6e-15   3e-6
-    """
-
-    warnings.warn('I havent tested this function for a very long time, so please verify that it works..')
-    # Split the original file and extract the file name
-    NparticlesToWrite = np.size(self.x)  # use this to create a smaller PID flie for easier trouble shooting
-    WritefilePath = self.OutputDataLoc + '/' + self.OutputFile + '.pid'
-    # generate other information required by pid file:
-
-    Charge = self.weight * constants.elementary_charge * -1
-    Mass = self.weight * constants.electron_mass
-    Weight = self.weight
-    x = self.x * 1e-3  ## convert to m
-    y = self.y * 1e-3
-    if z_offset == None:
-        # z_offset is an optional parameter to change the starting location of the particle beam (which
-        # assume propogates in the Z direction)
-        self.zOut = self.z * 1e-3
-    else:
-        self.zOut = (self.z + z_offset) * 1e-3
-    px = self.px / self._me_MeV
-    py = self.py / self._me_MeV
-    pz = self.pz / self._me_MeV
-    time = np.zeros(self.x.shape)
-
-    # generate PID file
-    Data = [x[0:NparticlesToWrite], y[0:NparticlesToWrite], self.zOut[0:NparticlesToWrite],
-            px[0:NparticlesToWrite], py[0:NparticlesToWrite], pz[0:NparticlesToWrite],
-            Mass[0:NparticlesToWrite], Charge[0:NparticlesToWrite], Weight[0:NparticlesToWrite],
-            time[0:NparticlesToWrite]]
-
-    Data = np.transpose(Data)
-    np.savetxt(WritefilePath, Data, fmt='%01.3e', delimiter='      ')
-
-def export_to_comsol(self, z_offset=None):
-    """
-    Generate a phase space which can be directly imported into CST
-    For a constant emission model: generate a .pid ascii file
-    Below is the example from CST:
-
-    % Use always SI units.
-    % The momentum (mom) is equivalent to beta* gamma.
-    %
-    % Columns: pos_x  pos_y  pos_z  mom_x  mom_y  mom_z  mass  charge  current
-
-    1.0e-3   4.0e-3  -1.0e-3   1.0   2.0   1.0   9.11e-31  -1.6e-19   1.0e-6
-    2.0e-3   4.0e-3   1.0e-3   1.0   2.0   1.0   9.11e-31  -1.6e-19   1.0e-6
-    3.0e-3   2.0e-3   1.0e-3   1.0   2.0   2.0   9.11e-31  -1.6e-19   1.0e-6
-    4.0e-3   4.0e-3   5.0e-3   1.0   2.0   1.0   9.11e-31  -1.6e-19   2.0e-6
-    """
-    # Split the original file and extract the file name
-    NparticlesToWrite = np.size(self.x)  # use this to create a smaller PID flie for easier trouble shooting
-    WritefilePath = self.OutputDataLoc + '/' + self.OutputFile + '.txt'
-    # generate other information required by pid file:
-
-    x = self.x * 1e-3  ## convert to m
-    y = self.y * 1e-3
-    if z_offset == None:
-        # z_offset is an optional parameter to change the starting location of the particle beam (which
-        # assume propogates in the Z direction)
-        self.zOut = self.z
-    else:
-        self.zOut = (self.z + z_offset)
-    # generate PID file
-    Data = [x, y, self.zOut, self.vx * self._c, self.vy * self._c, self.vz * self._c]
-
-    Data = np.transpose(Data)
-    np.savetxt(WritefilePath, Data, fmt='%01.12e', delimiter='      ')
-
-def export_to_topas(PhaseSpaceInstance: PhaseSpace, output_location: (str, Path), output_name: str):
-    """
-    Convert Phase space into format appropriate for topas.
-    You can read more about the required format
-    `Here <https://topas.readthedocs.io/en/latest/parameters/scoring/phasespace.html>`_
-
-    :param z_offset: number to add to the Z position of each particle. To move it upstream, z_offset should be negative.
-     No check is made for units, the user has to figure this out themselves! If z_offset=None, the read in X value
-     will be used.
-    :type z_offset: None or double
-    """
-
-
-    if 'windows' in platform.system().lower():
-        raise Exception('to generate a valid file, please use a unix-based system')
-    print('generating topas data file')
-    assert isinstance(PhaseSpaceInstance, PhaseSpace)
-    required_columns = ['x [mm]', 'y [mm]', 'z [mm]', 'DirCosX', 'DirCosY', 'Ek [MeV]', 'weight', 'particle id']
-
-
-
-
-    if not output_name[-5:] == 'phsp':
+    @abstractmethod
+    def _define_required_columns(self):
+        """
+        user should fill in the required columns here
+        :return:
+        """
         pass
 
-    WritefilePath = Path(output_location) / output_name
+    @abstractmethod
+    def _export_data(self):
+        """
+        this is the method which should actually perform the data export
+        :return:
+        """
+        pass
 
-    # write the header file:
-    self.__GenerateTopasHeaderFile()
 
-    # generare the required data and put it all in an ndrray
-    self.__ConvertMomentumToVelocity()
-    DirCosX, DirCosY = self.__CalculateDirectionCosines()
-    Weight = self.weight  # i think weight is scaled relative to particle type
-    # Weight = np.ones(len(self.x))  # i think weight is scaled relative to particle type
-    ParticleType = 11 * np.ones(len(self.x))  # 11 is the particle ID for electrons
-    ThirdDirectionFlag = np.zeros(len(self.x))  # not really sure what this means.
-    FirstParticleFlag = np.ones(
-        len(self.x))  # don't actually know what this does but as we import a pure phase space
-    if z_offset == None:
-        # z_offset is an optional parameter to change the starting location of the particle beam (which
-        # assume propogates in the Z direction)
-        self.zOut = self.z
-    else:
-        self.zOut = self.z + z_offset
-
-    # Nb: topas seems to require units of cm
-    Data = [self.x * 0.1, self.y * 0.1, self.zOut * 0.1, DirCosX, DirCosY, self.E, Weight,
-            ParticleType, ThirdDirectionFlag, FirstParticleFlag]
-
-    # write the data to a text file
-    Data = np.transpose(Data)
-    FormatSpec = ['%11.5f', '%11.5f', '%11.5f', '%11.5f', '%11.5f', '%11.5f', '%11.5f', '%2d', '%2d', '%2d']
-    np.savetxt(WritefilePath, Data, fmt=FormatSpec, delimiter='      ')
-    print('success')
-
-def _GenerateTopasHeaderFile(self):
+class Topas_Exporter(_DataExporterBase):
     """
-    Generate the header file required for a topas phase space source.
-    This is only intended to be used from within the class (private method)
+    output the phase space to topas ascii format:
+    https://topas.readthedocs.io/en/latest/parameters/source/phasespace.html
+
+    Note:
+        - we do not handle any time features
+        - every particle in the phase space is flagged as being a new history.
     """
 
-    WritefilePath = self.OutputDataLoc + '/' + self.OutputFile + '_tpsImport.header'
+    def _define_required_columns(self):
+        self._required_columns = ['x [mm]', 'y [mm]', 'z [mm]', 'Direction Cosine X', 'Direction Cosine Y',
+                                  'Direction Cosine Z', 'Ek [MeV]', 'weight', 'particle id']
 
-    ParticlesInPhaseSpace = str(len(self.x))
-    TopasHeader = []
+    def _export_data(self):
+        """
+        Convert Phase space into format appropriate for topas.
 
-    TopasHeader.append('TOPAS ASCII Phase Space\n')
-    TopasHeader.append('Number of Original Histories: ' + ParticlesInPhaseSpace)
-    TopasHeader.append('Number of Original Histories that Reached Phase Space: ' + ParticlesInPhaseSpace)
-    TopasHeader.append('Number of Scored Particles: ' + ParticlesInPhaseSpace + '\n')
-    TopasHeader.append('Columns of data are as follows:')
-    TopasHeader.append(' 1: Position X [cm]')
-    TopasHeader.append(' 2: Position Y [cm]')
-    TopasHeader.append(' 3: Position Z [cm]')
-    TopasHeader.append(' 4: Direction Cosine X')
-    TopasHeader.append(' 5: Direction Cosine Y')
-    TopasHeader.append(' 6: Energy [MeV]')
-    TopasHeader.append(' 7: Weight')
-    TopasHeader.append(' 8: Particle Type (in PDG Format)')
-    TopasHeader.append(' 9: Flag to tell if Third Direction Cosine is Negative (1 means true)')
-    TopasHeader.append(' 10: Flag to tell if this is the First Scored Particle from this History (1 means true)\n')
-    TopasHeader.append('Number of e-: ' + ParticlesInPhaseSpace + '\n')
-    TopasHeader.append('Minimum Kinetic Energy of e-: ' + str(min(self.E)) + ' MeV\n')
-    TopasHeader.append('Maximum Kinetic Energy of e-: ' + str(max(self.E)) + ' MeV')
+        You can read more about the required format
+        `Here <https://topas.readthedocs.io/en/latest/parameters/scoring/phasespace.html>`_
+        """
 
-    # open file:
-    try:
+        if 'windows' in platform.system().lower():
+            raise Exception('to generate a valid file, please use a unix-based system')
+        print('generating topas data file')
+
+        self._generate_topas_header_file()
+        # make sure output is in correct format
+        if not Path(self._output_name).suffix == '.phsp':
+            _output_name = str(self._output_name) + '.phsp'
+        else:
+            _output_name = self._output_name
+        WritefilePath = Path(self._output_location) / _output_name
+
+        first_particle_flag = np.ones(self._PS.ps_data['x [mm]'].shape[0])
+        third_direction_flag = np.int8(self._PS.ps_data['Direction Cosine Z'] < 0)
+
+        # Nb: topas requires units of cm
+        Data = [self._PS.ps_data['x [mm]'].to_numpy() * 0.1, self._PS.ps_data['y [mm]'].to_numpy() * 0.1,
+                self._PS.ps_data['z [mm]'].to_numpy() * 0.1,
+                self._PS.ps_data['Direction Cosine X'].to_numpy(), self._PS.ps_data['Direction Cosine Y'].to_numpy(),
+                self._PS.ps_data['Ek [MeV]'].to_numpy(), self._PS.ps_data['weight'].to_numpy(),
+                self._PS.ps_data['particle type [pdg_code]'].to_numpy(),
+                third_direction_flag, first_particle_flag]
+
+        # write the data to a text file
+        Data = np.transpose(Data)
+        FormatSpec = ['%11.5f', '%11.5f', '%11.5f', '%11.5f', '%11.5f', '%11.5f', '%11.5f', '%2d', '%2d', '%2d']
+        np.savetxt(WritefilePath, Data, fmt=FormatSpec, delimiter='      ')
+        print('success')
+
+    def _generate_topas_header_file(self):
+        """
+        Generate the header file required for a topas phase space source.
+        This is only intended to be used from within the class (private method)
+        """
+
+        if Path(self._output_name).suffix == '.phsp':
+            _output_name = Path(self._output_name).parts[0]
+        else:
+            _output_name = self._output_name
+        _output_name = str(_output_name) + '.header'
+        WritefilePath = self._output_location / _output_name
+
+        ParticlesInPhaseSpace = str(len(self._PS.ps_data['x [mm]'] ))
+        TopasHeader = []
+
+        TopasHeader.append('TOPAS ASCII Phase Space\n')
+        TopasHeader.append('Number of Original Histories: ' + ParticlesInPhaseSpace)
+        TopasHeader.append('Number of Original Histories that Reached Phase Space: ' + ParticlesInPhaseSpace)
+        TopasHeader.append('Number of Scored Particles: ' + ParticlesInPhaseSpace + '\n')
+        TopasHeader.append('Columns of data are as follows:')
+        TopasHeader.append(' 1: Position X [cm]')
+        TopasHeader.append(' 2: Position Y [cm]')
+        TopasHeader.append(' 3: Position Z [cm]')
+        TopasHeader.append(' 4: Direction Cosine X')
+        TopasHeader.append(' 5: Direction Cosine Y')
+        TopasHeader.append(' 6: Energy [MeV]')
+        TopasHeader.append(' 7: Weight')
+        TopasHeader.append(' 8: Particle Type (in PDG Format)')
+        TopasHeader.append(' 9: Flag to tell if Third Direction Cosine is Negative (1 means true)')
+        TopasHeader.append(' 10: Flag to tell if this is the First Scored Particle from this History (1 means true)\n')
+        particle_number_string = []
+        minimum_Ek_string = []
+        maximum_Ek_string = []
+        for particle in self._PS._unique_particles:
+            if particle_cfg.particle_properties[particle]['name'] == 'electrons':
+                electron_PS = self._PS('electrons')
+                electron_PS.fill_kinetic_E()
+                particle_number_string.append('Number of e-: ' + str(len(electron_PS.ps_data['x [mm]'])) )
+                minimum_Ek_string.append('Minimum Kinetic Energy of e-: ' + str(min(electron_PS.ps_data['Ek [MeV]'])) + ' MeV')
+                maximum_Ek_string.append('Maximum Kinetic Energy of e-: ' + str(max(electron_PS.ps_data['Ek [MeV]'])) + ' MeV')
+            elif particle_cfg.particle_properties[particle]['name'] == 'positrons':
+                positron_PS = self._PS('positrons')
+                positron_PS.fill_kinetic_E()
+                particle_number_string.append('Number of e+: ' + str(len(positron_PS.ps_data['x [mm]'])))
+                minimum_Ek_string.append('Minimum Kinetic Energy of e+: ' + str(min(positron_PS.ps_data['Ek [MeV]'])) + ' MeV')
+                maximum_Ek_string.append('Maximum Kinetic Energy of e+: ' + str(max(positron_PS.ps_data['Ek [MeV]'])) + ' MeV')
+            elif particle_cfg.particle_properties[particle]['name'] == 'gammas':
+                gamma_PS = self._PS('gammas')
+                gamma_PS.fill_kinetic_E()
+                particle_number_string.append('Number of gamma: ' + str(len(gamma_PS.ps_data['x [mm]'])))
+                minimum_Ek_string.append('Minimum Kinetic Energy of gamma: ' + str(min(gamma_PS.ps_data['Ek [MeV]'])) + ' MeV')
+                maximum_Ek_string.append('Maximum Kinetic Energy of gamma: ' + str(max(gamma_PS.ps_data['Ek [MeV]'])) + ' MeV')
+            else:
+                raise NotImplementedError(f'cannot currently export particle type {particle_cfg.particle_properties[particle]["name"]}.'
+                                          f'\nneed to update header writer')
+        for line in particle_number_string:
+            TopasHeader.append(line)
+        TopasHeader.append('')
+        for line in minimum_Ek_string:
+            TopasHeader.append(line)
+        TopasHeader.append('')
+        for line in maximum_Ek_string:
+            TopasHeader.append(line)
+
+        # open file:
         f = open(WritefilePath, 'w')
-    except FileNotFoundError:
-        sys.exit('couldnt open file for writing')
+        # Write file line by line:
+        for Line in TopasHeader:
+            f.write(Line)
+            f.write('\n')
+        f.close()
 
-    # Write file line by line:
-    for Line in TopasHeader:
-        f.write(Line)
-        f.write('\n')
 
-    f.close
+
+
+
+

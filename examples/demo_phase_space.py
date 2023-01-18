@@ -1,5 +1,6 @@
 from ParticlePhaseSpace import DataLoaders
 from ParticlePhaseSpace import PhaseSpace
+from ParticlePhaseSpace import DataExporters
 from pathlib import Path
 import matplotlib as mpl
 
@@ -10,8 +11,10 @@ test_data_loc = Path(r'coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phs
 ps_data = DataLoaders.LoadTopasData(test_data_loc)
 PS = PhaseSpace(ps_data)
 
-from ParticlePhaseSpace.DataExporters import export_to_topas
+DataExporters.Topas_Exporter(PS, output_location=Path('.').absolute(), output_name='test')
 
+ps_data = DataLoaders.LoadTopasData(Path(r'test.phsp'))
+PS2 = PhaseSpace(ps_data)
 
 
 

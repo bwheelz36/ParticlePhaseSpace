@@ -473,12 +473,11 @@ class PhaseSpace:
         V (direction cosine of momentum with respect to Y)
         :return:
         """
-        if not 'vx [m/s]' in self._ps_data.columns:
-            self.fill_velocity()
-        V = np.sqrt(self._ps_data['vx [m/s]'] ** 2 + self._ps_data['vy [m/s]'] ** 2 + self._ps_data['vz [m/s]'] ** 2)
-        self._ps_data['Direction Cosine X'] = self._ps_data['vx [m/s]'] / V
-        self._ps_data['Direction Cosine Y'] = self._ps_data['vy [m/s]'] / V
-        self._ps_data['Direction Cosine Z'] = self._ps_data['vz [m/s]'] / V
+
+        V = np.sqrt(self._ps_data['px [MeV/c]'] ** 2 + self._ps_data['py [MeV/c]'] ** 2 + self._ps_data['pz [MeV/c]'] ** 2)
+        self._ps_data['Direction Cosine X'] = self._ps_data['px [MeV/c]'] / V
+        self._ps_data['Direction Cosine Y'] = self._ps_data['py [MeV/c]'] / V
+        self._ps_data['Direction Cosine Z'] = self._ps_data['pz [MeV/c]'] / V
         self._check_ps_data_format()
 
     def get_downsampled_phase_space(self, downsample_factor=10):
