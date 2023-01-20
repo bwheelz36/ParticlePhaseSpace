@@ -502,7 +502,7 @@ class PhaseSpace:
         """
         if not 'Ek [MeV]' in self._ps_data.columns:
             self.fill_kinetic_E()
-        print(f'total number of particles in phase space: {self._ps_data.shape[0]}')
+        print(f'total number of particles in phase space: {len(self): d}')
 
         print(f'number of unique particle species: {len(self._unique_particles): d}')
         for particle in self._unique_particles:
@@ -513,8 +513,8 @@ class PhaseSpace:
                   f'\n        mean energy: {meanEnergy: 1.2f} MeV'
                   f'\n        median energy: {medianEnergy: 1.2f} MeV'
                   f'\n        Energy spread IQR: {EnergySpreadIQR: 1.2f} MeV'
-                  f'\n        min energy {self._ps_data.loc[ind]["Ek [MeV]"].min()} MeV'
-                  f'\n        max energy {self._ps_data.loc[ind]["Ek [MeV]"].max()} MeV')
+                  f'\n        min energy {self._ps_data.loc[ind]["Ek [MeV]"].min(): 1.2f} MeV'
+                  f'\n        max energy {self._ps_data.loc[ind]["Ek [MeV]"].max(): 1.2f} MeV')
 
     def fill_kinetic_E(self):
         """
