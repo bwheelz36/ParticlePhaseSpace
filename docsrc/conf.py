@@ -40,7 +40,8 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.githubpages',
     'myst_parser',
-    'nbsphinx']
+    'nbsphinx',
+    'IPython.sphinxext.ipython_console_highlighting']
 
 source_suffix = {
     '.rst': 'restructuredtext',
