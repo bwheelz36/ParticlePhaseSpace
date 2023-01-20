@@ -229,27 +229,25 @@
 <dt class="sig sig-object py" id="ParticlePhaseSpace.DataLoaders.LoadPandasData">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ParticlePhaseSpace.DataLoaders.</span></span><span class="sig-name descname"><span class="pre">LoadPandasData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace.DataLoaders.LoadPandasData" title="Permalink to this definition">¶</a></dt>
 <dd><p>loads in pandas data of the format. This is used internally by ParticlePhaseSpace, and can also be used
-externally in cases where it is not desired to write a dedicated new data loader</p>
-<blockquote>
-<div><p>from ParticlePhaseSpace import DataLoaders
-import pandas as pd</p>
-<dl class="simple">
-<dt>demo_data = pd.DataFrame(</dt><dd><dl class="simple">
-<dt>{‘x [mm]’: [0, 1, 2],</dt><dd><p>‘y [mm]’: [0, 1, 2],
-‘z [mm]’: [0, 1, 2],
-‘px [MeV/c]’: [0, 1, 2],
-‘py [MeV/c]’: [0, 1, 2],
-‘pz [MeV/c]’: [0, 1, 2],
-‘particle type [pdg_code]’: [0, 1, 2],
-‘weight’: [0, 1, 2],
-‘particle id’: [0, 1, 2],
-‘time [ps]’: [0, 1, 2]})</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p>data = DataLoaders.LoadPandasData(demo_data)</p>
-</div></blockquote>
+externally in cases where it is not desired to write a dedicated new data loader:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ParticlePhaseSpace</span> <span class="kn">import</span> <span class="n">DataLoaders</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="n">demo_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+            <span class="p">{</span><span class="s1">&#39;x [mm]&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+             <span class="s1">&#39;y [mm]&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+             <span class="s1">&#39;z [mm]&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+             <span class="s1">&#39;px [MeV/c]&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+             <span class="s1">&#39;py [MeV/c]&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+             <span class="s1">&#39;pz [MeV/c]&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+             <span class="s1">&#39;particle type [pdg_code]&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+             <span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+             <span class="s1">&#39;particle id&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+             <span class="s1">&#39;time [ps]&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]})</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">DataLoaders</span><span class="o">.</span><span class="n">LoadPandasData</span><span class="p">(</span><span class="n">demo_data</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py class">
