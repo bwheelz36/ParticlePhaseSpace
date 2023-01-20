@@ -26,6 +26,6 @@ jobs:
         pip install -r dev_requirements
     - name: Test with pytest
       run: |
-          pytest --cov-report xml --cov=MyPackage/
+          pytest --cov-report xml --cov=ParticlePhaseSpace/
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
