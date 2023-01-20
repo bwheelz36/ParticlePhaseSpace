@@ -8,7 +8,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Import data &mdash; Packaging Demo  documentation</title>
+  <title>Basic Example &mdash; Particle Phase Space  documentation</title>
   
 
   
@@ -62,7 +62,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> Packaging Demo
+            <a href="index.html" class="icon icon-home"> Particle Phase Space
           
 
           
@@ -96,7 +96,8 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="examples.html">Examples</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Import data</a><ul>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Basic Example</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Data-import">Data import</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Basic-analytics">Basic analytics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Seperating,-adding,-and-subtracting-phase-space-objects">Seperating, adding, and subtracting phase space objects</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Twiss-parameters">Twiss parameters</a></li>
@@ -108,6 +109,8 @@
 <li class="toctree-l2"><a class="reference internal" href="new_data_exporter.html">Writing a new data exporter</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="phase_space_format.html">Phase Space Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="supported_particles.html">Supported particles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="code_docs.html">Code Documentation</a></li>
 </ul>
 
@@ -124,7 +127,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">Packaging Demo</a>
+          <a href="index.html">Particle Phase Space</a>
         
       </nav>
 
@@ -159,7 +162,7 @@
         
           <li><a href="examples.html">Examples</a> &raquo;</li>
         
-      <li>Import data</li>
+      <li>Basic Example</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -457,16 +460,18 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
-<section id="Import-data">
-<h1>Import data<a class="headerlink" href="#Import-data" title="Permalink to this heading">¶</a></h1>
-<p>to import data, we use an instance of the DataLoaders class. In this example, we will work with topas data. For a list of all currently available data importers, see <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/code_docs.html#module-ParticlePhaseSpace.DataLoaders">here</a>; for instructions on writing new data importers see <a href="#id1"><span class="problematic" id="id2">`here &lt;&gt;`__</span></a></p>
+<section id="Basic-Example">
+<h1>Basic Example<a class="headerlink" href="#Basic-Example" title="Permalink to this heading">¶</a></h1>
+<section id="Data-import">
+<h2>Data import<a class="headerlink" href="#Data-import" title="Permalink to this heading">¶</a></h2>
+<p>to import data, we use an instance of the DataLoaders class. In this example, we will work with topas data. For a list of all currently available data importers, see <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/code_docs.html#module-ParticlePhaseSpace.DataLoaders">here</a>; for instructions on writing new data importers see <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/new_data_loader.html">here</a></p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">import</span> <span class="nn">sys</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;../&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;../&#39;</span><span class="p">)</span>  <span class="c1"># not necessary when the library is installed</span>
 <span class="kn">from</span> <span class="nn">ParticlePhaseSpace</span> <span class="kn">import</span> <span class="n">DataLoaders</span>
 <span class="kn">from</span> <span class="nn">ParticlePhaseSpace</span> <span class="kn">import</span> <span class="n">PhaseSpace</span>
 
@@ -484,6 +489,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
+</section>
 <section id="Basic-analytics">
 <h2>Basic analytics<a class="headerlink" href="#Basic-analytics" title="Permalink to this heading">¶</a></h2>
 <p>Once we have an instance of ParticlePhaseSpace, we can perform some analysis.</p>
@@ -491,7 +497,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">report</span><span class="p">()</span>  <span class="c1"># prints a summary of the data</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">report</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -500,26 +506,26 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-total number of particles in phase space: 311489
+total number of particles in phase space:  311489
 number of unique particle species:  3
      308280 gammas
         mean energy:  1.91 MeV
         median energy:  1.20 MeV
         Energy spread IQR:  2.03 MeV
-        min energy 0.007973426952958107 MeV
-        max energy 10.35245418548584 MeV
+        min energy  0.01 MeV
+        max energy  10.35 MeV
      2853 electrons
         mean energy:  3.16 MeV
         median energy:  3.39 MeV
         Energy spread IQR:  2.95 MeV
-        min energy 0.022923989221453667 MeV
-        max energy 9.435824394226074 MeV
+        min energy  0.02 MeV
+        max energy  9.44 MeV
      356 positrons
         mean energy:  2.66 MeV
         median energy:  2.39 MeV
         Energy spread IQR:  2.39 MeV
-        min energy 0.07927867770195007 MeV
-        max energy 8.458529472351074 MeV
+        min energy  0.08 MeV
+        max energy  8.46 MeV
 </pre></div></div>
 </div>
 <p>You can see that this phase space consists of three different particle species. We can also generate plots for energy, and particle positions:</p>
@@ -557,7 +563,7 @@ number of unique particle species:  3
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">plot_particle_positions</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">plot_particle_positions</span><span class="p">(</span><span class="n">beam_direction</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -568,7 +574,7 @@ number of unique particle species:  3
 <img alt="_images/basic_example_9_0.png" src="_images/basic_example_9_0.png" />
 </div>
 </div>
-<p>Note that in the plot above, particles with different weights are plotted with different colors. You can also produce a weighted scatterplot by setting <code class="docutils literal notranslate"><span class="pre">weight_position_plot=True</span></code> however this is very slow with large datasets.</p>
+<p>Note that in the plot above, particles with different weights are plotted with different colors. You can also produce a weighted scatterplot by setting <code class="docutils literal notranslate"><span class="pre">weight_position_plot=True</span></code> however this is very slow with large datasets. An example of this type of plot is <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/new_data_loader.html">here</a></p>
 </section>
 <section id="Seperating,-adding,-and-subtracting-phase-space-objects">
 <h2>Seperating, adding, and subtracting phase space objects<a class="headerlink" href="#Seperating,-adding,-and-subtracting-phase-space-objects" title="Permalink to this heading">¶</a></h2>
@@ -713,7 +719,8 @@ the required columns. Following this, you can use the various <code class="docut
 </section>
 <section id="Exporting-the-data">
 <h2>Exporting the data<a class="headerlink" href="#Exporting-the-data" title="Permalink to this heading">¶</a></h2>
-<p>Similarly to the data import stage we use an instance of <code class="docutils literal notranslate"><span class="pre">ParticlePhaseSpace.ataLoaders</span></code> to export the data. You can see the currently available data exporters <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/code_docs.html#module-ParticlePhaseSpace.DataExporters">here</a>, and you see a demonstration of writing a new data exporter <a href="#id1"><span class="problematic" id="id3">`here &lt;&gt;`__</span></a>. At the time of writing, I had only written the topas exporter, so again this is what I will use in this example:</p>
+<p>Similarly to the data import stage we use an instance of <code class="docutils literal notranslate"><span class="pre">ParticlePhaseSpace.ataLoaders</span></code> to export the data. You can see the currently available data exporters <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/code_docs.html#module-ParticlePhaseSpace.DataExporters">here</a>, and you see a demonstration of writing a new data exporter <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/new_data_exporter.html">here</a>. At the time of writing, I had only written the topas exporter, so again this is
+what I will use in this example:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
@@ -739,16 +746,8 @@ success
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;ParticlePhaseSpace.DataExporters.Topas_Exporter at 0x7f556ebcefd0&gt;
+&lt;ParticlePhaseSpace.DataExporters.Topas_Exporter at 0x7f9aab4ef670&gt;
 </pre></div></div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
 </div>
 </section>
 </section>

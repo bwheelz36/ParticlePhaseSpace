@@ -11,6 +11,8 @@ Contents
    :caption: Contents:
 
    /examples
+   /phase_space_format
+   /supported_particles
    /code_docs
 
 Indices and tables

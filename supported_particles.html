@@ -8,7 +8,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Examples &mdash; Particle Phase Space  documentation</title>
+  <title>Supported particles &mdash; Particle Phase Space  documentation</title>
   
 
   
@@ -45,8 +45,8 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Basic Example" href="basic_example.html" />
-    <link rel="prev" title="ParticlePhaseSpace" href="index.html" /> 
+    <link rel="next" title="Code Documentation" href="code_docs.html" />
+    <link rel="prev" title="Phase Space Format" href="phase_space_format.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -93,14 +93,12 @@
             
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="basic_example.html">Basic Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="new_data_loader.html">Writing a new data loader</a></li>
-<li class="toctree-l2"><a class="reference internal" href="new_data_exporter.html">Writing a new data exporter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="phase_space_format.html">Phase Space Format</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Supported particles</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#adding-new-particles">Adding new particles</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="phase_space_format.html">Phase Space Format</a></li>
-<li class="toctree-l1"><a class="reference internal" href="supported_particles.html">Supported particles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="code_docs.html">Code Documentation</a></li>
 </ul>
 
@@ -150,13 +148,13 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Examples</li>
+      <li>Supported particles</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/examples.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/supported_particles.md.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -193,27 +191,67 @@
     text-align: unset;
 }
 </style>
-<section id="examples">
-<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Examples:</span></p>
+<section id="supported-particles">
+<h1>Supported particles<a class="headerlink" href="#supported-particles" title="Permalink to this heading">¶</a></h1>
+<p>The following particles are currently supported:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>particle name</p></th>
+<th class="head"><p>pdg_code</p></th>
+<th class="head"><p>rest_mass</p></th>
+<th class="head"><p>charge</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>electrons</p></td>
+<td><p>11</p></td>
+<td><p>0.511 MeV</p></td>
+<td><p>-1.602-19 C</p></td>
+</tr>
+<tr class="row-odd"><td><p>positrons</p></td>
+<td><p>-11</p></td>
+<td><p>0.511 MeV</p></td>
+<td><p>1.602-19 C</p></td>
+</tr>
+<tr class="row-even"><td><p>gammas</p></td>
+<td><p>22</p></td>
+<td><p>0 MeV</p></td>
+<td><p>0 C</p></td>
+</tr>
+<tr class="row-odd"><td><p>protons</p></td>
+<td><p>2212</p></td>
+<td><p>938.272 MeV</p></td>
+<td><p>1.602-19 C</p></td>
+</tr>
+<tr class="row-even"><td><p>neutrons</p></td>
+<td><p>2112</p></td>
+<td><p>939.565 MeV</p></td>
+<td><p>0 C</p></td>
+</tr>
+</tbody>
+</table>
+<section id="adding-new-particles">
+<h2>Adding new particles<a class="headerlink" href="#adding-new-particles" title="Permalink to this heading">¶</a></h2>
+<p>Adding new particles is simple:</p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="basic_example.html">Basic Example</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="basic_example.html#Data-import">Data import</a></li>
-<li class="toctree-l2"><a class="reference internal" href="basic_example.html#Basic-analytics">Basic analytics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="basic_example.html#Seperating,-adding,-and-subtracting-phase-space-objects">Seperating, adding, and subtracting phase space objects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="basic_example.html#Twiss-parameters">Twiss parameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="basic_example.html#Manipulating-data-in-the-phase-space">Manipulating data in the phase space</a></li>
-<li class="toctree-l2"><a class="reference internal" href="basic_example.html#Exporting-the-data">Exporting the data</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="new_data_loader.html">Writing a new data loader</a></li>
-<li class="toctree-l1"><a class="reference internal" href="new_data_exporter.html">Writing a new data exporter</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="new_data_exporter.html#Testing-the-data-export">Testing the data export</a></li>
-</ul>
-</li>
-</ul>
+<li><p>update the <code class="docutils literal notranslate"><span class="pre">particle_properties</span></code> dictionary in <code class="docutils literal notranslate"><span class="pre">ParticlePhaseSpace.__particle_config__.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">particle_properties</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;some_new_particle&#39;</span><span class="p">:</span>
+    	<span class="p">{</span><span class="s1">&#39;rest_mass&#39;</span><span class="p">:</span> <span class="n">rest_mass_in_MeV</span><span class="o">/</span><span class="n">C</span><span class="o">^</span><span class="mi">2</span><span class="p">,</span>
+         <span class="s1">&#39;charge&#39;</span><span class="p">:</span> <span class="n">charge_in_coulombs</span><span class="p">,</span>
+         <span class="s1">&#39;pdg_code&#39;</span><span class="p">:</span> <span class="n">pdg_code</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
 </div>
+</li>
+<li><p>Below the dictionary definition, add an alias for the particle. This enables various parts of the code to operate using either particle names or pdg_codes:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">particle_properties</span><span class="p">[</span><span class="n">pdg_code_new_particle</span><span class="p">]</span> <span class="o">=</span> <span class="n">particle_properties</span><span class="p">[</span><span class="s1">&#39;some_new_particle&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</li>
+<li><p>Update the documents above with the new particle so the tests pass</p></li>
+</ul>
+</section>
 </section>
 
 
@@ -222,8 +260,8 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="basic_example.html" class="btn btn-neutral float-right" title="Basic Example" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="index.html" class="btn btn-neutral float-left" title="ParticlePhaseSpace" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="code_docs.html" class="btn btn-neutral float-right" title="Code Documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="phase_space_format.html" class="btn btn-neutral float-left" title="Phase Space Format" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
