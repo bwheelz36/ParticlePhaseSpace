@@ -14,7 +14,7 @@ from ParticlePhaseSpace.DataLoaders import _DataLoadersBase
 from ParticlePhaseSpace import utilities as ps_util
 from ParticlePhaseSpace import DataLoaders
 
-class FigureSpecs:
+class _FigureSpecs:
     """
     Thought this might be the easiest way to ensure universal parameters accross all figures
     """
@@ -277,12 +277,12 @@ class PhaseSpace:
             Eplot = self._ps_data['Ek [MeV]'][ind]
             n, bins, patches = axs.hist(Eplot, bins=n_bins, weights=self._ps_data['weight'][ind], alpha=.5)
 
-        axs.set_xlabel('Energy [MeV]', fontsize=FigureSpecs.LabelFontSize)
-        axs.set_ylabel('N counts', fontsize=FigureSpecs.LabelFontSize)
+        axs.set_xlabel('Energy [MeV]', fontsize=_FigureSpecs.LabelFontSize)
+        axs.set_ylabel('N counts', fontsize=_FigureSpecs.LabelFontSize)
         if title:
-            axs.set_title(title, fontsize=FigureSpecs.TitleFontSize)
-        axs.tick_params(axis="y", labelsize=FigureSpecs.TickFontSize)
-        axs.tick_params(axis="x", labelsize=FigureSpecs.TickFontSize)
+            axs.set_title(title, fontsize=_FigureSpecs.TitleFontSize)
+        axs.tick_params(axis="y", labelsize=_FigureSpecs.TickFontSize)
+        axs.tick_params(axis="x", labelsize=_FigureSpecs.TickFontSize)
         axs.legend(legend)
         plt.tight_layout()
         plt.show()
@@ -390,9 +390,9 @@ class PhaseSpace:
             else:
                 axs[0, n_axs].scatter(x_data, y_data, s=1, c=self._ps_data['weight'][ind])
             axs[0, n_axs].set_aspect(1)
-            axs[0, n_axs].set_title(axs_title, fontsize=FigureSpecs.TitleFontSize)
-            axs[0, n_axs].set_xlabel(x_label, fontsize=FigureSpecs.LabelFontSize)
-            axs[0, n_axs].set_ylabel(y_label, fontsize=FigureSpecs.LabelFontSize)
+            axs[0, n_axs].set_title(axs_title, fontsize=_FigureSpecs.TitleFontSize)
+            axs[0, n_axs].set_xlabel(x_label, fontsize=_FigureSpecs.LabelFontSize)
+            axs[0, n_axs].set_ylabel(y_label, fontsize=_FigureSpecs.LabelFontSize)
             if xlim:
                 axs[0, n_axs].set_xlim(xlim)
             if ylim:
@@ -701,11 +701,7 @@ class PhaseSpace:
 
     def assess_density_versus_r(self, Rvals=None, verbose=True, beam_direction='z'):
         """
-        Crude code to assess how many particles are in a certain radius
-
-        If ROI = None,  then all particles are assessed.
-        Otherwise, use ROI = [zval, radius] to only include particles that would be within radius r at distance z from
-        the read in location
+        Assess how many particles are in a given radius
 
         :param Rvals: list of rvals to assess in mm, e.g. np.linspace(0, 2, 21)
         :param verbose: prints data to screen if True
@@ -720,6 +716,8 @@ class PhaseSpace:
         if Rvals is None:
             # pick a default
             Rvals = np.linspace(0, 2, 21)
+        if not isinstance(Rvals, (list, np.ndarray)):
+            Rvals = list(Rvals)
         if beam_direction == 'x':
             r = np.sqrt(self.ps_data['z [mm]']**2 + self.ps_data['y [mm]']**2)
         elif beam_direction == 'y':
