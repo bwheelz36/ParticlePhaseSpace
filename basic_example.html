@@ -464,14 +464,14 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>from pathlib import Path
-import sys
-sys.path.append(&#39;../&#39;)
-from ParticlePhaseSpace import DataLoaders
-from ParticlePhaseSpace import PhaseSpace
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;../&#39;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">ParticlePhaseSpace</span> <span class="kn">import</span> <span class="n">DataLoaders</span>
+<span class="kn">from</span> <span class="nn">ParticlePhaseSpace</span> <span class="kn">import</span> <span class="n">PhaseSpace</span>
 
-test_data_loc = Path(r&#39;../tests/test_data/coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp&#39;).absolute()
-ps_data = DataLoaders.LoadTopasData(test_data_loc)
+<span class="n">test_data_loc</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;../tests/test_data/coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span>
+<span class="n">ps_data</span> <span class="o">=</span> <span class="n">DataLoaders</span><span class="o">.</span><span class="n">LoadTopasData</span><span class="p">(</span><span class="n">test_data_loc</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -480,7 +480,7 @@ ps_data = DataLoaders.LoadTopasData(test_data_loc)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>PS = PhaseSpace(ps_data)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span> <span class="o">=</span> <span class="n">PhaseSpace</span><span class="p">(</span><span class="n">ps_data</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -491,7 +491,7 @@ ps_data = DataLoaders.LoadTopasData(test_data_loc)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>PS.report()  # prints a summary of the data
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">report</span><span class="p">()</span>  <span class="c1"># prints a summary of the data</span>
 </pre></div>
 </div>
 </div>
@@ -527,7 +527,7 @@ number of unique particle species:  3
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>PS.plot_energy_histogram()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">plot_energy_histogram</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -542,7 +542,7 @@ number of unique particle species:  3
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>PS.plot_position_histogram()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">plot_position_histogram</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -557,7 +557,7 @@ number of unique particle species:  3
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>PS.plot_particle_positions()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">plot_particle_positions</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -577,10 +577,10 @@ number of unique particle species:  3
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>electron_PS = PS(&#39;electrons&#39;)  # this generates a phase space with only the electrons
-# you can also use pfg codes:
-electron_PS = PS(11)  # this is the same
-electron_PS.plot_energy_histogram()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">electron_PS</span> <span class="o">=</span> <span class="n">PS</span><span class="p">(</span><span class="s1">&#39;electrons&#39;</span><span class="p">)</span>  <span class="c1"># this generates a phase space with only the electrons</span>
+<span class="c1"># you can also use pfg codes:</span>
+<span class="n">electron_PS</span> <span class="o">=</span> <span class="n">PS</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span>  <span class="c1"># this is the same</span>
+<span class="n">electron_PS</span><span class="o">.</span><span class="n">plot_energy_histogram</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -596,7 +596,7 @@ electron_PS.plot_energy_histogram()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>gamma_PS, positron_PS = PS([&#39;gammas&#39;, &#39;positrons&#39;])  # you can also pass a list
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gamma_PS</span><span class="p">,</span> <span class="n">positron_PS</span> <span class="o">=</span> <span class="n">PS</span><span class="p">([</span><span class="s1">&#39;gammas&#39;</span><span class="p">,</span> <span class="s1">&#39;positrons&#39;</span><span class="p">])</span>  <span class="c1"># you can also pass a list</span>
 </pre></div>
 </div>
 </div>
@@ -605,8 +605,8 @@ electron_PS.plot_energy_histogram()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>no_gamma_PS = PS - gamma_PS
-no_gamma_PS.plot_energy_histogram()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">no_gamma_PS</span> <span class="o">=</span> <span class="n">PS</span> <span class="o">-</span> <span class="n">gamma_PS</span>
+<span class="n">no_gamma_PS</span><span class="o">.</span><span class="n">plot_energy_histogram</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -622,8 +622,8 @@ no_gamma_PS.plot_energy_histogram()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>Original_PS = no_gamma_PS + gamma_PS
-Original_PS.plot_energy_histogram()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Original_PS</span> <span class="o">=</span> <span class="n">no_gamma_PS</span> <span class="o">+</span> <span class="n">gamma_PS</span>
+<span class="n">Original_PS</span><span class="o">.</span><span class="n">plot_energy_histogram</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -643,7 +643,7 @@ Original_PS.plot_energy_histogram()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>PS.print_twiss_parameters(beam_direction=&#39;z&#39;)  # calculate the RMS twiss parameters
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">print_twiss_parameters</span><span class="p">(</span><span class="n">beam_direction</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">)</span>  <span class="c1"># calculate the RMS twiss parameters</span>
 </pre></div>
 </div>
 </div>
@@ -682,7 +682,7 @@ gamma    0.161570  0.141655
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>PS.plot_transverse_trace_space()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">plot_transverse_trace_space</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -703,10 +703,10 @@ the required columns. Following this, you can use the various <code class="docut
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># zero the z coordinate
-PS.ps_data[&#39;z [mm]&#39;] = PS.ps_data[&#39;z [mm]&#39;] - PS.ps_data[&#39;z [mm]&#39;].mean()
-# double the pz momentum:
-PS.ps_data[&#39;pz [MeV/c]&#39;] = PS.ps_data[&#39;pz [MeV/c]&#39;] * 2
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># zero the z coordinate</span>
+<span class="n">PS</span><span class="o">.</span><span class="n">ps_data</span><span class="p">[</span><span class="s1">&#39;z [mm]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PS</span><span class="o">.</span><span class="n">ps_data</span><span class="p">[</span><span class="s1">&#39;z [mm]&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">PS</span><span class="o">.</span><span class="n">ps_data</span><span class="p">[</span><span class="s1">&#39;z [mm]&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="c1"># double the pz momentum:</span>
+<span class="n">PS</span><span class="o">.</span><span class="n">ps_data</span><span class="p">[</span><span class="s1">&#39;pz [MeV/c]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PS</span><span class="o">.</span><span class="n">ps_data</span><span class="p">[</span><span class="s1">&#39;pz [MeV/c]&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span>
 </pre></div>
 </div>
 </div>
@@ -718,9 +718,9 @@ PS.ps_data[&#39;pz [MeV/c]&#39;] = PS.ps_data[&#39;pz [MeV/c]&#39;] * 2
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>from ParticlePhaseSpace import DataExporters
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ParticlePhaseSpace</span> <span class="kn">import</span> <span class="n">DataExporters</span>
 
-DataExporters.Topas_Exporter(PS, output_location=Path(&#39;.&#39;), output_name=&#39;test_export&#39;)
+<span class="n">DataExporters</span><span class="o">.</span><span class="n">Topas_Exporter</span><span class="p">(</span><span class="n">PS</span><span class="p">,</span> <span class="n">output_location</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">),</span> <span class="n">output_name</span><span class="o">=</span><span class="s1">&#39;test_export&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

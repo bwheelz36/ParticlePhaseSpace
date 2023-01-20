@@ -464,22 +464,22 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>from pathlib import Path
-import sys
-sys.path.append(&#39;../&#39;)
-from ParticlePhaseSpace.DataExporters import _DataExportersBase
-from ParticlePhaseSpace import DataLoaders
-from ParticlePhaseSpace._ParticlePhaseSpace import PhaseSpace
-import numpy as np
-import ParticlePhaseSpace.__particle_config__ as particle_cfg
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;../&#39;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">ParticlePhaseSpace.DataExporters</span> <span class="kn">import</span> <span class="n">_DataExportersBase</span>
+<span class="kn">from</span> <span class="nn">ParticlePhaseSpace</span> <span class="kn">import</span> <span class="n">DataLoaders</span>
+<span class="kn">from</span> <span class="nn">ParticlePhaseSpace._ParticlePhaseSpace</span> <span class="kn">import</span> <span class="n">PhaseSpace</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">ParticlePhaseSpace.__particle_config__</span> <span class="k">as</span> <span class="nn">particle_cfg</span>
 
-class NewDataExporter(_DataExportersBase):
+<span class="k">class</span> <span class="nc">NewDataExporter</span><span class="p">(</span><span class="n">_DataExportersBase</span><span class="p">):</span>
 
-    def _define_required_columns(self):
-        pass
+    <span class="k">def</span> <span class="nf">_define_required_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
 
-    def _export_data(self):
-        pass
+    <span class="k">def</span> <span class="nf">_export_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
 </pre></div>
 </div>
 </div>
@@ -493,27 +493,27 @@ class NewDataExporter(_DataExportersBase):
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>class NewDataExporter(_DataExportersBase):
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">NewDataExporter</span><span class="p">(</span><span class="n">_DataExportersBase</span><span class="p">):</span>
 
-    def _define_required_columns(self):
-        self._required_columns = [&#39;x [mm]&#39;, &#39;y [mm]&#39;, &#39;z [mm]&#39;, &#39;px [MeV/c]&#39;, &#39;py [MeV/c]&#39;, &#39;pz [MeV/c]&#39;, &#39;Ek [MeV]&#39;]
+    <span class="k">def</span> <span class="nf">_define_required_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_required_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;x [mm]&#39;</span><span class="p">,</span> <span class="s1">&#39;y [mm]&#39;</span><span class="p">,</span> <span class="s1">&#39;z [mm]&#39;</span><span class="p">,</span> <span class="s1">&#39;px [MeV/c]&#39;</span><span class="p">,</span> <span class="s1">&#39;py [MeV/c]&#39;</span><span class="p">,</span> <span class="s1">&#39;pz [MeV/c]&#39;</span><span class="p">,</span> <span class="s1">&#39;Ek [MeV]&#39;</span><span class="p">]</span>
 
-    def _export_data(self):
+    <span class="k">def</span> <span class="nf">_export_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
-        if not Path(self._output_name).suffix == &#39;.dat&#39;:
-            _output_name = str(self._output_name) + &#39;.dat&#39;
-        else:
-            _output_name = self._output_name
-        WritefilePath = Path(self._output_location) / _output_name
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_output_name</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s1">&#39;.dat&#39;</span><span class="p">:</span>
+            <span class="n">_output_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_output_name</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.dat&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_output_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output_name</span>
+        <span class="n">WritefilePath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_output_location</span><span class="p">)</span> <span class="o">/</span> <span class="n">_output_name</span>
 
-        header = &#39;x (mm)\ty (mm)\tz (mm)\tpx (MeV/c)\tpy (MeV/c)\tpz (MeV/c)\tE (MeV)&#39;
-        Data = [self._PS.ps_data[&#39;x [mm]&#39;].to_numpy(), self._PS.ps_data[&#39;y [mm]&#39;].to_numpy(), self._PS.ps_data[&#39;z [mm]&#39;].to_numpy(),
-                self._PS.ps_data[&#39;px [MeV/c]&#39;].to_numpy(), self._PS.ps_data[&#39;py [MeV/c]&#39;].to_numpy(),
-                self._PS.ps_data[&#39;pz [MeV/c]&#39;].to_numpy(),
-                self._PS.ps_data[&#39;Ek [MeV]&#39;].to_numpy()]
-        Data = np.transpose(Data)
-        FormatSpec = [&#39;%11.5f&#39;, &#39;%11.5f&#39;, &#39;%11.5f&#39;, &#39;%11.5f&#39;, &#39;%11.5f&#39;, &#39;%11.5f&#39;, &#39;%11.5f&#39;]
-        np.savetxt(WritefilePath, Data, fmt=FormatSpec, delimiter=&#39;      &#39;, header=header, comments=&#39;&#39;)
+        <span class="n">header</span> <span class="o">=</span> <span class="s1">&#39;x (mm)</span><span class="se">\t</span><span class="s1">y (mm)</span><span class="se">\t</span><span class="s1">z (mm)</span><span class="se">\t</span><span class="s1">px (MeV/c)</span><span class="se">\t</span><span class="s1">py (MeV/c)</span><span class="se">\t</span><span class="s1">pz (MeV/c)</span><span class="se">\t</span><span class="s1">E (MeV)&#39;</span>
+        <span class="n">Data</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_PS</span><span class="o">.</span><span class="n">ps_data</span><span class="p">[</span><span class="s1">&#39;x [mm]&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_PS</span><span class="o">.</span><span class="n">ps_data</span><span class="p">[</span><span class="s1">&#39;y [mm]&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_PS</span><span class="o">.</span><span class="n">ps_data</span><span class="p">[</span><span class="s1">&#39;z [mm]&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_PS</span><span class="o">.</span><span class="n">ps_data</span><span class="p">[</span><span class="s1">&#39;px [MeV/c]&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_PS</span><span class="o">.</span><span class="n">ps_data</span><span class="p">[</span><span class="s1">&#39;py [MeV/c]&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_PS</span><span class="o">.</span><span class="n">ps_data</span><span class="p">[</span><span class="s1">&#39;pz [MeV/c]&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_PS</span><span class="o">.</span><span class="n">ps_data</span><span class="p">[</span><span class="s1">&#39;Ek [MeV]&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()]</span>
+        <span class="n">Data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">Data</span><span class="p">)</span>
+        <span class="n">FormatSpec</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;</span><span class="si">%11.5f</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%11.5f</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%11.5f</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%11.5f</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%11.5f</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%11.5f</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%11.5f</span><span class="s1">&#39;</span><span class="p">]</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">WritefilePath</span><span class="p">,</span> <span class="n">Data</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">FormatSpec</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;      &#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">,</span> <span class="n">comments</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -524,15 +524,15 @@ class NewDataExporter(_DataExportersBase):
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># load topas data:
-data_loc = Path(&#39;../tests/test_data/coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp&#39;)
-data = DataLoaders.LoadTopasData(data_loc)
-PS = PhaseSpace(data)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># load topas data:</span>
+<span class="n">data_loc</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;../tests/test_data/coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp&#39;</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">DataLoaders</span><span class="o">.</span><span class="n">LoadTopasData</span><span class="p">(</span><span class="n">data_loc</span><span class="p">)</span>
+<span class="n">PS</span> <span class="o">=</span> <span class="n">PhaseSpace</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
-# Because we only want to work with the electrons, generate an electron only phase space:
-PS_electrons = PS(&#39;electrons&#39;)
+<span class="c1"># Because we only want to work with the electrons, generate an electron only phase space:</span>
+<span class="n">PS_electrons</span> <span class="o">=</span> <span class="n">PS</span><span class="p">(</span><span class="s1">&#39;electrons&#39;</span><span class="p">)</span>
 
-NewDataExporter(PS_electrons,&#39;.&#39;,&#39;test_new_exporter.dat&#39;)
+<span class="n">NewDataExporter</span><span class="p">(</span><span class="n">PS_electrons</span><span class="p">,</span><span class="s1">&#39;.&#39;</span><span class="p">,</span><span class="s1">&#39;test_new_exporter.dat&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -550,45 +550,45 @@ NewDataExporter(PS_electrons,&#39;.&#39;,&#39;test_new_exporter.dat&#39;)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>from ParticlePhaseSpace.DataLoaders import _DataImportersBase
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ParticlePhaseSpace.DataLoaders</span> <span class="kn">import</span> <span class="n">_DataImportersBase</span>
 
-class NewDataLoader(_DataImportersBase):
+<span class="k">class</span> <span class="nc">NewDataLoader</span><span class="p">(</span><span class="n">_DataImportersBase</span><span class="p">):</span>
 
-    def _import_data(self):
-        Data = np.loadtxt(self._input_data, skiprows=1)
-        self.data[&#39;x [mm]&#39;] = Data[:, 0]
-        self.data[&#39;y [mm]&#39;] = Data[:, 1]
-        self.data[&#39;z [mm]&#39;] = Data[:, 2]
-        self.data[&#39;px [MeV/c]&#39;] = Data[:, 3]
-        self.data[&#39;py [MeV/c]&#39;] = Data[:, 4]
-        self.data[&#39;pz [MeV/c]&#39;] = Data[:, 5]
-        self.data[&#39;particle type [pdg_code]&#39;] = particle_cfg.particle_properties[self._particle_type][&#39;name&#39;]
-        # we also need to fill in weight, particle id, and time; since none of these are specified we just use all
-        # ones for weight, 1,2,3... for particle id, and all zeros for time:
-        self.data[&#39;weight&#39;] = np.ones(Data.shape[0])
-        self.data[&#39;particle id&#39;] = np.arange(len(self.data))
+    <span class="k">def</span> <span class="nf">_import_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">Data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_input_data</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;x [mm]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;y [mm]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;z [mm]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Data</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;px [MeV/c]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Data</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;py [MeV/c]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Data</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;pz [MeV/c]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Data</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;particle type [pdg_code]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">particle_cfg</span><span class="o">.</span><span class="n">particle_properties</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_particle_type</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+        <span class="c1"># we also need to fill in weight, particle id, and time; since none of these are specified we just use all</span>
+        <span class="c1"># ones for weight, 1,2,3... for particle id, and all zeros for time:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">Data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;particle id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
 
-        self.data[&#39;time [ps]&#39;] = 0  # may want to replace with time feature if available?
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;time [ps]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># may want to replace with time feature if available?</span>
 
-        # because we have momentum and energy, we can double check that our momentum to energy conversion is
-        # consisten with the values in the phase space:
-        E = Data[:, 6]
-        self._check_energy_consistency(Ek=E)
+        <span class="c1"># because we have momentum and energy, we can double check that our momentum to energy conversion is</span>
+        <span class="c1"># consisten with the values in the phase space:</span>
+        <span class="n">E</span> <span class="o">=</span> <span class="n">Data</span><span class="p">[:,</span> <span class="mi">6</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_energy_consistency</span><span class="p">(</span><span class="n">Ek</span><span class="o">=</span><span class="n">E</span><span class="p">)</span>
 
-    def _check_input_data(self):
-        # is the input a file?
-        if not Path(self._input_data).is_file():
-            raise FileNotFoundError(f&#39;input data file {self._import_data()} does not exist&#39;)
-        # does it have the right extension?
-        if not Path(self._input_data).suffix == &#39;.dat&#39;:
-            raise Exception(&#39;This data loaders requires a *.dat file&#39;)
-        # the header is on the first line; does it look correct?
-        with open(self._input_data) as f:
-            first_line = f.readline()
-            if not first_line == &#39;x (mm)\ty (mm)\tz (mm)\tpx (MeV/c)\tpy (MeV/c)\tpz (MeV/c)\tE (MeV)\n&#39;:
-                raise Exception(&#39;file header does not look correct&#39;)
-        if not self._particle_type:
-            raise Exception(&#39;this data loader requires particle_type to be specified&#39;)
+    <span class="k">def</span> <span class="nf">_check_input_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># is the input a file?</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_input_data</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;input data file </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_import_data</span><span class="p">()</span><span class="si">}</span><span class="s1"> does not exist&#39;</span><span class="p">)</span>
+        <span class="c1"># does it have the right extension?</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_input_data</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s1">&#39;.dat&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;This data loaders requires a *.dat file&#39;</span><span class="p">)</span>
+        <span class="c1"># the header is on the first line; does it look correct?</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_input_data</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">first_line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">first_line</span> <span class="o">==</span> <span class="s1">&#39;x (mm)</span><span class="se">\t</span><span class="s1">y (mm)</span><span class="se">\t</span><span class="s1">z (mm)</span><span class="se">\t</span><span class="s1">px (MeV/c)</span><span class="se">\t</span><span class="s1">py (MeV/c)</span><span class="se">\t</span><span class="s1">pz (MeV/c)</span><span class="se">\t</span><span class="s1">E (MeV)</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;file header does not look correct&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_particle_type</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;this data loader requires particle_type to be specified&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -596,10 +596,10 @@ class NewDataLoader(_DataImportersBase):
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>data_loc = &#39;test_new_exporter.dat&#39;
-data = NewDataLoader(data_loc, particle_type=&#39;electrons&#39;)
-PS = PhaseSpace(data)
-PS.plot_energy_histogram()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data_loc</span> <span class="o">=</span> <span class="s1">&#39;test_new_exporter.dat&#39;</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">NewDataLoader</span><span class="p">(</span><span class="n">data_loc</span><span class="p">,</span> <span class="n">particle_type</span><span class="o">=</span><span class="s1">&#39;electrons&#39;</span><span class="p">)</span>
+<span class="n">PS</span> <span class="o">=</span> <span class="n">PhaseSpace</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="n">PS</span><span class="o">.</span><span class="n">plot_energy_histogram</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
