@@ -73,6 +73,9 @@ class _DataLoadersBase(ABC):
             raise Exception('you have attempted to create a data set with non'
                                  'unique "particle id" fields, which is not allowed')
 
+        #all pdg codes valid?
+        get_rest_masses_from_pdg_codes(self.data['particle type [pdg_code]'])
+
     def _check_energy_consistency(self, Ek):
         """
         for data formats that specify kinetic energy, this can be called at the end
@@ -143,7 +146,7 @@ class LoadTopasData(_DataLoadersBase):
 class LoadPandasData(_DataLoadersBase):
     """
     loads in pandas data of the format. This is used internally by ParticlePhaseSpace, and can also be used
-    externally in cases where it is not desired to write a dedicated new data loader
+    externally in cases where it is not desired to write a dedicated new data loader::
 
         from ParticlePhaseSpace import DataLoaders
         import pandas as pd
