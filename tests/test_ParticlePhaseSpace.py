@@ -53,6 +53,13 @@ def test_twiss_stability():
 def test_energy_stats_stability():
 
     PS.calculate_energy_statistics()
+    # compare with previous calc
+    with open(test_data_loc / 'energy_stats.json') as f:
+        old_data = json.load(f)
+    for particle_key in old_data:
+        for energy_key  in old_data[particle_key]:
+            np.allclose(old_data[particle_key][energy_key],
+                        PS.energy_stats[particle_key][energy_key])
 
 def test_project_particles():
     if not 'vx [m/s]' in PS.ps_data.columns:
@@ -83,7 +90,7 @@ def test_reset_phase_space():
 
 def test_get_particle_density():
 
-    particle_density = PS.assess_density_versus_r()
+    particle_density = PS.assess_density_versus_r(verbose=False)
     old_density = pd.read_csv(test_data_loc / 'particle_density.csv', index_col=0).squeeze("columns")
     np.allclose(particle_density, old_density)
 

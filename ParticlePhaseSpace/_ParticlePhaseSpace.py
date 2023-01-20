@@ -484,20 +484,29 @@ class PhaseSpace:
         """
         Prints a sumary of the phase space to the screen.
         """
-        self.calculate_energy_statistics()
+        if not self.energy_stats:
+            self.calculate_energy_statistics()
+        if file_name:
+            file_name = Path(file_name)
+            if not file_name.parent.is_dir():
+                raise NotADirectoryError(f'{file_name.parent} is not a directory')
+            if not file_name.suffix == '.json':
+                file_name = file_name.parent / (file_name.name + '.json')
+            with open(file_name, 'w') as fp:
+                json.dump(self.energy_stats, fp)
         print('===================================================')
         print('                 ENERGY STATS                  ')
         print('===================================================')
         print(f'total number of particles in phase space: {len(self): d}')
 
         print(f'number of unique particle species: {len(self._unique_particles): d}')
-        for particle in self._unique_particles:
-            print(f'    {np.count_nonzero(ind): d} {particle_cfg.particle_properties[particle]["name"]}'
-                  f'\n        mean energy: {meanEnergy: 1.2f} MeV'
-                  f'\n        median energy: {medianEnergy: 1.2f} MeV'
-                  f'\n        Energy spread IQR: {EnergySpreadIQR: 1.2f} MeV'
-                  f'\n        min energy {self._ps_data.loc[ind]["Ek [MeV]"].min(): 1.2f} MeV'
-                  f'\n        max energy {self._ps_data.loc[ind]["Ek [MeV]"].max(): 1.2f} MeV')
+        for particle in self.energy_stats:
+            print(f'    {self.energy_stats[particle]["number"]: d} {particle_cfg.particle_properties[particle]["name"]}'
+                  f'\n        mean energy: {self.energy_stats[particle]["mean energy"]: 1.2f} MeV'
+                  f'\n        median energy: {self.energy_stats[particle]["median energy"]: 1.2f} MeV'
+                  f'\n        Energy spread IQR: {self.energy_stats[particle]["energy spread IQR"]: 1.2f} MeV'
+                  f'\n        min energy {self.energy_stats[particle]["min energy"]: 1.2f} MeV'
+                  f'\n        max energy {self.energy_stats[particle]["max energy"]: 1.2f} MeV')
 
     def print_twiss_parameters(self, file_name=None, beam_direction='z'):
         """
@@ -509,7 +518,8 @@ class PhaseSpace:
             path to an existing directory
         :return: None
         """
-        self.calculate_twiss_parameters(beam_direction=beam_direction)
+        if not self.twiss_parameters:
+            self.calculate_twiss_parameters(beam_direction=beam_direction)
         if file_name:
             file_name = Path(file_name)
             if not file_name.parent.is_dir():
@@ -655,12 +665,15 @@ class PhaseSpace:
             ind = self._ps_data['particle type [pdg_code]'] == particle
             ps_data = self._ps_data[ind]
 
+            self.energy_stats[particle_name]['number'] = np.count_nonzero(ind)
             meanEnergy, stdEnergy = self._weighted_avg_and_std(ps_data['Ek [MeV]'], ps_data['weight'])
+            self.energy_stats[particle_name]['min energy'] = ps_data['Ek [MeV]'].min()
+            self.energy_stats[particle_name]['max energy'] = ps_data['Ek [MeV]'].max()
             self.energy_stats[particle_name]['mean energy'] = meanEnergy
             self.energy_stats[particle_name]['std mean'] = stdEnergy
-            self.energy_stats[particle_name]['medianEnergy'] = self._weighted_median(ps_data['Ek [MeV]'], ps_data['weight'])
+            self.energy_stats[particle_name]['median energy'] = self._weighted_median(ps_data['Ek [MeV]'], ps_data['weight'])
             q75, q25 = self._weighted_quantile(ps_data['Ek [MeV]'], [0.25, 0.75], sample_weight=ps_data['weight'])
-            self.energy_stats[particle_name]['EnergySpreadIQR'] = q25 - q75
+            self.energy_stats[particle_name]['energy spread IQR'] = q25 - q75
 
 
 
