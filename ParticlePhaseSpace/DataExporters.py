@@ -134,7 +134,7 @@ class Topas_Exporter(_DataExportersBase):
         """
 
         if Path(self._output_name).suffix == '.phsp':
-            _output_name = Path(self._output_name).parts[0]
+            _output_name = Path(self._output_name).stem
         else:
             _output_name = self._output_name
         _output_name = str(_output_name) + '.header'
