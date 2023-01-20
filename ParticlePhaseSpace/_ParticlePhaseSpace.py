@@ -14,7 +14,7 @@ from ParticlePhaseSpace.DataLoaders import _DataLoadersBase
 from ParticlePhaseSpace import utilities as ps_util
 from ParticlePhaseSpace import DataLoaders
 
-class FigureSpecs:
+class _FigureSpecs:
     """
     Thought this might be the easiest way to ensure universal parameters accross all figures
     """
@@ -277,12 +277,12 @@ class PhaseSpace:
             Eplot = self._ps_data['Ek [MeV]'][ind]
             n, bins, patches = axs.hist(Eplot, bins=n_bins, weights=self._ps_data['weight'][ind], alpha=.5)
 
-        axs.set_xlabel('Energy [MeV]', fontsize=FigureSpecs.LabelFontSize)
-        axs.set_ylabel('N counts', fontsize=FigureSpecs.LabelFontSize)
+        axs.set_xlabel('Energy [MeV]', fontsize=__FigureSpecs.LabelFontSize)
+        axs.set_ylabel('N counts', fontsize=__FigureSpecs.LabelFontSize)
         if title:
-            axs.set_title(title, fontsize=FigureSpecs.TitleFontSize)
-        axs.tick_params(axis="y", labelsize=FigureSpecs.TickFontSize)
-        axs.tick_params(axis="x", labelsize=FigureSpecs.TickFontSize)
+            axs.set_title(title, fontsize=__FigureSpecs.TitleFontSize)
+        axs.tick_params(axis="y", labelsize=__FigureSpecs.TickFontSize)
+        axs.tick_params(axis="x", labelsize=__FigureSpecs.TickFontSize)
         axs.legend(legend)
         plt.tight_layout()
         plt.show()
@@ -390,9 +390,9 @@ class PhaseSpace:
             else:
                 axs[0, n_axs].scatter(x_data, y_data, s=1, c=self._ps_data['weight'][ind])
             axs[0, n_axs].set_aspect(1)
-            axs[0, n_axs].set_title(axs_title, fontsize=FigureSpecs.TitleFontSize)
-            axs[0, n_axs].set_xlabel(x_label, fontsize=FigureSpecs.LabelFontSize)
-            axs[0, n_axs].set_ylabel(y_label, fontsize=FigureSpecs.LabelFontSize)
+            axs[0, n_axs].set_title(axs_title, fontsize=__FigureSpecs.TitleFontSize)
+            axs[0, n_axs].set_xlabel(x_label, fontsize=__FigureSpecs.LabelFontSize)
+            axs[0, n_axs].set_ylabel(y_label, fontsize=__FigureSpecs.LabelFontSize)
             if xlim:
                 axs[0, n_axs].set_xlim(xlim)
             if ylim:
