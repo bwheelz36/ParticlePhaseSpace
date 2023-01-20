@@ -163,3 +163,4 @@ cython_debug/
 *.phsp
 *.header
 docs/*
+*temp*

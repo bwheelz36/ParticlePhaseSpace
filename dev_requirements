@@ -15,4 +15,7 @@ pandas
 scipy
 topas2numpy
 nbsphinx
+nbformat
+nbconvert
+jupyter
 Ipython

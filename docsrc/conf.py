@@ -25,7 +25,7 @@ shutil.copy(this_file_loc.parent / 'examples' / 'new_data_exporter.ipynb', this_
 
 # -- Project information -----------------------------------------------------
 
-project = 'Packaging Demo'
+project = 'Particle Phase Space'
 copyright = '2022, Brendan Whelan'
 author = 'Brendan Whelan'
 
