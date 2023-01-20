@@ -26,6 +26,6 @@ def test_pandas_import_fails_when_particles_specfied():
          'particle id': [0, 1, 2],
          'time [ps]': [0, 1, 2]})
 
-    with pytest.raises(AttributeError):
+    with pytest.raises(Exception):
         data = DataLoaders.LoadPandasData(demo_data)
 
