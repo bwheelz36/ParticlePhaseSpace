@@ -701,11 +701,7 @@ class PhaseSpace:
 
     def assess_density_versus_r(self, Rvals=None, verbose=True, beam_direction='z'):
         """
-        Crude code to assess how many particles are in a certain radius
-
-        If ROI = None,  then all particles are assessed.
-        Otherwise, use ROI = [zval, radius] to only include particles that would be within radius r at distance z from
-        the read in location
+        Assess how many particles are in a given radius
 
         :param Rvals: list of rvals to assess in mm, e.g. np.linspace(0, 2, 21)
         :param verbose: prints data to screen if True
@@ -720,6 +716,8 @@ class PhaseSpace:
         if Rvals is None:
             # pick a default
             Rvals = np.linspace(0, 2, 21)
+        if not isinstance(Rvals, (list, np.ndarray)):
+            Rvals = list(Rvals)
         if beam_direction == 'x':
             r = np.sqrt(self.ps_data['z [mm]']**2 + self.ps_data['y [mm]']**2)
         elif beam_direction == 'y':
