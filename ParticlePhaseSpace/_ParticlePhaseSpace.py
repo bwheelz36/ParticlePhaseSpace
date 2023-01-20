@@ -215,7 +215,8 @@ class PhaseSpace:
             if not col_name in all_allowed_columns:
                 raise AttributeError(f'non allowed column name {col_name} in ps_data')
 
-    def _get_ellipse_xy_points(self, ellipse_parameters, x_search_min, x_search_max, xpq_search_min, xpq_search_max):
+    def _get_ellipse_xy_points(self, ellipse_parameters, x_search_min,  # pragma: no cover
+                               x_search_max, xpq_search_min, xpq_search_max):
         """
         given the parameters of an ellipse, return a set of points in XY which meet those parameters
         :return:
@@ -480,7 +481,7 @@ class PhaseSpace:
         plt.tight_layout()
         plt.show()
 
-    def print_energy_stats(self, file_name=None):
+    def print_energy_stats(self, file_name=None):  # pragma: no cover
         """
         Prints a sumary of the phase space to the screen.
         """
@@ -508,7 +509,7 @@ class PhaseSpace:
                   f'\n        min energy {self.energy_stats[particle]["min energy"]: 1.2f} MeV'
                   f'\n        max energy {self.energy_stats[particle]["max energy"]: 1.2f} MeV')
 
-    def print_twiss_parameters(self, file_name=None, beam_direction='z'):
+    def print_twiss_parameters(self, file_name=None, beam_direction='z'):  #pragma: no cover
         """
         prints the twiss parameters if they exist
         they are always printed to the screen.
