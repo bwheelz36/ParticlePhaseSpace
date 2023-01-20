@@ -68,6 +68,10 @@ class _DataLoadersBase(ABC):
         if self.data.isnull().values.any():
             raise AttributeError(f'input data may not contain NaNs')
 
+        tot_mom = np.sqrt(self.data['px [MeV/c]']**2 + self.data['py [MeV/c]']**2 + self.data['pz [MeV/c]']**2)
+        if not np.min(tot_mom)>0:
+            raise Exception('particles with zero absolute momentum make no sense')
+
         # is every particle ID unique?
         if not len(self.data['particle id'].unique()) == len(self.data['particle id']):
             raise Exception('you have attempted to create a data set with non'
@@ -128,7 +132,7 @@ class LoadTopasData(_DataLoadersBase):
         self.data['px [MeV/c]'] = np.multiply(P, DirCosineX)
         self.data['py [MeV/c]'] = np.multiply(P, DirCosineY)
         temp = P ** 2 - self.data['px [MeV/c]'] ** 2 - self.data['py [MeV/c]'] ** 2
-        ParticleDir = [1 if elem else -1 for elem in ParticleDir]
+        ParticleDir = [-1 if elem else 1 for elem in ParticleDir]
         self.data['pz [MeV/c]'] = np.multiply(np.sqrt(temp), ParticleDir)
         self._check_energy_consistency(Ek=E)
 
@@ -177,5 +181,8 @@ class LoadPandasData(_DataLoadersBase):
         is pandas instance
         """
         assert isinstance(self._input_data, pd.DataFrame)
+
+        if self._particle_type:
+            raise AttributeError('particle_type should not be specified for pandas import')
 
 
