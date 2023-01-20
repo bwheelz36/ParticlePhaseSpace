@@ -43,6 +43,7 @@ class PhaseSpace:
         self._ps_data = data_loader.data
         self._unique_particles = self._ps_data['particle type [pdg_code]'].unique()
         self.twiss_parameters = {}
+        self.energy_stats = {}
 
     def __call__(self, particle_list):
         """
@@ -139,15 +140,6 @@ class PhaseSpace:
         self._check_ps_data_format()
         self._unique_particles = self._ps_data['particle type [pdg_code]'].unique()
 
-    def _assert_unique_particle_ids(self):
-        """
-        check that every entry in the phase space is unique
-        :return:
-        """
-        if not len(self._ps_data['particle id'].unique()) == len(self._ps_data['particle id']):
-            raise Exception('you have attempted to create a data set with non'
-                                 'unique "particle id" fields, which is not allowed')
-
     def _weighted_median(self, data, weights):
         """
         calculate a weighted median
@@ -223,14 +215,6 @@ class PhaseSpace:
             if not col_name in all_allowed_columns:
                 raise AttributeError(f'non allowed column name {col_name} in ps_data')
 
-    def _calculate_energy_statistics(self, ps_data):
-        meanEnergy, stdEnergy = self._weighted_avg_and_std(ps_data['Ek [MeV]'], ps_data['weight'])
-        medianEnergy = self._weighted_median(ps_data['Ek [MeV]'], ps_data['weight'])
-        EnergySpreadSTD = np.std(np.multiply(ps_data['Ek [MeV]'], ps_data['weight']))
-        q75, q25 = self._weighted_quantile(ps_data['Ek [MeV]'], [0.25, 0.75], sample_weight=ps_data['weight'])
-        EnergySpreadIQR = q25 - q75
-        return meanEnergy, medianEnergy, EnergySpreadSTD, EnergySpreadIQR
-
     def _get_ellipse_xy_points(self, ellipse_parameters, x_search_min, x_search_max, xpq_search_min, xpq_search_max):
         """
         given the parameters of an ellipse, return a set of points in XY which meet those parameters
@@ -258,7 +242,7 @@ class PhaseSpace:
 
     # public methods
 
-    def plot_energy_histogram(self, n_bins=100, title=None):
+    def plot_energy_histogram(self, n_bins=100, title=None):  # pragma: no cover
         """
         generate a histogram plot of paritcle energies.
         Each particle spcies present in the phase space is overlaid  on the same plot.
@@ -285,9 +269,9 @@ class PhaseSpace:
         axs.tick_params(axis="x", labelsize=_FigureSpecs.TickFontSize)
         axs.legend(legend)
         plt.tight_layout()
-        plt.show()
+        plt.show()  # pragma: no cover
 
-    def plot_position_histogram(self, n_bins=100, alpha=0.5):
+    def plot_position_histogram(self, n_bins=100, alpha=0.5):  # pragma: no cover
         """
         plot a histogram of particle positions in x, y, z.
         a new histogram is generated for each particle species.
@@ -327,7 +311,7 @@ class PhaseSpace:
         plt.show()
 
     def plot_particle_positions(self, beam_direction='z', weight_position_plot=False,
-                                xlim=None, ylim=None):
+                                xlim=None, ylim=None):  # pragma: no cover
         """
         produce a scatter plot of particle positions.
         one plot is produced for each unique species.
@@ -402,7 +386,7 @@ class PhaseSpace:
         plt.tight_layout()
         plt.show()
 
-    def plot_transverse_trace_space(self, beam_direction='z', plot_twiss_ellipse=True):
+    def plot_transverse_trace_space(self, beam_direction='z', plot_twiss_ellipse=True):  # pragma: no cover
         """
         Generate a scatter plot of x versus x'=px/pz and y versus y'=py/pz (these definitions are for
         beam_direction='z')
@@ -496,25 +480,63 @@ class PhaseSpace:
         plt.tight_layout()
         plt.show()
 
-    def report(self):
+    def print_energy_stats(self, file_name=None):
         """
         Prints a sumary of the phase space to the screen.
         """
-        if not 'Ek [MeV]' in self._ps_data.columns:
-            self.fill_kinetic_E()
+        if not self.energy_stats:
+            self.calculate_energy_statistics()
+        if file_name:
+            file_name = Path(file_name)
+            if not file_name.parent.is_dir():
+                raise NotADirectoryError(f'{file_name.parent} is not a directory')
+            if not file_name.suffix == '.json':
+                file_name = file_name.parent / (file_name.name + '.json')
+            with open(file_name, 'w') as fp:
+                json.dump(self.energy_stats, fp)
+        print('===================================================')
+        print('                 ENERGY STATS                  ')
+        print('===================================================')
         print(f'total number of particles in phase space: {len(self): d}')
 
         print(f'number of unique particle species: {len(self._unique_particles): d}')
+        for particle in self.energy_stats:
+            print(f'    {self.energy_stats[particle]["number"]: d} {particle_cfg.particle_properties[particle]["name"]}'
+                  f'\n        mean energy: {self.energy_stats[particle]["mean energy"]: 1.2f} MeV'
+                  f'\n        median energy: {self.energy_stats[particle]["median energy"]: 1.2f} MeV'
+                  f'\n        Energy spread IQR: {self.energy_stats[particle]["energy spread IQR"]: 1.2f} MeV'
+                  f'\n        min energy {self.energy_stats[particle]["min energy"]: 1.2f} MeV'
+                  f'\n        max energy {self.energy_stats[particle]["max energy"]: 1.2f} MeV')
+
+    def print_twiss_parameters(self, file_name=None, beam_direction='z'):
+        """
+        prints the twiss parameters if they exist
+        they are always printed to the screen.
+        if filename is specified, they are also saved to file as json
+
+        :param file_name: filename to write twiss data to. should be absolute
+            path to an existing directory
+        :return: None
+        """
+        if not self.twiss_parameters:
+            self.calculate_twiss_parameters(beam_direction=beam_direction)
+        if file_name:
+            file_name = Path(file_name)
+            if not file_name.parent.is_dir():
+                raise NotADirectoryError(f'{file_name.parent} is not a directory')
+            if not file_name.suffix == '.json':
+                file_name = file_name.parent / (file_name.name + '.json')
+            with open(file_name, 'w') as fp:
+                json.dump(self.twiss_parameters, fp)
+
+        print('===================================================')
+        print('                 TWISS PARAMETERS                  ')
+        print('===================================================')
         for particle in self._unique_particles:
-            ind = self._ps_data['particle type [pdg_code]'] == particle
-            ps_data = self._ps_data.loc[ind]
-            meanEnergy, medianEnergy, EnergySpreadSTD, EnergySpreadIQR = self._calculate_energy_statistics(ps_data)
-            print(f'    {np.count_nonzero(ind): d} {particle_cfg.particle_properties[particle]["name"]}'
-                  f'\n        mean energy: {meanEnergy: 1.2f} MeV'
-                  f'\n        median energy: {medianEnergy: 1.2f} MeV'
-                  f'\n        Energy spread IQR: {EnergySpreadIQR: 1.2f} MeV'
-                  f'\n        min energy {self._ps_data.loc[ind]["Ek [MeV]"].min(): 1.2f} MeV'
-                  f'\n        max energy {self._ps_data.loc[ind]["Ek [MeV]"].max(): 1.2f} MeV')
+            particle_name = particle_cfg.particle_properties[particle]['name']
+            print(f'\n{particle_name}:')
+            data = pd.DataFrame(self.twiss_parameters[particle_name])
+            print(data)
 
     def fill_kinetic_E(self):
         """
@@ -615,12 +637,14 @@ class PhaseSpace:
             raise NotImplementedError('beam direction must be "x", "y", or "z"')
         for particle in self._unique_particles:
             particle_name = particle_cfg.particle_properties[particle]['name']
+            ind = self._ps_data['particle type [pdg_code]'] == particle
+            particle_data = self._ps_data[ind]
             self.twiss_parameters[particle_name] = {}
             for calc_dir in direction_columns:
-                x2 = np.average(np.square(self._ps_data[calc_dir[0]]), weights=self._ps_data['weight'])
-                xp = np.divide(self._ps_data[calc_dir[1]], self._ps_data[intersection_columns[1]])
-                xp2 = np.average(np.square(xp), weights=self._ps_data['weight'])
-                x_xp = np.average(np.multiply(self._ps_data[calc_dir[0]], xp), weights=self._ps_data['weight'])
+                x2 = np.average(np.square(particle_data[calc_dir[0]]), weights=particle_data['weight'])
+                xp = np.divide(particle_data[calc_dir[1]], particle_data[intersection_columns[1]])
+                xp2 = np.average(np.square(xp), weights=particle_data['weight'])
+                x_xp = np.average(np.multiply(particle_data[calc_dir[0]], xp), weights=particle_data['weight'])
 
                 epsilon = np.sqrt((x2 * xp2) - (x_xp ** 2))
                 alpha = -x_xp / epsilon
@@ -632,34 +656,26 @@ class PhaseSpace:
                                                          'beta': beta,
                                                          'gamma': gamma}
 
-    def print_twiss_parameters(self, file_name=None, beam_direction='z'):
-        """
-        prints the twiss parameters if they exist
-        they are always printed to the screen.
-        if filename is specified, they are also saved to file as json
-
-        :param file_name: filename to write twiss data to. should be absolute
-            path to an existing directory
-        :return: None
-        """
-        self.calculate_twiss_parameters(beam_direction=beam_direction)
-        if file_name:
-            file_name = Path(file_name)
-            if not file_name.parent.is_dir():
-                raise NotADirectoryError(f'{file_name.parent} is not a directory')
-            if not file_name.suffix == '.json':
-                file_name = file_name.parent / (file_name.name + '.json')
-            with open(file_name, 'w') as fp:
-                json.dump(self.twiss_parameters, fp)
-
-        print('===================================================')
-        print('                 TWISS PARAMETERS                  ')
-        print('===================================================')
+    def calculate_energy_statistics(self):
+        if not 'Ek [MeV]' in self._ps_data.columns:
+            self.fill_kinetic_E()
         for particle in self._unique_particles:
             particle_name = particle_cfg.particle_properties[particle]['name']
-            print(f'\n{particle_name}:')
-            data = pd.DataFrame(self.twiss_parameters[particle_name])
-            print(data)
+            self.energy_stats[particle_name] = {}
+            ind = self._ps_data['particle type [pdg_code]'] == particle
+            ps_data = self._ps_data[ind]
+
+            self.energy_stats[particle_name]['number'] = np.count_nonzero(ind)
+            meanEnergy, stdEnergy = self._weighted_avg_and_std(ps_data['Ek [MeV]'], ps_data['weight'])
+            self.energy_stats[particle_name]['min energy'] = ps_data['Ek [MeV]'].min()
+            self.energy_stats[particle_name]['max energy'] = ps_data['Ek [MeV]'].max()
+            self.energy_stats[particle_name]['mean energy'] = meanEnergy
+            self.energy_stats[particle_name]['std mean'] = stdEnergy
+            self.energy_stats[particle_name]['median energy'] = self._weighted_median(ps_data['Ek [MeV]'], ps_data['weight'])
+            q75, q25 = self._weighted_quantile(ps_data['Ek [MeV]'], [0.25, 0.75], sample_weight=ps_data['weight'])
+            self.energy_stats[particle_name]['energy spread IQR'] = q25 - q75
+
+
 
     def project_particles(self, beam_direction='z', distance=100):
         """
@@ -698,6 +714,7 @@ class PhaseSpace:
                 self._ps_data.drop(columns=col_name, inplace=True)
 
         self.twiss_parameters = {}
+        self.energy_stats = {}
 
     def assess_density_versus_r(self, Rvals=None, verbose=True, beam_direction='z'):
         """
