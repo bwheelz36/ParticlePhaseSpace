@@ -5,11 +5,12 @@ import pandas as pd
 logging.basicConfig(level=logging.WARNING)
 import warnings
 from scipy.stats import gaussian_kde
+from scipy import constants
 import json
 from pathlib import Path
 import ParticlePhaseSpace.__phase_space_config__ as ps_cfg
 import ParticlePhaseSpace.__particle_config__ as particle_cfg
-from ParticlePhaseSpace.DataLoaders import _DataImportersBase
+from ParticlePhaseSpace.DataLoaders import _DataLoadersBase
 from ParticlePhaseSpace import utilities as ps_util
 from ParticlePhaseSpace import DataLoaders
 
@@ -26,11 +27,17 @@ class FigureSpecs:
 
 class PhaseSpace:
     """
+    This class holds phase space data in  a pandas dataframe, and allowed users to utilise common libraries for
+    plotting and analysis. It accepts data from any `DataLoader <https://bwheelz36.github.io/ParticlePhaseSpace/code_docs.html#module-ParticlePhaseSpace.DataLoaders>`_
+    Basic use is documented `here <https://bwheelz36.github.io/ParticlePhaseSpace/basic_example.html>`_.
+
+    :param data_loader: an instance of ParticlePhaseSpace.DataLoaders._DataLoadersBase
+    :type data_loader: _DataLoadersBase
     """
 
     def __init__(self, data_loader):
 
-        if not isinstance(data_loader, _DataImportersBase):
+        if not isinstance(data_loader, _DataLoadersBase):
             raise TypeError(f'ParticlePhaseSpace must be instantiated with a valid object'
                             f'from DataLoaders, not {type(data_loader)}')
         self._ps_data = data_loader.data
@@ -254,8 +261,7 @@ class PhaseSpace:
     def plot_energy_histogram(self, n_bins=100, title=None):
         """
         generate a histogram plot of paritcle energies.
-        Each particle spcies present in the phase space is overlaid
-        on the same plot.
+        Each particle spcies present in the phase space is overlaid  on the same plot.
 
         :param n_bins: number of bins in histogram
         :param title: title of histogram
@@ -287,7 +293,9 @@ class PhaseSpace:
         a new histogram is generated for each particle species.
         histograms are overlaid.
 
-        :return: None
+        :param n_bins:  number of bins in histogram
+        :param alpha: controls transparency of each histogram.
+        :return:
         """
         fig, axs = plt.subplots(1, 3)
         fig.set_size_inches(15, 5)
@@ -334,7 +342,7 @@ class PhaseSpace:
         :type xlim: list or None, optional
         :param ylim: set the ylim for all plots, e.g. [-2,2]
         :type ylim: list or None, optional
-        :return:
+        :return: None
         """
 
 
@@ -395,6 +403,16 @@ class PhaseSpace:
         plt.show()
 
     def plot_transverse_trace_space(self, beam_direction='z', plot_twiss_ellipse=True):
+        """
+        Generate a scatter plot of x versus x'=px/pz and y versus y'=py/pz (these definitions are for
+        beam_direction='z')
+
+        :param beam_direction: main direction in which beam is travelling. 'x', 'y', or 'z' (default)
+        :type beam_direction: str, optional
+        :param plot_twiss_ellipse: if True, will overlay the RMS twiss ellipse onto the trace space
+        :type plot_twiss_ellipse: bool, optional
+        :return: None
+        """
 
         self.calculate_twiss_parameters(beam_direction=beam_direction)
         fig, axs = plt.subplots(nrows=len(self._unique_particles), ncols=2, squeeze=False)
@@ -474,18 +492,13 @@ class PhaseSpace:
             axs[row, 1].set_title(title_2)
             axs[row, 1].grid()
             row = row + 1
-        # plt.ylim([ymin, ymax])
-        # plt.xlim([xmin, xmax])
-        # TitleString = "\u03C0\u03B5: %1.1f mm mrad, \u03B1: %1.1f, \u03B2: %1.1f, \u03B3: %1.1f" % \
-        #               (self.twiss_epsilon, self.twiss_alpha, self.twiss_beta, self.twiss_gamma)
-        # plt.title(TitleString)
 
         plt.tight_layout()
         plt.show()
 
     def report(self):
         """
-        print a sumary of the phase space to the screen.
+        Prints a sumary of the phase space to the screen.
         """
         if not 'Ek [MeV]' in self._ps_data.columns:
             self.fill_kinetic_E()
@@ -546,7 +559,7 @@ class PhaseSpace:
             self.fill_rest_mass()
         TOT_P = np.sqrt(self._ps_data['px [MeV/c]'] ** 2 + self._ps_data['py [MeV/c]'] ** 2 + self._ps_data['pz [MeV/c]'] ** 2)
         self._ps_data['beta'] = np.divide(TOT_P, self._ps_data['Ek [MeV]'] + self._ps_data['rest mass [MeV/c^2]'])
-        self._ps_data['gamma'] = 1 / np.sqrt(1 - np.square(self._ps_data['beta']))
+        self._ps_data['gamma'] = 1 / np.sqrt(1 - np.square(self._ps_data['beta'] ))
         self._check_ps_data_format()
 
     def fill_direction_cosines(self):
@@ -570,6 +583,7 @@ class PhaseSpace:
         before being randomly sampled.
 
         :param downsample_factor: the factor to downsample the phase space by
+        :type downsample_factor: int
         """
         new_data = self._ps_data.sample(frac=1).reset_index(drop=True)  # this shuffles the data
         new_data = new_data.sample(frac=1/downsample_factor, ignore_index=True)
@@ -582,9 +596,12 @@ class PhaseSpace:
 
     def calculate_twiss_parameters(self, beam_direction='z'):
         """
-        Calculate the twiss parameters
-        """
+        Calculate the RMS `twiss parameters <https://en.wikipedia.org/wiki/Courant%E2%80%93Snyder_parameters>`_
 
+        :param beam_direction: main direction in which beam is travelling. 'x', 'y', or 'z' (default)
+        :type beam_direction: str, optional
+        :return: None
+        """
         if beam_direction == 'x':
             intersection_columns = ['x [mm]', 'px [MeV/c]']
             direction_columns = [['z [mm]', 'pz [MeV/c]'], ['y [mm]', 'py [MeV/c]']]
@@ -623,7 +640,7 @@ class PhaseSpace:
 
         :param file_name: filename to write twiss data to. should be absolute
             path to an existing directory
-        :return:
+        :return: None
         """
         self.calculate_twiss_parameters(beam_direction=beam_direction)
         if file_name:
@@ -634,15 +651,15 @@ class PhaseSpace:
                 file_name = file_name.parent / (file_name.name + '.json')
             with open(file_name, 'w') as fp:
                 json.dump(self.twiss_parameters, fp)
-        else:
-            print('===================================================')
-            print('                 TWISS PARAMETERS                  ')
-            print('===================================================')
-            for particle in self._unique_particles:
-                particle_name = particle_cfg.particle_properties[particle]['name']
-                print(f'\n{particle_name}:')
-                data = pd.DataFrame(self.twiss_parameters[particle_name])
-                print(data)
+
+        print('===================================================')
+        print('                 TWISS PARAMETERS                  ')
+        print('===================================================')
+        for particle in self._unique_particles:
+            particle_name = particle_cfg.particle_properties[particle]['name']
+            print(f'\n{particle_name}:')
+            data = pd.DataFrame(self.twiss_parameters[particle_name])
+            print(data)
 
     def project_particles(self, beam_direction='z', distance=100):
         """
@@ -654,7 +671,7 @@ class PhaseSpace:
         that they all remain correct.
 
         :param direction: the direction to project in. 'x', 'y', or 'z'
-        :param distance: how far to project
+        :param distance: how far to project in mm
         :return: None
         """
         if not 'vx [m/s]' in self._ps_data.columns:
@@ -673,8 +690,8 @@ class PhaseSpace:
         """
         reduce self._ps_data to only the required columns
         delete any other dervied quantities such as twiss parameters
-        this can be called whenever you want to reduce the memory footprint, or whenever
-        you have perfored some operation which may have invalidiated derived metrics
+        this can be called whenever you want to reduce the memory footprint
+        It is also called internally whenever the user changes the data in ps_data
         """
         for col_name in self._ps_data.columns:
             if not col_name in ps_cfg.required_columns:
@@ -692,6 +709,8 @@ class PhaseSpace:
 
         :param Rvals: list of rvals to assess in mm, e.g. np.linspace(0, 2, 21)
         :param verbose: prints data to screen if True
+        :param beam_direction: main direction in which beam is travelling. 'x', 'y', or 'z' (default)
+        :type beam_direction: str, optional
         :return density_data: a dataframe containing the roi vals and the proportion of particles inside
         """
 

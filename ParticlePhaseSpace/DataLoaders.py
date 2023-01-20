@@ -9,7 +9,7 @@ import ParticlePhaseSpace.__particle_config__ as particle_cfg
 import warnings
 
 
-class _DataImportersBase(ABC):
+class _DataLoadersBase(ABC):
 
     def __init__(self, input_data, particle_type=None):
         self.data = pd.DataFrame()
@@ -89,7 +89,7 @@ class _DataImportersBase(ABC):
             raise Exception('Energy check failed: read in of data may be incorrect')
 
 
-class LoadTopasData(_DataImportersBase):
+class LoadTopasData(_DataLoadersBase):
 
     def _import_data(self):
         """
@@ -133,7 +133,7 @@ class LoadTopasData(_DataImportersBase):
             warnings.warn('particle type is ignored in topas read in')
 
 
-class LoadPandasData(_DataImportersBase):
+class LoadPandasData(_DataLoadersBase):
     """
     loads in pandas data; provides a general purpose interface for
     those who do not wish to write a specific data loader for their application
