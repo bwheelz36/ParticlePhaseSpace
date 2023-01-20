@@ -10,6 +10,10 @@ import warnings
 
 
 class _DataLoadersBase(ABC):
+    """
+    DataLoader Abstract Base Class.
+    Inherited by new instances of DataLoaders
+    """
 
     def __init__(self, input_data, particle_type=None):
         self.data = pd.DataFrame()
@@ -90,14 +94,17 @@ class _DataLoadersBase(ABC):
 
 
 class LoadTopasData(_DataLoadersBase):
+    """
+    DataLoader for `Topas <https://topas.readthedocs.io/en/latest/>`_ data.
+    This data loader will read in both ascii and binary topas phase space (phsp) files.
+    Behind the scenes, it relies on `topas2numpy <https://github.com/davidchall/topas2numpy>`_
+    """
 
     def _import_data(self):
         """
         Read in topas  data
-        assumption is that this is in cm and MeV
-
-        this has to be tested for particle travelling in the x and y directions since topas seems to be quite confused
-        about this...
+        This has been extensively tested for data travelling the z direction, but not so much in the x and y directions.
+        since topas uses the direction cosines to define directions, I would be cautious about these other cases
         """
         topas_phase_space = tp.read_ntuple(self._input_data)
         ParticleTypes = topas_phase_space['Particle Type (in PDG Format)']
@@ -135,12 +142,32 @@ class LoadTopasData(_DataLoadersBase):
 
 class LoadPandasData(_DataLoadersBase):
     """
-    loads in pandas data; provides a general purpose interface for
-    those who do not wish to write a specific data loader for their application
+    loads in pandas data of the format. This is used internally by ParticlePhaseSpace, and can also be used
+    externally in cases where it is not desired to write a dedicated new data loader
+
+        from ParticlePhaseSpace import DataLoaders
+        import pandas as pd
+
+        demo_data = pd.DataFrame(
+                    {'x [mm]': [0, 1, 2],
+                     'y [mm]': [0, 1, 2],
+                     'z [mm]': [0, 1, 2],
+                     'px [MeV/c]': [0, 1, 2],
+                     'py [MeV/c]': [0, 1, 2],
+                     'pz [MeV/c]': [0, 1, 2],
+                     'particle type [pdg_code]': [0, 1, 2],
+                     'weight': [0, 1, 2],
+                     'particle id': [0, 1, 2],
+                     'time [ps]': [0, 1, 2]})
+
+        data = DataLoaders.LoadPandasData(demo_data)
     """
 
     def _import_data(self):
+
         self.data = self._input_data
+        #         Note that the format of the data is checked by the base class,
+        #         so no additional checks are required here
 
     def _check_input_data(self):
         """
