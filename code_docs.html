@@ -102,7 +102,6 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-ParticlePhaseSpace._ParticlePhaseSpace">Particle Phase Space</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.FigureSpecs"><code class="docutils literal notranslate"><span class="pre">FigureSpecs</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace"><code class="docutils literal notranslate"><span class="pre">PhaseSpace</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.assess_density_versus_r"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.assess_density_versus_r()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.calculate_twiss_parameters"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.calculate_twiss_parameters()</span></code></a></li>
@@ -265,12 +264,6 @@ Behind the scenes, it relies on <a class="reference external" href="https://gith
 <section id="module-ParticlePhaseSpace._ParticlePhaseSpace">
 <span id="particle-phase-space"></span><h2>Particle Phase Space<a class="headerlink" href="#module-ParticlePhaseSpace._ParticlePhaseSpace" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
-<dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.FigureSpecs">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ParticlePhaseSpace._ParticlePhaseSpace.</span></span><span class="sig-name descname"><span class="pre">FigureSpecs</span></span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.FigureSpecs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Thought this might be the easiest way to ensure universal parameters accross all figures</p>
-</dd></dl>
-
-<dl class="py class">
 <dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ParticlePhaseSpace._ParticlePhaseSpace.</span></span><span class="sig-name descname"><span class="pre">PhaseSpace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_loader</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace" title="Permalink to this definition">¶</a></dt>
 <dd><p>This class holds phase space data in  a pandas dataframe, and allowed users to utilise common libraries for
@@ -284,10 +277,7 @@ Basic use is documented <a class="reference external" href="https://bwheelz36.gi
 <dl class="py method">
 <dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.assess_density_versus_r">
 <span class="sig-name descname"><span class="pre">assess_density_versus_r</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Rvals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam_direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'z'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.assess_density_versus_r" title="Permalink to this definition">¶</a></dt>
-<dd><p>Crude code to assess how many particles are in a certain radius</p>
-<p>If ROI = None,  then all particles are assessed.
-Otherwise, use ROI = [zval, radius] to only include particles that would be within radius r at distance z from
-the read in location</p>
+<dd><p>Assess how many particles are in a given radius</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
