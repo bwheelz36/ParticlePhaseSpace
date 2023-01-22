@@ -136,7 +136,6 @@ class PhaseSpace:
         """
         self._ps_data = new_data_frame
         self.reset_phase_space()
-        self._assert_unique_particle_ids()
         self._check_ps_data_format()
         self._unique_particles = self._ps_data['particle type [pdg_code]'].unique()
 
@@ -240,6 +239,7 @@ class PhaseSpace:
         elipseX = ElipseGridx[ElipseIndex]
         elipseY = ElipseGridy[ElipseIndex]
         return elipseX, elipseY
+
 
     # public methods
 
@@ -384,6 +384,87 @@ class PhaseSpace:
                 axs[0, n_axs].set_ylim(ylim)
             n_axs = n_axs+1
 
+        plt.tight_layout()
+        plt.show()
+
+    def plot_beam_intensity(self, beam_direction='z', xlim=None, ylim=None, quantity='intensity',
+                            grid=True):  # pragma: no cover
+        """
+        This is alternative to plot_particle_positions(weight_position_plot=True); rather than a scatter plot of every particle, an
+        image is formed by assigning particles to bins over a 2D grid. This is faster than generating a gaussian kde of intensity.
+        In addition, this also allows to accumulate over energy as well as intensity.
+
+        :param beam_direction: the direction the beam is travelling in. "x", "y", or "z" (default)
+        :type beam_direction: str, optional
+        :param xlim: set the xlim for all plots, e.g. [-2,2]
+        :type xlim: list or None, optional
+        :param ylim: set the ylim for all plots, e.g. [-2,2]
+        :type ylim: list or None, optional
+        :param quantity: quantity to accumulate; either 'intensity' or 'energy
+        :type quantity: str
+        :param grid: turns grid on/off
+        :type grid: bool
+        :return: None
+        """
+
+        fig, axs = plt.subplots(1, len(self._unique_particles), squeeze=False)
+        fig.set_size_inches(5*len(self._unique_particles), 5)
+        n_axs = 0
+        if not beam_direction in ['x', 'y', 'z']:
+            raise NotImplementedError('beam_direction must be "x", "y", or  "z"')
+        if not quantity in ['intensity', 'energy']:
+            raise NotImplementedError('quantity must be "intensity" or "energy"')
+
+        if not 'Ek [MeV]' in self.ps_data.columns:
+            self.fill_kinetic_E()
+        for particle in self._unique_particles:
+            ind = self._ps_data['particle type [pdg_code]'] == particle
+            ps_data = self._ps_data.loc[ind]
+            if beam_direction == 'x':
+                loop_data = zip(ps_data['z [mm]'], ps_data['y [mm]'], ps_data['Ek [MeV]'], ps_data['weight'])
+                _xlabel = 'z [mm]'
+                _ylabel = 'y [mm]'
+
+            if beam_direction == 'y':
+                loop_data = zip(ps_data['x [mm]'], ps_data['z [mm]'], ps_data['Ek [MeV]'], ps_data['weight'])
+                _xlabel = 'x [mm]'
+                _ylabel = 'z [mm]'
+            if beam_direction == 'z':
+                loop_data = zip(ps_data['x [mm]'], ps_data['y [mm]'], ps_data['Ek [MeV]'], ps_data['weight'])
+                _xlabel = 'x [mm]'
+                _ylabel = 'y [mm]'
+            if xlim is None:
+                xlim = [ps_data['x [mm]'].min(), ps_data['x [mm]'].max()]
+            if ylim is None:
+                ylim = [ps_data['y [mm]'].min(), ps_data['y [mm]'].max()]
+            if quantity == 'intensity':
+                _title = f"accumulated intensity;\n{particle_cfg.particle_properties[particle]['name']}"
+            elif quantity == 'energy':
+                _title = f"accumulated energy;\n{particle_cfg.particle_properties[particle]['name']}"
+            X = np.linspace(xlim[0], xlim[1], 100)
+            Y = np.linspace(ylim[0], ylim[1], 100)
+            # create an empty array:
+            ImageArray = np.zeros([X.shape[0], Y.shape[0]])
+
+            for x, y, E, weight in loop_data:
+                # find the closest position in the image array:
+                xpos = np.argmin(abs(X - x))  ## nb big X is image coordinate, x is particle coordinate
+                ypos = np.argmin(abs(Y - y))
+                if quantity == 'intensity':
+                    ImageArray[xpos, ypos] = ImageArray[xpos, ypos] + weight
+                elif quantity == 'energy':
+                    ImageArray[xpos, ypos] = ImageArray[xpos, ypos] + (E * weight)
+            # plot data:
+            extent = [xlim[0], xlim[1], ylim[0], ylim[1]]
+            _im = axs[0, n_axs].imshow(ImageArray, extent=extent)
+            fig.colorbar(_im, ax=axs[0,n_axs])
+
+            axs[0, n_axs].set_title(_title)
+            axs[0, n_axs].set_xlabel(_xlabel, fontsize=_FigureSpecs.LabelFontSize)
+            axs[0, n_axs].set_ylabel(_ylabel, fontsize=_FigureSpecs.LabelFontSize)
+            if grid:
+                axs[0, n_axs].grid()
+            n_axs = n_axs + 1
         plt.tight_layout()
         plt.show()
 
