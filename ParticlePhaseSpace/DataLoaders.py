@@ -104,7 +104,16 @@ class LoadTopasData(_DataLoadersBase):
     """
     DataLoader for `Topas <https://topas.readthedocs.io/en/latest/>`_ data.
     This data loader will read in both ascii and binary topas phase space (phsp) files.
-    Behind the scenes, it relies on `topas2numpy <https://github.com/davidchall/topas2numpy>`_
+    Behind the scenes, it relies on `topas2numpy <https://github.com/davidchall/topas2numpy>`_::
+
+        from ParticlePhaseSpace import DataLoaders
+        from ParticlePhaseSpace import PhaseSpace
+        from pathlib import Path
+
+        data_loc = Path(r'../tests/test_data/coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp')
+
+        data = DataLoaders.LoadTopasData(data_loc)
+        PS = PhaseSpace(data)
     """
 
     def _import_data(self):
