@@ -7,7 +7,7 @@ from .utilities import get_rest_masses_from_pdg_codes
 import ParticlePhaseSpace.__phase_space_config__ as ps_cfg
 import ParticlePhaseSpace.__particle_config__ as particle_cfg
 import warnings
-
+from scipy import constants
 
 class _DataLoadersBase(ABC):
     """
@@ -152,6 +152,8 @@ class LoadTopasData(_DataLoadersBase):
         """
         if not Path(self._input_data).is_file():
             raise FileNotFoundError(f'input data file {self._import_data()} does not exist')
+        if not Path(self._input_data).suffix == '.phsp':
+            raise Exception('The topas data loader reads in files of extension *.phsp')
         if self._particle_type:
             warnings.warn('particle type is ignored in topas read in')
 
@@ -195,3 +197,63 @@ class LoadPandasData(_DataLoadersBase):
             raise AttributeError('particle_type should not be specified for pandas import')
 
 
+class LoadTibarayData(_DataLoadersBase):
+    """
+    Load ASCII data from tibaray of format::
+
+        x y z rxy Bx By Bz G t m q nmacro rmacro ID
+    """
+
+    def _check_input_data(self):
+        if not Path(self._input_data).is_file():
+            raise FileNotFoundError(f'input data file {self._import_data()} does not exist')
+        if not self._particle_type:
+            raise Exception('particle_type must be specified when readin tibaray data')
+
+    def _import_data(self):
+        Data = np.loadtxt(self._input_data, skiprows=1)
+        self.data['x [mm]'] = Data[:, 0] * 1e3  # mm to m
+        self.data['y [mm]'] = Data[:, 1] * 1e3
+        self.data['z [mm]'] = Data[:, 2] * 1e3
+        Bx = Data[:, 4]
+        By = Data[:, 5]
+        Bz = Data[:, 6]
+        Gamma = Data[:, 7]
+        self.data['time [ps]'] = Data[:, 8]
+        m = Data[:, 9]
+        q = Data[:, 10]
+        self.data['weight'] = Data[:, 11]
+        rmacro = Data[:, 12]
+        self.data['particle id'] = Data[:, 13]
+        self.data['particle type [pdg_code]'] = particle_cfg.particle_properties[self._particle_type]['pdg_code']
+
+        self.data['px [MeV/c]'] = np.multiply(Bx, Gamma) * particle_cfg.particle_properties[self._particle_type]['rest_mass']
+        self.data['py [MeV/c]'] = np.multiply(By, Gamma) * particle_cfg.particle_properties[self._particle_type]['rest_mass']
+        self.data['pz [MeV/c]'] = np.multiply(Bz, Gamma) * particle_cfg.particle_properties[self._particle_type]['rest_mass']
+
+
+class LoadCST_TRK_Data(_DataLoadersBase):
+
+    def _check_input_data(self):
+        if not Path(self._input_data).is_file():
+            raise FileNotFoundError(f'input data file {self._import_data()} does not exist')
+        if not self._particle_type:
+            raise Exception('particle_type must be specified when readin tibaray data')
+
+    def _import_data(self):
+        """
+        Read in CST data file of format:
+        [posX   posY    posZ    particleID      sourceID    mass    macro-charge    time    Current     momX    momY    momZ    SEEGeneration]
+        """
+
+        Data = np.loadtxt(self._input_data, skiprows=8)
+        self.data['x [mm]'] = Data[:, 0]
+        self.data['y [mm]'] = Data[:, 1]
+        self.data['z [mm]'] = Data[:, 2]
+        self.data['px [MeV/c]'] = Data[:, 9] * particle_cfg.particle_properties[self._particle_type]['rest_mass']
+        self.data['py [MeV/c]'] = Data[:, 10] * particle_cfg.particle_properties[self._particle_type]['rest_mass']
+        self.data['[z [MeV/c]'] = Data[:, 11] * particle_cfg.particle_properties[self._particle_type]['rest_mass']
+        _macro_charge = Data[:, 6]
+        self.data['weight'] = _macro_charge / constants.elementary_charge
+        self.data['particle id'] = Data[:, 4]
+        self.data['particle type [pdg_code]'] = particle_cfg.particle_properties[self._particle_type]['pdg_code']
