@@ -464,7 +464,7 @@ div.rendered_html tbody tr:hover {
 <h1>Basic Example<a class="headerlink" href="#Basic-Example" title="Permalink to this heading">¶</a></h1>
 <section id="Data-import">
 <h2>Data import<a class="headerlink" href="#Data-import" title="Permalink to this heading">¶</a></h2>
-<p>to import data, we use an instance of the DataLoaders class. In this example, we will work with topas data. For a list of all currently available data importers, see <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/code_docs.html#module-ParticlePhaseSpace.DataLoaders">here</a>; for instructions on writing new data importers see <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/new_data_loader.html">here</a></p>
+<p>The first step of data analysis is import data. In this code, data import is always handled through an instance of the DataLoaders class. In this example, we will work with topas data. For a list of all currently available data importers, see <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/code_docs.html#module-ParticlePhaseSpace.DataLoaders">here</a>; for instructions on writing new data importers see <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/new_data_loader.html">here</a></p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -547,13 +547,29 @@ div.rendered_html tbody tr:hover {
 <img alt="_images/basic_example_9_0.png" src="_images/basic_example_9_0.png" />
 </div>
 </div>
-<p>Note that in the plot above, particles with different weights are plotted with different colors. You can also produce a weighted scatterplot by setting <code class="docutils literal notranslate"><span class="pre">weight_position_plot=True</span></code> however this is very slow with large datasets. An example of this type of plot is <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/new_data_loader.html">here</a></p>
+<p>Note that in the plot above, particles with different weights are plotted with different colors. Another way to visualise the particle positions is the <code class="docutils literal notranslate"><span class="pre">plot_beam_intensity</span></code> method, which will produce an image of accumulated intensity:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">plot_beam_intensity</span><span class="p">(</span><span class="n">xlim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/basic_example_11_0.png" src="_images/basic_example_11_0.png" />
+</div>
+</div>
+<p>This plot is actually a lot more illuminating than the scatter plot in this instance! This phase space was scored at the exit of a <a class="reference external" href="https://aapm.onlinelibrary.wiley.com/doi/10.1002/mp.15887">novel type of x-ray collimator</a>; you can see that the x-rays (gammas) have been shaped to a square, which is as expected. Meanwhile the electrons and positrons are randomly scattered, which is also as expected.</p>
 </section>
 <section id="Seperating,-adding,-and-subtracting-phase-space-objects">
 <h2>Seperating, adding, and subtracting phase space objects<a class="headerlink" href="#Seperating,-adding,-and-subtracting-phase-space-objects" title="Permalink to this heading">¶</a></h2>
 <p>You can easily add, subtract, and seperate phase space objects:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">electron_PS</span> <span class="o">=</span> <span class="n">PS</span><span class="p">(</span><span class="s1">&#39;electrons&#39;</span><span class="p">)</span>  <span class="c1"># this generates a phase space with only the electrons</span>
@@ -567,12 +583,12 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/basic_example_12_0.png" src="_images/basic_example_12_0.png" />
+<img alt="_images/basic_example_14_0.png" src="_images/basic_example_14_0.png" />
 </div>
 </div>
 <p>You can also pass a list of particles to get multiple phase spaces at once:</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gamma_PS</span><span class="p">,</span> <span class="n">positron_PS</span> <span class="o">=</span> <span class="n">PS</span><span class="p">([</span><span class="s1">&#39;gammas&#39;</span><span class="p">,</span> <span class="s1">&#39;positrons&#39;</span><span class="p">])</span>  <span class="c1"># you can also pass a list</span>
@@ -581,7 +597,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <p>You can subtract one phase space from another. For example, the following will produce a new phase space object where all the gamma particles are removed:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">no_gamma_PS</span> <span class="o">=</span> <span class="n">PS</span> <span class="o">-</span> <span class="n">gamma_PS</span>
@@ -593,12 +609,12 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/basic_example_16_0.png" src="_images/basic_example_16_0.png" />
+<img alt="_images/basic_example_18_0.png" src="_images/basic_example_18_0.png" />
 </div>
 </div>
 <p>You can also add phase spaces together:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Original_PS</span> <span class="o">=</span> <span class="n">no_gamma_PS</span> <span class="o">+</span> <span class="n">gamma_PS</span>
@@ -610,7 +626,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/basic_example_18_0.png" src="_images/basic_example_18_0.png" />
+<img alt="_images/basic_example_20_0.png" src="_images/basic_example_20_0.png" />
 </div>
 </div>
 <p>However: you cannot add identical particles into an existing phase space. If you really want to do this, you will need to update the particle_ID field first.</p>
@@ -619,7 +635,7 @@ div.rendered_html tbody tr:hover {
 <h2>Twiss parameters<a class="headerlink" href="#Twiss-parameters" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference external" href="https://en.wikipedia.org/wiki/Courant%E2%80%93Snyder_parameters">Twiss parameters</a> or courant-snyder parameters are commonly used to describe the distribution of particles in a transverse phase space. You can calculate, save, and plot the twiss parameters:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">print_twiss_parameters</span><span class="p">(</span><span class="n">beam_direction</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">)</span>  <span class="c1"># calculate the RMS twiss parameters</span>
@@ -638,27 +654,27 @@ div.rendered_html tbody tr:hover {
 gammas:
                 x         y
 epsilon  2.525901  2.673361
-alpha   -0.619585 -0.525727
+alpha    0.619585  0.525727
 beta     8.976938  9.488084
 gamma    0.154160  0.134526
 
 electrons:
                 x         y
 epsilon  2.208669  2.357446
-alpha   -1.159332 -1.009164
+alpha    1.159332  1.009164
 beta     4.971102  4.634599
 gamma    0.471535  0.435510
 
 positrons:
                 x         y
 epsilon  1.881200  1.178092
-alpha   -1.141023 -2.283977
+alpha    1.141023  2.283977
 beta     3.888975  5.672388
 gamma    0.591913  1.095932
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">plot_transverse_trace_space</span><span class="p">()</span>
@@ -669,7 +685,7 @@ gamma    0.591913  1.095932
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/basic_example_22_0.png" src="_images/basic_example_22_0.png" />
+<img alt="_images/basic_example_24_0.png" src="_images/basic_example_24_0.png" />
 </div>
 </div>
 <p>The above plot shows what is sometimes called a ‘trace space’ which is plot of position (x) versus divergence (x’ = px/pz). The Red ellipse represents the space enclosed by the RMS twiss parameters, which should enclode 37% of the beam.</p>
@@ -679,7 +695,7 @@ gamma    0.591913  1.095932
 <p>For some research purposes you may wish to manipulate the data in the phase space - for instance, change the z value of all particles because different simulation codes use different coordinate system. This is very possible with this code; you can directly change all data fields by directly interacting with the pandas data stored at <code class="docutils literal notranslate"><span class="pre">PhaseSpace.ps_data</span></code>. Whenever you change ps_data, all columns except for the <a class="reference external" href="add%20link">required columns</a> will be deleted. As such, you can only manipulate
 the required columns. Following this, you can use the various <code class="docutils literal notranslate"><span class="pre">fill</span></code> methods to recalculate any additional data.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># zero the z coordinate</span>
@@ -695,7 +711,7 @@ the required columns. Following this, you can use the various <code class="docut
 <p>Similarly to the data import stage we use an instance of <code class="docutils literal notranslate"><span class="pre">ParticlePhaseSpace.ataLoaders</span></code> to export the data. You can see the currently available data exporters <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/code_docs.html#module-ParticlePhaseSpace.DataExporters">here</a>, and you see a demonstration of writing a new data exporter <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/new_data_exporter.html">here</a>. At the time of writing, I had only written the topas exporter, so again this is
 what I will use in this example:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ParticlePhaseSpace</span> <span class="kn">import</span> <span class="n">DataExporters</span>
@@ -714,12 +730,12 @@ success
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;ParticlePhaseSpace.DataExporters.Topas_Exporter at 0x7f0fa9ed27c0&gt;
+&lt;ParticlePhaseSpace.DataExporters.Topas_Exporter at 0x7faa8211e790&gt;
 </pre></div></div>
 </div>
 </section>
