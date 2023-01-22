@@ -78,8 +78,7 @@ class _DataExportersBase(ABC):
 
 class Topas_Exporter(_DataExportersBase):
     """
-    output the phase space to topas ascii format:
-    https://topas.readthedocs.io/en/latest/parameters/source/phasespace.html
+    output the phase space to `topas ascii format <https://topas.readthedocs.io/en/latest/parameters/source/phasespace.html>`_.
 
     Note:
         - we do not handle any time features
