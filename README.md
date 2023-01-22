@@ -11,7 +11,8 @@ To install: ```pip install ParticlePhaseSpace```
 
 ## Usage and Documentation
 
-Detailed documentation is provided [here](https://bwheelz36.github.io/ParticlePhaseSpace/)
+Detailed documentation is provided [here](https://bwheelz36.github.io/ParticlePhaseSpace/).
+
 The source code for the [worked examples](https://bwheelz36.github.io/ParticlePhaseSpace/examples.html) is inside the examples folder.
 
 ## Directory Structure
