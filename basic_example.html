@@ -464,7 +464,8 @@ div.rendered_html tbody tr:hover {
 <h1>Basic Example<a class="headerlink" href="#Basic-Example" title="Permalink to this heading">¶</a></h1>
 <section id="Data-import">
 <h2>Data import<a class="headerlink" href="#Data-import" title="Permalink to this heading">¶</a></h2>
-<p>The first step of data analysis is import data. In this code, data import is always handled through an instance of the DataLoaders class. In this example, we will work with topas data. For a list of all currently available data importers, see <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/code_docs.html#module-ParticlePhaseSpace.DataLoaders">here</a>; for instructions on writing new data importers see <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/new_data_loader.html">here</a></p>
+<p>The first step of data analysis is import data. In this code, data import is always handled through an instance of the <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/code_docs.html#module-ParticlePhaseSpace.DataLoaders">DataLoaders</a> class. In this example, we will work with topas data. For a list of all currently available data importers, see <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/code_docs.html#module-ParticlePhaseSpace.DataLoaders">here</a>; for instructions on writing new data
+importers see <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/new_data_loader.html">here</a></p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -476,7 +477,7 @@ div.rendered_html tbody tr:hover {
 <span class="kn">from</span> <span class="nn">ParticlePhaseSpace</span> <span class="kn">import</span> <span class="n">PhaseSpace</span>
 
 <span class="n">test_data_loc</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;../tests/test_data/coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span>
-<span class="n">ps_data</span> <span class="o">=</span> <span class="n">DataLoaders</span><span class="o">.</span><span class="n">LoadTopasData</span><span class="p">(</span><span class="n">test_data_loc</span><span class="p">)</span>
+<span class="n">ps_data</span> <span class="o">=</span> <span class="n">DataLoaders</span><span class="o">.</span><span class="n">Load_TopasData</span><span class="p">(</span><span class="n">test_data_loc</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -493,13 +494,43 @@ div.rendered_html tbody tr:hover {
 <section id="Basic-analytics">
 <h2>Basic analytics<a class="headerlink" href="#Basic-analytics" title="Permalink to this heading">¶</a></h2>
 <p>Once we have an instance of ParticlePhaseSpace, we can perform some analysis.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># PS.print_energy_stats()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">print_energy_stats</span><span class="p">()</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+===================================================
+                 ENERGY STATS
+===================================================
+total number of particles in phase space:  311489
+number of unique particle species:  3
+     308280 gammas
+        mean energy:  1.91 MeV
+        median energy:  1.20 MeV
+        Energy spread IQR:  2.03 MeV
+        min energy  0.01 MeV
+        max energy  10.35 MeV
+     2853 electrons
+        mean energy:  3.16 MeV
+        median energy:  3.39 MeV
+        Energy spread IQR:  2.95 MeV
+        min energy  0.02 MeV
+        max energy  9.44 MeV
+     356 positrons
+        mean energy:  2.66 MeV
+        median energy:  2.39 MeV
+        Energy spread IQR:  2.39 MeV
+        min energy  0.08 MeV
+        max energy  8.46 MeV
+</pre></div></div>
 </div>
 <p>You can see that this phase space consists of three different particle species. We can also generate plots for energy, and particle positions:</p>
 <div class="nbinput docutils container">
@@ -549,10 +580,10 @@ div.rendered_html tbody tr:hover {
 </div>
 <p>Note that in the plot above, particles with different weights are plotted with different colors. Another way to visualise the particle positions is the <code class="docutils literal notranslate"><span class="pre">plot_beam_intensity</span></code> method, which will produce an image of accumulated intensity:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">plot_beam_intensity</span><span class="p">(</span><span class="n">xlim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">])</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">plot_beam_intensity</span><span class="p">(</span><span class="n">xlim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">],</span> <span class="n">grid</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -573,7 +604,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">electron_PS</span> <span class="o">=</span> <span class="n">PS</span><span class="p">(</span><span class="s1">&#39;electrons&#39;</span><span class="p">)</span>  <span class="c1"># this generates a phase space with only the electrons</span>
-<span class="c1"># you can also use pfg codes:</span>
+<span class="c1"># you can also use pdg codes:</span>
 <span class="n">electron_PS</span> <span class="o">=</span> <span class="n">PS</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span>  <span class="c1"># this is the same</span>
 <span class="n">electron_PS</span><span class="o">.</span><span class="n">plot_energy_histogram</span><span class="p">()</span>
 </pre></div>
@@ -677,7 +708,7 @@ gamma    0.591913  1.095932
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">plot_transverse_trace_space</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">plot_transverse_trace_space_scatter</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -688,14 +719,30 @@ gamma    0.591913  1.095932
 <img alt="_images/basic_example_24_0.png" src="_images/basic_example_24_0.png" />
 </div>
 </div>
-<p>The above plot shows what is sometimes called a ‘trace space’ which is plot of position (x) versus divergence (x’ = px/pz). The Red ellipse represents the space enclosed by the RMS twiss parameters, which should enclode 37% of the beam.</p>
+<p>The above plot shows what is sometimes called a ‘trace space’ which is plot of position (x) versus divergence (x’ = px/pz). The Red ellipse represents the space enclosed by the RMS twiss parameters, which should enclode 37% of the beam. As an alternative to the scatter plot, you can also visualise the intensity (defined as the sum of weights) in trace space:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">plot_transverse_trace_space_intensity</span><span class="p">(</span><span class="n">xlim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span> <span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">plot_twiss_ellipse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/basic_example_26_0.png" src="_images/basic_example_26_0.png" />
+</div>
+</div>
+<p>Again, this is quite illuminating; it shows that the gamma particles are fairly evenly dsitributed spread between -1 and 1 mm, and have almost no divergence. Again, since this data is from an x-ray collimator, this makes a lot of sense!</p>
 </section>
 <section id="Manipulating-data-in-the-phase-space">
 <h2>Manipulating data in the phase space<a class="headerlink" href="#Manipulating-data-in-the-phase-space" title="Permalink to this heading">¶</a></h2>
 <p>For some research purposes you may wish to manipulate the data in the phase space - for instance, change the z value of all particles because different simulation codes use different coordinate system. This is very possible with this code; you can directly change all data fields by directly interacting with the pandas data stored at <code class="docutils literal notranslate"><span class="pre">PhaseSpace.ps_data</span></code>. Whenever you change ps_data, all columns except for the <a class="reference external" href="add%20link">required columns</a> will be deleted. As such, you can only manipulate
 the required columns. Following this, you can use the various <code class="docutils literal notranslate"><span class="pre">fill</span></code> methods to recalculate any additional data.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># zero the z coordinate</span>
@@ -708,10 +755,10 @@ the required columns. Following this, you can use the various <code class="docut
 </section>
 <section id="Exporting-the-data">
 <h2>Exporting the data<a class="headerlink" href="#Exporting-the-data" title="Permalink to this heading">¶</a></h2>
-<p>Similarly to the data import stage we use an instance of <code class="docutils literal notranslate"><span class="pre">ParticlePhaseSpace.ataLoaders</span></code> to export the data. You can see the currently available data exporters <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/code_docs.html#module-ParticlePhaseSpace.DataExporters">here</a>, and you see a demonstration of writing a new data exporter <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/new_data_exporter.html">here</a>. At the time of writing, I had only written the topas exporter, so again this is
+<p>Similarly to the data import stage we use an instance of <code class="docutils literal notranslate"><span class="pre">ParticlePhaseSpace.DataLoaders</span></code> to export the data. You can see the currently available data exporters <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/code_docs.html#module-ParticlePhaseSpace.DataExporters">here</a>, and you see a demonstration of writing a new data exporter <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/new_data_exporter.html">here</a>. At the time of writing, I had only written the topas exporter, so again this is
 what I will use in this example:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ParticlePhaseSpace</span> <span class="kn">import</span> <span class="n">DataExporters</span>
@@ -730,12 +777,12 @@ success
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;ParticlePhaseSpace.DataExporters.Topas_Exporter at 0x7faa8211e790&gt;
+&lt;ParticlePhaseSpace.DataExporters.Topas_Exporter at 0x7f2162442800&gt;
 </pre></div></div>
 </div>
 </section>
