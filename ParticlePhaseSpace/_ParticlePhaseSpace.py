@@ -82,7 +82,7 @@ class PhaseSpace:
                 if not col_name in ps_cfg.required_columns:
                     particle_data.drop(columns=col_name, inplace=True)
             # create a new instance of _DataImportersBase based on particle_data
-            particle_data_loader = DataLoaders.LoadPandasData(particle_data)
+            particle_data_loader = DataLoaders.Load_PandasData(particle_data)
             particle_instance = PhaseSpace(particle_data_loader)
             particle_data_sets.append(particle_instance)
 
@@ -101,7 +101,7 @@ class PhaseSpace:
         for col_name in new_data.columns:
             if not col_name in ps_cfg.required_columns:
                 new_data.drop(columns=col_name, inplace=True)
-        new_data_loader = DataLoaders.LoadPandasData(new_data)
+        new_data_loader = DataLoaders.Load_PandasData(new_data)
         new_instance = PhaseSpace(new_data_loader)
         return new_instance
 
@@ -116,7 +116,7 @@ class PhaseSpace:
         for col_name in new_data.columns:
             if not col_name in ps_cfg.required_columns:
                 new_data.drop(columns=col_name, inplace=True)
-        new_data_loader = DataLoaders.LoadPandasData(new_data)
+        new_data_loader = DataLoaders.Load_PandasData(new_data)
         new_instance = PhaseSpace(new_data_loader)
         return new_instance
 
@@ -239,7 +239,6 @@ class PhaseSpace:
         elipseX = ElipseGridx[ElipseIndex]
         elipseY = ElipseGridy[ElipseIndex]
         return elipseX, elipseY
-
 
     # public methods
 
@@ -448,12 +447,14 @@ class PhaseSpace:
 
             for x, y, E, weight in loop_data:
                 # find the closest position in the image array:
-                xpos = np.argmin(abs(X - x))  ## nb big X is image coordinate, x is particle coordinate
-                ypos = np.argmin(abs(Y - y))
-                if quantity == 'intensity':
-                    ImageArray[xpos, ypos] = ImageArray[xpos, ypos] + weight
-                elif quantity == 'energy':
-                    ImageArray[xpos, ypos] = ImageArray[xpos, ypos] + (E * weight)
+                if x < xlim[1] and x > xlim[0]:
+                    if y < ylim[1] and y > ylim[0]:
+                        xpos = np.argmin(abs(X - x))  ## nb big X is image coordinate, x is particle coordinate
+                        ypos = np.argmin(abs(Y - y))
+                        if quantity == 'intensity':
+                            ImageArray[xpos, ypos] = ImageArray[xpos, ypos] + weight
+                        elif quantity == 'energy':
+                            ImageArray[xpos, ypos] = ImageArray[xpos, ypos] + (E * weight)
             # plot data:
             extent = [xlim[0], xlim[1], ylim[0], ylim[1]]
             _im = axs[0, n_axs].imshow(ImageArray, extent=extent)
@@ -468,7 +469,8 @@ class PhaseSpace:
         plt.tight_layout()
         plt.show()
 
-    def plot_transverse_trace_space(self, beam_direction='z', plot_twiss_ellipse=True):  # pragma: no cover
+    def plot_transverse_trace_space_scatter(self, beam_direction='z', plot_twiss_ellipse=True,
+                                            xlim=None, ylim=None):  # pragma: no cover
         """
         Generate a scatter plot of x versus x'=px/pz and y versus y'=py/pz (these definitions are for
         beam_direction='z')
@@ -477,6 +479,10 @@ class PhaseSpace:
         :type beam_direction: str, optional
         :param plot_twiss_ellipse: if True, will overlay the RMS twiss ellipse onto the trace space
         :type plot_twiss_ellipse: bool, optional
+        :param xlim: set xlim, e.g. [-2,2]
+        :type xlim: list, optional
+        :param ylim: set ylim, e.g. [-2,2]
+        :type ylim: list, optional
         :return: None
         """
 
@@ -547,7 +553,10 @@ class PhaseSpace:
                 # axs[row, 0].set_xlim([3*np.min(twiss_X), 3*np.max(twiss_X)])
                 # axs[row, 0].set_ylim([3 * np.min(twiss_Y), 3 * np.max(twiss_Y)])
             axs[row, 0].grid()
-
+            if xlim:
+                axs[row, 0].set_xlim(xlim)
+            if ylim:
+                axs[row, 0].set_ylim(ylim)
             if plot_twiss_ellipse:
                 twiss_X, twiss_Y = self._get_ellipse_xy_points(elipse_parameters_2, x_data_2.min(), x_data_2.max(),
                                                                div_data_2.min(), div_data_2.max())
@@ -557,10 +566,146 @@ class PhaseSpace:
             axs[row, 1].set_ylabel(y_label_2)
             axs[row, 1].set_title(title_2)
             axs[row, 1].grid()
+            if xlim:
+                axs[row, 1].set_xlim(xlim)
+            if ylim:
+                axs[row, 1].set_ylim(ylim)
             row = row + 1
 
         plt.tight_layout()
         plt.show()
+
+    def plot_tranverse_trace_space_intensity(self, beam_direction='z', plot_twiss_ellipse=True,
+                                             xlim=None, ylim=None, grid=True):
+        self.calculate_twiss_parameters(beam_direction=beam_direction)
+        fig, axs = plt.subplots(nrows=len(self._unique_particles), ncols=2, squeeze=False)
+        row = 0
+        for particle in self._unique_particles:
+            particle_name = particle_cfg.particle_properties[particle]['name']
+            ind = self._ps_data['particle type [pdg_code]'] == particle
+            ps_data = self._ps_data.loc[ind]
+            if beam_direction == 'z':
+                x_data_1 = ps_data['x [mm]']
+                div_data_1 = np.divide(ps_data['px [MeV/c]'], ps_data['pz [MeV/c]'])
+                x_label_1 = 'x [mm]'
+                y_label_1 = "x' [mrad]"
+                title_1 = particle_name + ': x'
+                weight = ps_data['weight']
+                elipse_parameters_1 = self.twiss_parameters[particle_name]['x']
+
+                x_data_2 = ps_data['y [mm]']
+                div_data_2 = np.divide(ps_data['py [MeV/c]'], ps_data['pz [MeV/c]'])
+                x_label_2 = 'y [mm]'
+                y_label_2 = "y' [mrad]"
+                title_2 = particle_name + ': y'
+                elipse_parameters_2 = self.twiss_parameters[particle_name]['y']
+
+            elif beam_direction == 'x':
+                x_data_1 = ps_data['y [mm]']
+                div_data_1 = np.divide(ps_data['py [MeV/c]'], ps_data['px [MeV/c]'])
+                x_label_1 = 'y [mm]'
+                y_label_1 = "y' [mrad]"
+                title_1 = particle_name + ': x'
+                weight = ps_data['weight']
+                elipse_parameters_1 = self.twiss_parameters[particle_name]['y']
+
+                x_data_2 = ps_data['z [mm]']
+                div_data_2 = np.divide(ps_data['pz [MeV/c]'], ps_data['px [MeV/c]'])
+                x_label_2 = 'z [mm]'
+                y_label_2 = "z' [mrad]"
+                title_2 = particle_name + ': y'
+                elipse_parameters_2 = self.twiss_parameters[particle_name]['z']
+            elif beam_direction == 'y':
+                x_data_1 = ps_data['x [mm]']
+                div_data_1 = np.divide(ps_data['px [MeV/c]'], ps_data['py [MeV/c]'])
+                x_label_1 = 'x [mm]'
+                y_label_1 = "x' [mrad]"
+                title_1 = particle_name + ': x'
+                weight = ps_data['weight']
+                elipse_parameters_1 = self.twiss_parameters[particle_name]['x']
+
+                x_data_2 = ps_data['z [mm]']
+                div_data_2 = np.divide(ps_data['pz [MeV/c]'], ps_data['py [MeV/c]'])
+                x_label_2 = 'z [mm]'
+                y_label_2 = "z' [mrad]"
+                title_2 = particle_name + ': y'
+                elipse_parameters_2 = self.twiss_parameters[particle_name]['z']
+            else:
+                raise NotImplementedError(f'beam_direction must be "x", "y", or "z", not {beam_direction}')
+
+            # accumulate data
+            if not xlim:
+                xlim = [np.min([x_data_1, x_data_2]), np.max([x_data_1, x_data_2])]
+            if not ylim:
+                ylim =  [np.min([div_data_1, div_data_2]), np.max([div_data_1, div_data_2])]
+
+            X = np.linspace(xlim[0], xlim[1], 100)
+            Y = np.linspace(ylim[0], ylim[1], 100)
+            # create an empty array:
+            ImageArray1 = np.zeros([X.shape[0], Y.shape[0]])
+            ImageArray2 = np.zeros([X.shape[0], Y.shape[0]])
+
+            for _x_1, _div_1, _x_2, _div_2, _weight in zip(x_data_1, div_data_1, x_data_2, div_data_2, weight):
+                if _x_1 < xlim[1] and _x_1 > xlim[0]:
+                    if _div_1 < ylim[1] and _div_1 > ylim[0]:
+                        # find the closest position in the image array:
+                        xpos1 = np.argmin(abs(X - _x_1))  ## nb big X is image coordinate, x is particle coordinate
+                        ypos1 = np.argmin(abs(Y - _div_1))
+                        ImageArray1[xpos1, ypos1] = ImageArray1[xpos1, ypos1] + _weight
+                        if abs(_x_1) > 1:
+                            print('what gives')
+                if _x_2 < xlim[1] and _x_1 > xlim[0]:
+                    if _div_2 < ylim[1] and _div_1 > ylim[0]:
+                        xpos2 = np.argmin(abs(X - _x_2))  ## nb big X is image coordinate, x is particle coordinate
+                        ypos2 = np.argmin(abs(Y - _div_2))
+                        ImageArray2[xpos2, ypos2] = ImageArray1[xpos2, ypos2] + _weight
+
+            # plot data:
+            extent = [xlim[0], xlim[1], ylim[0], ylim[1]]
+            _im1 = axs[row, 0].imshow(np.log(ImageArray1), extent=extent)
+            fig.colorbar(_im1, ax=axs[row,0])
+            axs[row, 0].set_xlabel(x_label_1)
+            axs[row, 0].set_ylabel(y_label_1)
+            axs[row, 0].set_title(title_1)
+            if plot_twiss_ellipse:
+                twiss_X, twiss_Y = self._get_ellipse_xy_points(elipse_parameters_1, x_data_1.min(), x_data_1.max(),
+                                                               div_data_1.min(), div_data_1.max())
+                axs[row, 0].scatter(twiss_X, twiss_Y, c='r')
+            if grid:
+                axs[row, 0].grid()
+            axs[row, 0].set_xlim(xlim)
+            axs[row, 0].set_ylim(ylim)
+            axs[row, 0].set_aspect('auto')
+
+            _im2 = axs[row, 1].imshow(ImageArray2, extent=extent)
+            fig.colorbar(_im2, ax=axs[row, 1])
+            if plot_twiss_ellipse:
+                twiss_X, twiss_Y = self._get_ellipse_xy_points(elipse_parameters_2, x_data_2.min(), x_data_2.max(),
+                                                               div_data_2.min(), div_data_2.max())
+                axs[row, 1].scatter(twiss_X, twiss_Y, c='r')
+            if grid:
+                axs[row, 1].grid()
+            axs[row, 1].set_xlabel(x_label_2)
+            axs[row, 1].set_ylabel(y_label_2)
+            axs[row, 1].set_title(title_2)
+            axs[row, 1].set_xlim(xlim)
+            axs[row, 1].set_ylim(ylim)
+            axs[row, 1].set_aspect('auto')
+            row = row + 1
+
+        plt.tight_layout()
+        plt.show()
+
+    def plot_n_particles_v_time(self):  # pragma: no cover
+        """
+        basic plot of number of particles versus time; useful for quickly seperating out different bunches
+        of electrons such that you can apply the 'filter_by_time' method
+        """
+        plt.figure()
+        plt.hist(self._ps_data['time [ps]'], 100)
+        plt.xlabel('time ps')
+        plt.ylabel('N particles')
+        plt.tight_layout()
 
     def print_energy_stats(self, file_name=None):  # pragma: no cover
         """
@@ -694,7 +839,7 @@ class PhaseSpace:
         for col_name in new_data.columns:
             if not col_name in ps_cfg.required_columns:
                 new_data.drop(columns=col_name, inplace=True)
-        new_data_loader = DataLoaders.LoadPandasData(new_data)
+        new_data_loader = DataLoaders.Load_PandasData(new_data)
         new_instance = PhaseSpace(new_data_loader)
         return new_instance
 
@@ -757,30 +902,54 @@ class PhaseSpace:
             q75, q25 = self._weighted_quantile(ps_data['Ek [MeV]'], [0.25, 0.75], sample_weight=ps_data['weight'])
             self.energy_stats[particle_name]['energy spread IQR'] = q25 - q75
 
-
-
-    def project_particles(self, beam_direction='z', distance=100):
+    def project_particles(self, beam_direction='z', distance=100, in_place=False):
         """
         Update the positions of each particle by projecting it forward/back by distance.
 
-        This serves as a crude approximation to more advanced particle transport codes, but gives
-        an indication of where the particles would end up in the absence of other forces.
-        When this function is recalled, any dervied quantities will be deleted as it is too hard to check
-        that they all remain correct.
+        This serves as a crude approximation to more advanced particle transport codes
+        and represents where the particles would end up in the absence of any forces or interactions.
 
         :param direction: the direction to project in. 'x', 'y', or 'z'
         :param distance: how far to project in mm
-        :return: None
+        :param in_place: if True, the existing PhaseSpace object has its data updated. if False,
+            a new PhaseSpace object is returned
+        :return: new_instance: if in_place = False, a new PhaseSpace object is returned
         """
         if not 'vx [m/s]' in self._ps_data.columns:
             self.fill_velocity()
 
-        if beam_direction == 'z':
-            self._ps_data['x [mm]'] = self._ps_data['x [mm]'] + np.divide(self._ps_data['vx [m/s]'], self._ps_data['vz [m/s]']) * distance
-            self._ps_data['y [mm]'] = self._ps_data['y [mm]'] + np.divide(self._ps_data['vy [m/s]'], self._ps_data['vz [m/s]']) * distance
-            self._ps_data['z [mm]'] = self._ps_data['z [mm]'] + distance
+        if beam_direction == 'x':
+            new_x = self._ps_data['x [mm]'] + distance
+            new_y = self._ps_data['y [mm]'] + np.divide(self._ps_data['vy [m/s]'], self._ps_data['vx [m/s]']) * distance
+            new_z = self._ps_data['z [mm]'] + np.divide(self._ps_data['vz [m/s]'], self._ps_data['vx [m/s]']) * distance
+        elif beam_direction == 'y':
+            new_x = self._ps_data['x [mm]'] + np.divide(self._ps_data['vx [m/s]'], self._ps_data['vy [m/s]']) * distance
+            new_y = self._ps_data['y [mm]'] + distance
+            new_z = self._ps_data['z [mm]'] + np.divide(self._ps_data['vz [m/s]'], self._ps_data['vy [m/s]']) * distance
+        elif beam_direction == 'z':
+            new_x = self._ps_data['x [mm]'] + np.divide(self._ps_data['vx [m/s]'], self._ps_data['vz [m/s]']) * distance
+            new_y = self._ps_data['y [mm]'] + np.divide(self._ps_data['vy [m/s]'], self._ps_data['vz [m/s]']) * distance
+            new_z = self._ps_data['z [mm]'] + distance
         else:
-            raise NotImplementedError('havent coded the other directions yet')
+            raise NotImplementedError('beam_direction must be "x", "y", or "z"')
+
+        if in_place:
+            self._ps_data['x [mm]'] = new_x
+            self._ps_data['y [mm]'] = new_y
+            self._ps_data['z [mm]'] = new_z
+        else:
+            ps_data = self._ps_data.copy(deep=True)
+            for col_name in ps_data.columns:
+                if not col_name in ps_cfg.required_columns:
+                    ps_data.drop(columns=col_name, inplace=True)
+            ps_data['x [mm]'] = new_x
+            ps_data['y [mm]'] = new_y
+            ps_data['z [mm]'] = new_z
+            new_data = DataLoaders.Load_PandasData(ps_data)
+            new_instance = PhaseSpace(new_data)
+            return  new_instance
+
+
 
         self.reset_phase_space()  # safest to get rid of any derived quantities
 
@@ -837,3 +1006,25 @@ class PhaseSpace:
             print(density_data)
         return density_data
 
+    def filter_by_time(self, t_start, t_finish):
+        """
+        Generates a new PhaseSpace which only contains particles inside t_start and t_finish (inclusive).
+        t_start and t_finish should be specfied in ps.
+
+        :param t_start: particles with t<t_start are removed.
+        :type t_start: float
+        :param t_finish: particleswith t>t_finish are removed
+        :type t_finish: float
+        :return: new_instance: a new phase space object with data filtered by time
+        """
+        ind = np.logical_and(self._ps_data['time [ps]'] >= t_start, self._ps_data['time [ps]'] <= t_finish)
+        ps_data = self._ps_data[ind]
+        for col_name in ps_data.columns:
+            if not col_name in ps_cfg.required_columns:
+                ps_data.drop(columns=col_name, inplace=True)
+        # create a new instance of _DataImportersBase based on particle_data
+        ps_data_loader = DataLoaders.Load_PandasData(ps_data)
+        new_instance = PhaseSpace(ps_data_loader)
+        print(f'Original data contains {len(self): d} particles')
+        print(f'Filtered data contains {len(new_instance): d} particles')
+        return new_instance
