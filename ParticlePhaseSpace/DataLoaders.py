@@ -110,6 +110,7 @@ class Load_TopasData(_DataLoadersBase):
     """
     DataLoader for `Topas <https://topas.readthedocs.io/en/latest/>`_ data.
     This data loader will read in both ascii and binary topas phase space (phsp) files.
+    At present, we do not handle time or particle-id fields which may or may not be present in topas data.
     Behind the scenes, it relies on `topas2numpy <https://github.com/davidchall/topas2numpy>`_::
 
         from ParticlePhaseSpace import DataLoaders
