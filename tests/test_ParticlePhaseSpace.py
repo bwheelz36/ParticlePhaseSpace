@@ -12,7 +12,7 @@ import pytest
 import ParticlePhaseSpace.__particle_config__ as particle_cfg
 
 test_data_loc = this_file_loc / 'test_data'
-data = DataLoaders.LoadTopasData(test_data_loc / 'coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp')
+data = DataLoaders.Load_TopasData(test_data_loc / 'coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp')
 PS = PhaseSpace(data)
 
 
@@ -62,24 +62,56 @@ def test_energy_stats_stability():
                         PS.energy_stats[particle_key][energy_key])
 
 def test_project_particles():
-    if not 'vx [m/s]' in PS.ps_data.columns:
-        PS.fill_velocity()
 
-    # manual projection:
+
+    # manual projection in z direction:
     project_dist = 100
     x1 = PS.ps_data['x [mm]'][0]
     y1 = PS.ps_data['y [mm]'][0]
     z1 = PS.ps_data['z [mm]'][0]
-    vx1 = PS.ps_data['vx [m/s]'][0]
-    vy1 = PS.ps_data['vy [m/s]'][0]
-    vz1 = PS.ps_data['vz [m/s]'][0]
+    px1 = PS.ps_data['px [MeV/c]'][0]
+    py1 = PS.ps_data['py [MeV/c]'][0]
+    pz1 = PS.ps_data['pz [MeV/c]'][0]
 
-    x2 = x1 + ((vx1/vz1) * project_dist)
-    y2 = y1 + ((vy1 / vz1) * project_dist)
-    z2 = z1 + ((vz1 / vz1) * project_dist)
-    PS.project_particles(beam_direction='z', distance=project_dist)
+    x2 = x1 + ((px1/pz1) * project_dist)
+    y2 = y1 + ((py1 / pz1) * project_dist)
+    z2 = z1 + ((pz1 / pz1) * project_dist)
+    PS_projected = PS.project_particles(beam_direction='z', distance=project_dist)
     # compare:
-    np.allclose([x2,y2,z2], [PS.ps_data['x [mm]'][0], PS.ps_data['y [mm]'][0], PS.ps_data['z [mm]'][0]])
+    assert np.allclose([x2, y2, z2], [PS_projected.ps_data['x [mm]'][0], PS_projected.ps_data['y [mm]'][0], PS_projected.ps_data['z [mm]'][0]])
+
+    # manual projection in x direction:
+    project_dist = 100
+    x1 = PS.ps_data['x [mm]'][0]
+    y1 = PS.ps_data['y [mm]'][0]
+    z1 = PS.ps_data['z [mm]'][0]
+    px1 = PS.ps_data['px [MeV/c]'][0]
+    py1 = PS.ps_data['py [MeV/c]'][0]
+    pz1 = PS.ps_data['pz [MeV/c]'][0]
+
+    x2 = x1 + ((px1/px1) * project_dist)
+    y2 = y1 + ((py1 / px1) * project_dist)
+    z2 = z1 + ((pz1 / px1) * project_dist)
+    PS_projected = PS.project_particles(beam_direction='x', distance=project_dist)
+    # compare:
+    assert np.allclose([x2, y2, z2], [PS_projected.ps_data['x [mm]'][0], PS_projected.ps_data['y [mm]'][0], PS_projected.ps_data['z [mm]'][0]])
+
+    # manual projection in y direction:
+    project_dist = 100
+    x1 = PS.ps_data['x [mm]'][0]
+    y1 = PS.ps_data['y [mm]'][0]
+    z1 = PS.ps_data['z [mm]'][0]
+    px1 = PS.ps_data['px [MeV/c]'][0]
+    py1 = PS.ps_data['py [MeV/c]'][0]
+    pz1 = PS.ps_data['pz [MeV/c]'][0]
+
+    x2 = x1 + ((px1/py1) * project_dist)
+    y2 = y1 + ((py1 / py1) * project_dist)
+    z2 = z1 + ((pz1 / py1) * project_dist)
+    PS_projected = PS.project_particles(beam_direction='y', distance=project_dist)
+    # compare:
+    assert np.allclose([x2, y2, z2], [PS_projected.ps_data['x [mm]'][0], PS_projected.ps_data['y [mm]'][0], PS_projected.ps_data['z [mm]'][0]])
+
 
 def test_reset_phase_space():
     PS.reset_phase_space()
@@ -97,7 +129,7 @@ def test_get_particle_density():
 def test_get_seperated_phase_space():
 
     # had to reload the data for some reason:
-    data = DataLoaders.LoadTopasData(test_data_loc / 'coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp')
+    data = DataLoaders.Load_TopasData(test_data_loc / 'coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp')
     PS = PhaseSpace(data)
 
     electron_PS = PS('electrons')
@@ -109,7 +141,7 @@ def test_get_seperated_phase_space():
 
 def test_add_phase_space():
     # had to reload the data for some reason:
-    data = DataLoaders.LoadTopasData(test_data_loc / 'coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp')
+    data = DataLoaders.Load_TopasData(test_data_loc / 'coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp')
     PS = PhaseSpace(data)
 
     gamma_PS, electron_PS = PS(['gammas', 'electrons'])

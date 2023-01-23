@@ -7,7 +7,7 @@ from .utilities import get_rest_masses_from_pdg_codes
 import ParticlePhaseSpace.__phase_space_config__ as ps_cfg
 import ParticlePhaseSpace.__particle_config__ as particle_cfg
 import warnings
-
+from scipy import constants
 
 class _DataLoadersBase(ABC):
     """
@@ -19,9 +19,15 @@ class _DataLoadersBase(ABC):
         self.data = pd.DataFrame()
 
         if particle_type:
-            allowed_particles = [el for el in list(particle_cfg.particle_properties.keys()) if isinstance(el, str)]
-            if not particle_type in allowed_particles:
-                raise Exception(f'unknown particle type: {particle_type}.'
+            if not isinstance(particle_type, str):
+                allowed_particles = [el for el in list(particle_cfg.particle_properties.keys()) if isinstance(el, str)]
+                try:
+                    particle_type = particle_cfg.particle_properties[particle_type]['name']
+                except KeyError:
+                    raise Exception(f'unknown particle type: {particle_type}.'
+                                    f'allowed particles are {allowed_particles}')
+                if not particle_type in allowed_particles:
+                    raise Exception(f'unknown particle type: {particle_type}.'
                                 f'allowed particles are {allowed_particles}')
         self._particle_type = particle_type
 
@@ -100,7 +106,7 @@ class _DataLoadersBase(ABC):
             raise Exception('Energy check failed: read in of data may be incorrect')
 
 
-class LoadTopasData(_DataLoadersBase):
+class Load_TopasData(_DataLoadersBase):
     """
     DataLoader for `Topas <https://topas.readthedocs.io/en/latest/>`_ data.
     This data loader will read in both ascii and binary topas phase space (phsp) files.
@@ -112,7 +118,7 @@ class LoadTopasData(_DataLoadersBase):
 
         data_loc = Path(r'../tests/test_data/coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp')
 
-        data = DataLoaders.LoadTopasData(data_loc)
+        data = DataLoaders.Load_TopasData(data_loc)
         PS = PhaseSpace(data)
     """
 
@@ -152,11 +158,13 @@ class LoadTopasData(_DataLoadersBase):
         """
         if not Path(self._input_data).is_file():
             raise FileNotFoundError(f'input data file {self._import_data()} does not exist')
+        if not Path(self._input_data).suffix == '.phsp':
+            raise Exception('The topas data loader reads in files of extension *.phsp')
         if self._particle_type:
             warnings.warn('particle type is ignored in topas read in')
 
 
-class LoadPandasData(_DataLoadersBase):
+class Load_PandasData(_DataLoadersBase):
     """
     loads in pandas data of the format. This is used internally by ParticlePhaseSpace, and can also be used
     externally in cases where it is not desired to write a dedicated new data loader::
@@ -165,18 +173,18 @@ class LoadPandasData(_DataLoadersBase):
         import pandas as pd
 
         demo_data = pd.DataFrame(
-                    {'x [mm]': [0, 1, 2],
-                     'y [mm]': [0, 1, 2],
-                     'z [mm]': [0, 1, 2],
-                     'px [MeV/c]': [0, 1, 2],
-                     'py [MeV/c]': [0, 1, 2],
-                     'pz [MeV/c]': [0, 1, 2],
-                     'particle type [pdg_code]': [0, 1, 2],
-                     'weight': [0, 1, 2],
-                     'particle id': [0, 1, 2],
-                     'time [ps]': [0, 1, 2]})
+            {'x [mm]': [0, 1, 2],
+             'y [mm]': [0, 1, 2],
+             'z [mm]': [0, 1, 2],
+             'px [MeV/c]': [0, 1, 2],
+             'py [MeV/c]': [0, 1, 2],
+             'pz [MeV/c]': [0, 1, 2],
+             'particle type [pdg_code]': [11, 11, 11],
+             'weight': [0, 1, 2],
+             'particle id': [0, 1, 2],
+             'time [ps]': [0, 1, 2]})
 
-        data = DataLoaders.LoadPandasData(demo_data)
+        data = DataLoaders.Load_PandasData(demo_data)
     """
 
     def _import_data(self):
@@ -195,3 +203,43 @@ class LoadPandasData(_DataLoadersBase):
             raise AttributeError('particle_type should not be specified for pandas import')
 
 
+class Load_TibarayData(_DataLoadersBase):
+    """
+    Load ASCII data from tibaray of format
+    `x y z rxy Bx By Bz G t m q nmacro rmacro ID`::
+
+        data_loc = Path(r'../tests/test_data/tibaray_test.dat')
+        data = DataLoaders.Load_TibarayData(data_loc, particle_type=11)
+        PS = PhaseSpace(data)
+    """
+
+    def _check_input_data(self):
+        if not Path(self._input_data).is_file():
+            raise FileNotFoundError(f'input data file {self._import_data()} does not exist')
+        if not self._particle_type:
+            raise Exception('particle_type must be specified when readin tibaray data')
+        with open(self._input_data) as f:
+            first_line = f.readline()
+            if not first_line == 'x y z rxy Bx By Bz G t m q nmacro rmacro ID \n':
+                warnings.warn('first line of tibaray data does not look as expected, proceed with caution')
+
+    def _import_data(self):
+        Data = np.loadtxt(self._input_data, skiprows=1)
+        self.data['x [mm]'] = Data[:, 0] * 1e3  # mm to m
+        self.data['y [mm]'] = Data[:, 1] * 1e3
+        self.data['z [mm]'] = Data[:, 2] * 1e3
+        Bx = Data[:, 4]
+        By = Data[:, 5]
+        Bz = Data[:, 6]
+        Gamma = Data[:, 7]
+        self.data['time [ps]'] = Data[:, 8] * 1e9
+        m = Data[:, 9]
+        q = Data[:, 10]
+        self.data['weight'] = Data[:, 11]
+        rmacro = Data[:, 12]
+        self.data['particle id'] = Data[:, 13]
+        self.data['particle type [pdg_code]'] = particle_cfg.particle_properties[self._particle_type]['pdg_code']
+
+        self.data['px [MeV/c]'] = np.multiply(Bx, Gamma) * particle_cfg.particle_properties[self._particle_type]['rest_mass']
+        self.data['py [MeV/c]'] = np.multiply(By, Gamma) * particle_cfg.particle_properties[self._particle_type]['rest_mass']
+        self.data['pz [MeV/c]'] = np.multiply(Bz, Gamma) * particle_cfg.particle_properties[self._particle_type]['rest_mass']

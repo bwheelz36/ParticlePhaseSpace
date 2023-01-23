@@ -199,5 +199,3 @@ class Topas_Exporter(_DataExportersBase):
             f.write('\n')
         f.close()
 
-
-
