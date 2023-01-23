@@ -214,8 +214,8 @@ class PhaseSpace:
             if not col_name in all_allowed_columns:
                 raise AttributeError(f'non allowed column name {col_name} in ps_data')
 
-    def _get_ellipse_xy_points(self, ellipse_parameters, x_search_min,  # pragma: no cover
-                               x_search_max, xpq_search_min, xpq_search_max):
+    def _get_ellipse_xy_points(self, ellipse_parameters, x_search_min,
+                               x_search_max, xpq_search_min, xpq_search_max):  # pragma: no cover
         """
         given the parameters of an ellipse, return a set of points in XY which meet those parameters
         :return:
@@ -240,7 +240,7 @@ class PhaseSpace:
         elipseY = ElipseGridy[ElipseIndex]
         return elipseX, elipseY
 
-    def _get_data_for_trace_space_plots(self, beam_direction, ps_data, particle_name):
+    def _get_data_for_trace_space_plots(self, beam_direction, ps_data, particle_name):  # pragma: no cover
         if beam_direction == 'z':
             x_data_1 = ps_data['x [mm]']
             div_data_1 = np.divide(ps_data['px [MeV/c]'], ps_data['pz [MeV/c]'])
@@ -584,7 +584,7 @@ class PhaseSpace:
         plt.show()
 
     def plot_transverse_trace_space_intensity(self, beam_direction='z', plot_twiss_ellipse=True,
-                                             xlim=None, ylim=None, grid=True):
+                                             xlim=None, ylim=None, grid=True):  # pragma: no cover
         self.calculate_twiss_parameters(beam_direction=beam_direction)
         fig, axs = plt.subplots(nrows=len(self._unique_particles), ncols=2, squeeze=False)
         row = 0

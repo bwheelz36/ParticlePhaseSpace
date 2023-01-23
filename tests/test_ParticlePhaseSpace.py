@@ -156,3 +156,10 @@ def test_manipulate_data():
     old_x_mean = PS.ps_data['x [mm]'].mean()
     PS.ps_data['x [mm]'] = PS.ps_data['x [mm]'] + 2
     assert np.allclose(PS.ps_data['x [mm]'].mean(), old_x_mean + 2)
+
+def test_filter_by_time():
+    data = DataLoaders.Load_TopasData(test_data_loc / 'coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp')
+    PS = PhaseSpace(data)
+    PS.ps_data['time [ps]'] = np.arange(len(PS))
+    filtered_PS = PS.filter_by_time(t_start=0, t_finish=np.floor(len(PS)/2))
+    assert len(filtered_PS) == np.ceil(len(PS)/2)
