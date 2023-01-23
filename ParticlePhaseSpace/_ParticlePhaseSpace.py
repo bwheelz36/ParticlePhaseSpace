@@ -240,6 +240,58 @@ class PhaseSpace:
         elipseY = ElipseGridy[ElipseIndex]
         return elipseX, elipseY
 
+    def _get_data_for_trace_space_plots(self, beam_direction, ps_data, particle_name):
+        if beam_direction == 'z':
+            x_data_1 = ps_data['x [mm]']
+            div_data_1 = np.divide(ps_data['px [MeV/c]'], ps_data['pz [MeV/c]'])
+            x_label_1 = 'x [mm]'
+            y_label_1 = "x' [rad]"
+            title_1 = particle_name + ': x'
+            weight = ps_data['weight']
+            elipse_parameters_1 = self.twiss_parameters[particle_name]['x']
+
+            x_data_2 = ps_data['y [mm]']
+            div_data_2 = np.divide(ps_data['py [MeV/c]'], ps_data['pz [MeV/c]'])
+            x_label_2 = 'y [mm]'
+            y_label_2 = "y' [rad]"
+            title_2 = particle_name + ': y'
+            elipse_parameters_2 = self.twiss_parameters[particle_name]['y']
+        elif beam_direction == 'x':
+            x_data_1 = ps_data['y [mm]']
+            div_data_1 = np.divide(ps_data['py [MeV/c]'], ps_data['px [MeV/c]'])
+            x_label_1 = 'y [mm]'
+            y_label_1 = "y' [rad]"
+            title_1 = particle_name + ': x'
+            weight = ps_data['weight']
+            elipse_parameters_1 = self.twiss_parameters[particle_name]['y']
+
+            x_data_2 = ps_data['z [mm]']
+            div_data_2 = np.divide(ps_data['pz [MeV/c]'], ps_data['px [MeV/c]'])
+            x_label_2 = 'z [mm]'
+            y_label_2 = "z' [rad]"
+            title_2 = particle_name + ': y'
+            elipse_parameters_2 = self.twiss_parameters[particle_name]['z']
+        elif beam_direction == 'y':
+            x_data_1 = ps_data['x [mm]']
+            div_data_1 = np.divide(ps_data['px [MeV/c]'], ps_data['py [MeV/c]'])
+            x_label_1 = 'x [mm]'
+            y_label_1 = "x' [rad]"
+            title_1 = particle_name + ': x'
+            weight = ps_data['weight']
+            elipse_parameters_1 = self.twiss_parameters[particle_name]['x']
+
+            x_data_2 = ps_data['z [mm]']
+            div_data_2 = np.divide(ps_data['pz [MeV/c]'], ps_data['py [MeV/c]'])
+            x_label_2 = 'z [mm]'
+            y_label_2 = "z' [rad]"
+            title_2 = particle_name + ': y'
+            elipse_parameters_2 = self.twiss_parameters[particle_name]['z']
+        else:
+            raise NotImplementedError(f'beam_direction must be "x", "y", or "z", not {beam_direction}')
+
+        return x_data_1, div_data_1, x_label_1, y_label_1, title_1, weight, elipse_parameters_1, \
+            x_data_2, div_data_2, x_label_2, y_label_2, title_2, elipse_parameters_2
+
     # public methods
 
     def plot_energy_histogram(self, n_bins=100, title=None):  # pragma: no cover
@@ -457,7 +509,7 @@ class PhaseSpace:
                             ImageArray[ypos, xpos] = ImageArray[ypos, xpos] + (E * weight)
             # plot data:
             extent = [xlim[0], xlim[1], ylim[0], ylim[1]]
-            _im = axs[0, n_axs].imshow(ImageArray, extent=extent)
+            _im = axs[0, n_axs].imshow(ImageArray, extent=extent, cmap='inferno')
             fig.colorbar(_im, ax=axs[0,n_axs])
 
             axs[0, n_axs].set_title(_title)
@@ -493,53 +545,9 @@ class PhaseSpace:
             particle_name = particle_cfg.particle_properties[particle]['name']
             ind = self._ps_data['particle type [pdg_code]'] == particle
             ps_data = self._ps_data.loc[ind]
-            if beam_direction == 'z':
-                x_data_1 = ps_data['x [mm]']
-                div_data_1 = np.divide(ps_data['px [MeV/c]'], ps_data['pz [MeV/c]'])
-                x_label_1 = 'x [mm]'
-                y_label_1 = "x' [mrad]"
-                title_1 = particle_name + ': x'
-                weight = ps_data['weight']
-                elipse_parameters_1 = self.twiss_parameters[particle_name]['x']
-
-                x_data_2 = ps_data['y [mm]']
-                div_data_2 = np.divide(ps_data['py [MeV/c]'], ps_data['pz [MeV/c]'])
-                x_label_2 = 'y [mm]'
-                y_label_2 = "y' [mrad]"
-                title_2 = particle_name  + ': y'
-                elipse_parameters_2 = self.twiss_parameters[particle_name ]['y']
-            elif beam_direction == 'x':
-                x_data_1 = ps_data['y [mm]']
-                div_data_1 = np.divide(ps_data['py [MeV/c]'], ps_data['px [MeV/c]'])
-                x_label_1 = 'y [mm]'
-                y_label_1 = "y' [mrad]"
-                title_1 = particle_name + ': x'
-                weight = ps_data['weight']
-                elipse_parameters_1 = self.twiss_parameters[particle_name]['y']
-
-                x_data_2 = ps_data['z [mm]']
-                div_data_2 = np.divide(ps_data['pz [MeV/c]'], ps_data['px [MeV/c]'])
-                x_label_2 = 'z [mm]'
-                y_label_2 = "z' [mrad]"
-                title_2 = particle_name + ': y'
-                elipse_parameters_2 = self.twiss_parameters[particle_name]['z']
-            elif beam_direction == 'y':
-                x_data_1 = ps_data['x [mm]']
-                div_data_1 = np.divide(ps_data['px [MeV/c]'], ps_data['py [MeV/c]'])
-                x_label_1 = 'x [mm]'
-                y_label_1 = "x' [mrad]"
-                title_1 = particle_name + ': x'
-                weight = ps_data['weight']
-                elipse_parameters_1 = self.twiss_parameters[particle_name]['x']
-
-                x_data_2 = ps_data['z [mm]']
-                div_data_2 = np.divide(ps_data['pz [MeV/c]'], ps_data['py [MeV/c]'])
-                x_label_2 = 'z [mm]'
-                y_label_2 = "z' [mrad]"
-                title_2 = particle_name + ': y'
-                elipse_parameters_2 = self.twiss_parameters[particle_name]['z']
-            else:
-                raise NotImplementedError(f'beam_direction must be "x", "y", or "z", not {beam_direction}')
+            x_data_1, div_data_1, x_label_1, y_label_1, title_1, weight, elipse_parameters_1, \
+                x_data_2, div_data_2, x_label_2, y_label_2, title_2, elipse_parameters_2 = \
+                self._get_data_for_trace_space_plots(beam_direction, ps_data, particle_name)
 
 
             axs[row, 0].scatter(x_data_1, div_data_1, s=1, marker='.', c=weight)
@@ -575,7 +583,7 @@ class PhaseSpace:
         plt.tight_layout()
         plt.show()
 
-    def plot_tranverse_trace_space_intensity(self, beam_direction='z', plot_twiss_ellipse=True,
+    def plot_transverse_trace_space_intensity(self, beam_direction='z', plot_twiss_ellipse=True,
                                              xlim=None, ylim=None, grid=True):
         self.calculate_twiss_parameters(beam_direction=beam_direction)
         fig, axs = plt.subplots(nrows=len(self._unique_particles), ncols=2, squeeze=False)
@@ -584,55 +592,9 @@ class PhaseSpace:
             particle_name = particle_cfg.particle_properties[particle]['name']
             ind = self._ps_data['particle type [pdg_code]'] == particle
             ps_data = self._ps_data.loc[ind]
-            if beam_direction == 'z':
-                x_data_1 = ps_data['x [mm]']
-                div_data_1 = np.divide(ps_data['px [MeV/c]'], ps_data['pz [MeV/c]'])
-                x_label_1 = 'x [mm]'
-                y_label_1 = "x' [mrad]"
-                title_1 = particle_name + ': x'
-                weight = ps_data['weight']
-                elipse_parameters_1 = self.twiss_parameters[particle_name]['x']
-
-                x_data_2 = ps_data['y [mm]']
-                div_data_2 = np.divide(ps_data['py [MeV/c]'], ps_data['pz [MeV/c]'])
-                x_label_2 = 'y [mm]'
-                y_label_2 = "y' [mrad]"
-                title_2 = particle_name + ': y'
-                elipse_parameters_2 = self.twiss_parameters[particle_name]['y']
-
-            elif beam_direction == 'x':
-                x_data_1 = ps_data['y [mm]']
-                div_data_1 = np.divide(ps_data['py [MeV/c]'], ps_data['px [MeV/c]'])
-                x_label_1 = 'y [mm]'
-                y_label_1 = "y' [mrad]"
-                title_1 = particle_name + ': x'
-                weight = ps_data['weight']
-                elipse_parameters_1 = self.twiss_parameters[particle_name]['y']
-
-                x_data_2 = ps_data['z [mm]']
-                div_data_2 = np.divide(ps_data['pz [MeV/c]'], ps_data['px [MeV/c]'])
-                x_label_2 = 'z [mm]'
-                y_label_2 = "z' [mrad]"
-                title_2 = particle_name + ': y'
-                elipse_parameters_2 = self.twiss_parameters[particle_name]['z']
-            elif beam_direction == 'y':
-                x_data_1 = ps_data['x [mm]']
-                div_data_1 = np.divide(ps_data['px [MeV/c]'], ps_data['py [MeV/c]'])
-                x_label_1 = 'x [mm]'
-                y_label_1 = "x' [mrad]"
-                title_1 = particle_name + ': x'
-                weight = ps_data['weight']
-                elipse_parameters_1 = self.twiss_parameters[particle_name]['x']
-
-                x_data_2 = ps_data['z [mm]']
-                div_data_2 = np.divide(ps_data['pz [MeV/c]'], ps_data['py [MeV/c]'])
-                x_label_2 = 'z [mm]'
-                y_label_2 = "z' [mrad]"
-                title_2 = particle_name + ': y'
-                elipse_parameters_2 = self.twiss_parameters[particle_name]['z']
-            else:
-                raise NotImplementedError(f'beam_direction must be "x", "y", or "z", not {beam_direction}')
-
+            x_data_1, div_data_1, x_label_1, y_label_1, title_1, weight, elipse_parameters_1, \
+                x_data_2, div_data_2, x_label_2, y_label_2, title_2, elipse_parameters_2 = \
+                self._get_data_for_trace_space_plots(beam_direction, ps_data, particle_name)
             # accumulate data
             if not xlim:
                 xlim = [np.min([x_data_1, x_data_2]), np.max([x_data_1, x_data_2])]
@@ -918,20 +880,17 @@ class PhaseSpace:
             a new PhaseSpace object is returned
         :return: new_instance: if in_place = False, a new PhaseSpace object is returned
         """
-        if not 'vx [m/s]' in self._ps_data.columns:
-            self.fill_velocity()
-
         if beam_direction == 'x':
             new_x = self._ps_data['x [mm]'] + distance
-            new_y = self._ps_data['y [mm]'] + np.divide(self._ps_data['vy [m/s]'], self._ps_data['vx [m/s]']) * distance
-            new_z = self._ps_data['z [mm]'] + np.divide(self._ps_data['vz [m/s]'], self._ps_data['vx [m/s]']) * distance
+            new_y = self._ps_data['y [mm]'] + np.divide(self._ps_data['py [MeV/c]'], self._ps_data['px [MeV/c]']) * distance
+            new_z = self._ps_data['z [mm]'] + np.divide(self._ps_data['pz [MeV/c]'], self._ps_data['px [MeV/c]']) * distance
         elif beam_direction == 'y':
-            new_x = self._ps_data['x [mm]'] + np.divide(self._ps_data['vx [m/s]'], self._ps_data['vy [m/s]']) * distance
+            new_x = self._ps_data['x [mm]'] + np.divide(self._ps_data['px [MeV/c]'], self._ps_data['py [MeV/c]']) * distance
             new_y = self._ps_data['y [mm]'] + distance
-            new_z = self._ps_data['z [mm]'] + np.divide(self._ps_data['vz [m/s]'], self._ps_data['vy [m/s]']) * distance
+            new_z = self._ps_data['z [mm]'] + np.divide(self._ps_data['pz [MeV/c]'], self._ps_data['py [MeV/c]']) * distance
         elif beam_direction == 'z':
-            new_x = self._ps_data['x [mm]'] + np.divide(self._ps_data['vx [m/s]'], self._ps_data['vz [m/s]']) * distance
-            new_y = self._ps_data['y [mm]'] + np.divide(self._ps_data['vy [m/s]'], self._ps_data['vz [m/s]']) * distance
+            new_x = self._ps_data['x [mm]'] + np.divide(self._ps_data['px [MeV/c]'], self._ps_data['pz [MeV/c]']) * distance
+            new_y = self._ps_data['y [mm]'] + np.divide(self._ps_data['py [MeV/c]'], self._ps_data['pz [MeV/c]']) * distance
             new_z = self._ps_data['z [mm]'] + distance
         else:
             raise NotImplementedError('beam_direction must be "x", "y", or "z"')
@@ -959,7 +918,7 @@ class PhaseSpace:
     def reset_phase_space(self):
         """
         reduce self._ps_data to only the required columns
-        delete any other dervied quantities such as twiss parameters
+        delete any other derived quantities such as twiss parameters
         this can be called whenever you want to reduce the memory footprint
         It is also called internally whenever the user changes the data in ps_data
         """

@@ -24,12 +24,12 @@ def test_topas_export():
                      'particle id': [0, 1, 2],
                      'time [ps]': [0, 0, 0]})
 
-    data = DataLoaders.LoadPandasData(demo_data)
+    data = DataLoaders.Load_PandasData(demo_data)
     PS = PhaseSpace(data)
     # ok: can we export this data:
     DataExporters.Topas_Exporter(PS,output_location='.', output_name='test.phsp')
     # now check we can read it back in:
-    data = DataLoaders.LoadTopasData('test.phsp')
+    data = DataLoaders.Load_TopasData('test.phsp')
     PS2 = PhaseSpace(data)
     PS.reset_phase_space()
     gah = PS.ps_data - PS2.ps_data

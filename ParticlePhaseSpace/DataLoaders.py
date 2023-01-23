@@ -173,16 +173,16 @@ class Load_PandasData(_DataLoadersBase):
         import pandas as pd
 
         demo_data = pd.DataFrame(
-                    {'x [mm]': [0, 1, 2],
-                     'y [mm]': [0, 1, 2],
-                     'z [mm]': [0, 1, 2],
-                     'px [MeV/c]': [0, 1, 2],
-                     'py [MeV/c]': [0, 1, 2],
-                     'pz [MeV/c]': [0, 1, 2],
-                     'particle type [pdg_code]': [0, 1, 2],
-                     'weight': [0, 1, 2],
-                     'particle id': [0, 1, 2],
-                     'time [ps]': [0, 1, 2]})
+            {'x [mm]': [0, 1, 2],
+             'y [mm]': [0, 1, 2],
+             'z [mm]': [0, 1, 2],
+             'px [MeV/c]': [0, 1, 2],
+             'py [MeV/c]': [0, 1, 2],
+             'pz [MeV/c]': [0, 1, 2],
+             'particle type [pdg_code]': [11, 11, 11],
+             'weight': [0, 1, 2],
+             'particle id': [0, 1, 2],
+             'time [ps]': [0, 1, 2]})
 
         data = DataLoaders.Load_PandasData(demo_data)
     """
@@ -205,9 +205,12 @@ class Load_PandasData(_DataLoadersBase):
 
 class Load_TibarayData(_DataLoadersBase):
     """
-    Load ASCII data from tibaray of format::
+    Load ASCII data from tibaray of format
+    `x y z rxy Bx By Bz G t m q nmacro rmacro ID`::
 
-        x y z rxy Bx By Bz G t m q nmacro rmacro ID
+        data_loc = Path(r'../tests/test_data/tibaray_test.dat')
+        data = DataLoaders.Load_TibarayData(data_loc, particle_type=11)
+        PS = PhaseSpace(data)
     """
 
     def _check_input_data(self):
