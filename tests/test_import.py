@@ -10,7 +10,9 @@ from ParticlePhaseSpace import DataLoaders
 from ParticlePhaseSpace import PhaseSpace
 import pytest
 
-
+'''
+note that the topas data loader functionality is inhenerently tested in test_ParticlePhaseSpace
+'''
 
 def test_pandas_import_fails_when_particles_specfied():
 
@@ -27,5 +29,24 @@ def test_pandas_import_fails_when_particles_specfied():
          'time [ps]': [0, 1, 2]})
 
     with pytest.raises(Exception):
-        data = DataLoaders.LoadPandasData(demo_data)
+        data = DataLoaders.Load_PandasData(demo_data)
+
+
+def test_tibaray_import():
+    data_loc = this_file_loc / 'test_data' / 'tibaray_test.dat'
+    data = DataLoaders.Load_TibarayData(data_loc, particle_type='electrons')
+    PS = PhaseSpace(data)
+    # check that energy is stable
+    PS.calculate_energy_statistics()
+    with open(this_file_loc / 'test_data' / 'tibaray_energy.json') as f:
+        old_data = json.load(f)
+    for particle_key in old_data:
+        for energy_key  in old_data[particle_key]:
+            np.allclose(old_data[particle_key][energy_key],
+                        PS.energy_stats[particle_key][energy_key])
+
+def test_tibaray_import_fails_when_no_particles_specified():
+    data_loc = this_file_loc / 'test_data' / 'tibaray_test.dat'
+    with pytest.raises(Exception):
+        data = DataLoaders.Load_TibarayData(data_loc)
 

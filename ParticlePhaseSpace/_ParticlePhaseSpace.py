@@ -452,9 +452,9 @@ class PhaseSpace:
                         xpos = np.argmin(abs(X - x))  ## nb big X is image coordinate, x is particle coordinate
                         ypos = np.argmin(abs(Y - y))
                         if quantity == 'intensity':
-                            ImageArray[xpos, ypos] = ImageArray[xpos, ypos] + weight
+                            ImageArray[ypos, xpos] = ImageArray[ypos, xpos] + weight
                         elif quantity == 'energy':
-                            ImageArray[xpos, ypos] = ImageArray[xpos, ypos] + (E * weight)
+                            ImageArray[ypos, xpos] = ImageArray[ypos, xpos] + (E * weight)
             # plot data:
             extent = [xlim[0], xlim[1], ylim[0], ylim[1]]
             _im = axs[0, n_axs].imshow(ImageArray, extent=extent)
@@ -549,7 +549,7 @@ class PhaseSpace:
             if plot_twiss_ellipse:
                 twiss_X, twiss_Y = self._get_ellipse_xy_points(elipse_parameters_1, x_data_1.min(), x_data_1.max(),
                                                                div_data_1.min(), div_data_1.max())
-                axs[row, 0].scatter(twiss_X, twiss_Y, c='r')
+                axs[row, 0].scatter(twiss_X, twiss_Y, c='r', s=2)
                 # axs[row, 0].set_xlim([3*np.min(twiss_X), 3*np.max(twiss_X)])
                 # axs[row, 0].set_ylim([3 * np.min(twiss_Y), 3 * np.max(twiss_Y)])
             axs[row, 0].grid()
@@ -560,7 +560,7 @@ class PhaseSpace:
             if plot_twiss_ellipse:
                 twiss_X, twiss_Y = self._get_ellipse_xy_points(elipse_parameters_2, x_data_2.min(), x_data_2.max(),
                                                                div_data_2.min(), div_data_2.max())
-                axs[row, 1].scatter(twiss_X, twiss_Y, c='r')
+                axs[row, 1].scatter(twiss_X, twiss_Y, c='r', s=2)
             axs[row, 1].scatter(x_data_2, div_data_2, s=1, marker='.', c=weight)
             axs[row, 1].set_xlabel(x_label_2)
             axs[row, 1].set_ylabel(y_label_2)
@@ -651,18 +651,20 @@ class PhaseSpace:
                         # find the closest position in the image array:
                         xpos1 = np.argmin(abs(X - _x_1))  ## nb big X is image coordinate, x is particle coordinate
                         ypos1 = np.argmin(abs(Y - _div_1))
-                        ImageArray1[xpos1, ypos1] = ImageArray1[xpos1, ypos1] + _weight
-                        if abs(_x_1) > 1:
-                            print('what gives')
+                        # note indexing is row/column == y/x
+                        ImageArray1[ypos1, xpos1] = ImageArray1[ypos1, xpos1] + _weight
                 if _x_2 < xlim[1] and _x_1 > xlim[0]:
                     if _div_2 < ylim[1] and _div_1 > ylim[0]:
                         xpos2 = np.argmin(abs(X - _x_2))  ## nb big X is image coordinate, x is particle coordinate
                         ypos2 = np.argmin(abs(Y - _div_2))
-                        ImageArray2[xpos2, ypos2] = ImageArray1[xpos2, ypos2] + _weight
+                        # note indexing is row/column == y/x
+                        ImageArray2[ypos2, xpos2] = ImageArray1[ypos2, xpos2] + _weight
 
             # plot data:
-            extent = [xlim[0], xlim[1], ylim[0], ylim[1]]
-            _im1 = axs[row, 0].imshow(np.log(ImageArray1), extent=extent)
+            _extent = [xlim[0], xlim[1], ylim[0], ylim[1]]
+            # _extent = None
+            _im1 = axs[row, 0].imshow(ImageArray1, extent=_extent, origin='lower',
+                                      cmap='inferno')
             fig.colorbar(_im1, ax=axs[row,0])
             axs[row, 0].set_xlabel(x_label_1)
             axs[row, 0].set_ylabel(y_label_1)
@@ -670,19 +672,20 @@ class PhaseSpace:
             if plot_twiss_ellipse:
                 twiss_X, twiss_Y = self._get_ellipse_xy_points(elipse_parameters_1, x_data_1.min(), x_data_1.max(),
                                                                div_data_1.min(), div_data_1.max())
-                axs[row, 0].scatter(twiss_X, twiss_Y, c='r')
+                axs[row, 0].scatter(twiss_X, twiss_Y, c='r', s=2)
             if grid:
                 axs[row, 0].grid()
             axs[row, 0].set_xlim(xlim)
             axs[row, 0].set_ylim(ylim)
             axs[row, 0].set_aspect('auto')
 
-            _im2 = axs[row, 1].imshow(ImageArray2, extent=extent)
+            _im2 = axs[row, 1].imshow(ImageArray2, extent=_extent, origin='lower',
+                                      cmap='inferno')
             fig.colorbar(_im2, ax=axs[row, 1])
             if plot_twiss_ellipse:
                 twiss_X, twiss_Y = self._get_ellipse_xy_points(elipse_parameters_2, x_data_2.min(), x_data_2.max(),
                                                                div_data_2.min(), div_data_2.max())
-                axs[row, 1].scatter(twiss_X, twiss_Y, c='r')
+                axs[row, 1].scatter(twiss_X, twiss_Y, c='r', s=2)
             if grid:
                 axs[row, 1].grid()
             axs[row, 1].set_xlabel(x_label_2)
