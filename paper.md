@@ -45,27 +45,10 @@ In accelerator particle physics, it is necessary to describe ensembles of partic
 
 Unfortunately, each of the codes listed above have their own phase space formats, and do not 'speak' well to each other. There have been some attempts to define a universal phase space format through the IAEA, however there are still regular issues with non-compliance of IAEA phase and it is widely acknowledged that the format is poorly defined. In any case, the IAEA format has not been supported by any of the commercial vendors listed above who continue to rely on their own data formats. 
 
-`ParticlePhaseSpace` aims to solve these issues by providing extensible mechanisms through which phase space data can be both imported and exported from different programs., as well as a library of methods for visualising, manipulating, characterising and analysing phase space data. The underlying data is stored in a pandas data frame with clearly defined allowed columns and units. A PhaseSpace object is provided with a large library of methods for visualising, manipulating, characterising and analysing phase space data. Importantly,  base classes for data import and export are provided, and examples demonstrating how to write new data loaders/ data exporters.
+`ParticlePhaseSpace` aims to solve these issues by providing extensible mechanisms through which phase space data can be both imported and exported from different programs., as well as a library of methods for visualising, manipulating, characterising and analysing phase space data. The underlying data is stored in a pandas data frame with clearly defined allowed columns and units. Both the supported particles and data format have been designed to be extensible, and documetnation exists demosntrating how to do this. A PhaseSpace object is provided with a large library of methods for visualising, manipulating, characterising and analysing phase space data. Importantly,  base classes for data import and export are provided, and examples demonstrating how to write new data loaders/ data exporters. 
 
-
-
-
-# Mathematics
-
-Single dollars ($) are required for inline mathematics e.g. $f(x) = e^{\pi/x}$
-
-Double dollars make self-standing equations:
-
-$$\Theta(x) = \left\{\begin{array}{l}
-0\textrm{ if } x < 0\cr
-1\textrm{ else}
-\end{array}\right.$$
-
-You can also use plain \LaTeX for equations
-\begin{equation}\label{eq:fourier}
-\hat f(\omega) = \int_{-\infty}^{\infty} f(x) e^{i\omega x} dx
-\end{equation}
-and refer to \autoref{eq:fourier} from text.
+- PhaseSpace objects can be added and subtracted from each other
+- Derive other physical quantities such as the lorentz factor and kinetic energy
 
 # Citations
 
