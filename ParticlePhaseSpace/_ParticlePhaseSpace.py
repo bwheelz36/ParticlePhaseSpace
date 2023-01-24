@@ -1,3 +1,5 @@
+from timeit import timeit
+
 import numpy as np
 from matplotlib import pyplot as plt
 import logging
@@ -439,7 +441,7 @@ class PhaseSpace:
         plt.show()
 
     def plot_beam_intensity(self, beam_direction='z', xlim=None, ylim=None, quantity='intensity',
-                            grid=True):  # pragma: no cover
+                            grid=True, normalize=True, bins=100, vmin=None, vmax=None):  # pragma: no cover
         """
         This is alternative to plot_particle_positions(weight_position_plot=True); rather than a scatter plot of every particle, an
         image is formed by assigning particles to bins over a 2D grid. This is faster than generating a gaussian kde of intensity.
@@ -448,16 +450,25 @@ class PhaseSpace:
         :param beam_direction: the direction the beam is travelling in. "x", "y", or "z" (default)
         :type beam_direction: str, optional
         :param xlim: set the xlim for all plots, e.g. [-2,2]
-        :type xlim: list or None, optional
+        :type xlim: list, optional
         :param ylim: set the ylim for all plots, e.g. [-2,2]
-        :type ylim: list or None, optional
+        :type ylim: list, optional
+        :param plot_twiss_ellipse: if True, RMS ellipse from twiss parameters is overlaid.
+        :type plot_twiss_ellipse: bool, optional
         :param quantity: quantity to accumulate; either 'intensity' or 'energy
         :type quantity: str
         :param grid: turns grid on/off
-        :type grid: bool
+        :type grid: bool, optional
+        :param normalize: if True, data is displayed in range 0-100
+        :type normalize: bool, optional
+        :param bins: number of bins in X/Y direction. n_pixels = bins ** 2
+        :type bins: int, optional
+        :param vmin: minimum color range
+        :type vmin: float, optional
+        :param vmax: maximum color range
+        :type vmax: float, optional
         :return: None
         """
-
         fig, axs = plt.subplots(1, len(self._unique_particles), squeeze=False)
         fig.set_size_inches(5*len(self._unique_particles), 5)
         n_axs = 0
@@ -475,7 +486,6 @@ class PhaseSpace:
                 loop_data = zip(ps_data['z [mm]'], ps_data['y [mm]'], ps_data['Ek [MeV]'], ps_data['weight'])
                 _xlabel = 'z [mm]'
                 _ylabel = 'y [mm]'
-
             if beam_direction == 'y':
                 loop_data = zip(ps_data['x [mm]'], ps_data['z [mm]'], ps_data['Ek [MeV]'], ps_data['weight'])
                 _xlabel = 'x [mm]'
@@ -489,28 +499,22 @@ class PhaseSpace:
             if ylim is None:
                 ylim = [ps_data['y [mm]'].min(), ps_data['y [mm]'].max()]
             if quantity == 'intensity':
-                _title = f"accumulated intensity;\n{particle_cfg.particle_properties[particle]['name']}"
+                _title = f"2D histogram;\n{particle_cfg.particle_properties[particle]['name']}"
+                _weight = ps_data['weight']
             elif quantity == 'energy':
                 _title = f"accumulated energy;\n{particle_cfg.particle_properties[particle]['name']}"
-            X = np.linspace(xlim[0], xlim[1], 100)
-            Y = np.linspace(ylim[0], ylim[1], 100)
+                _weight = np.multiply(ps_data['weight'], ps_data['Ek [MeV]'])
+            X = np.linspace(xlim[0], xlim[1], bins)
+            Y = np.linspace(ylim[0], ylim[1], bins)
             # create an empty array:
-            ImageArray = np.zeros([X.shape[0], Y.shape[0]])
-
-            for x, y, E, weight in loop_data:
-                # find the closest position in the image array:
-                if x < xlim[1] and x > xlim[0]:
-                    if y < ylim[1] and y > ylim[0]:
-                        xpos = np.argmin(abs(X - x))  ## nb big X is image coordinate, x is particle coordinate
-                        ypos = np.argmin(abs(Y - y))
-                        if quantity == 'intensity':
-                            ImageArray[ypos, xpos] = ImageArray[ypos, xpos] + weight
-                        elif quantity == 'energy':
-                            ImageArray[ypos, xpos] = ImageArray[ypos, xpos] + (E * weight)
-            # plot data:
             extent = [xlim[0], xlim[1], ylim[0], ylim[1]]
-            _im = axs[0, n_axs].imshow(ImageArray, extent=extent, cmap='inferno')
-            fig.colorbar(_im, ax=axs[0,n_axs])
+            _histnp = np.histogram2d(ps_data['x [mm]'], ps_data['y [mm]'],
+                                     weights=_weight, bins=[X, Y])[0]
+
+            if normalize:
+                _histnp = _histnp * 100 / _histnp.max()
+            __im = axs[0, n_axs].imshow(_histnp.T, cmap='inferno', extent=extent, vmin=vmin, vmax=vmax)
+            fig.colorbar(__im, ax=axs[0, n_axs])
 
             axs[0, n_axs].set_title(_title)
             axs[0, n_axs].set_xlabel(_xlabel, fontsize=_FigureSpecs.LabelFontSize)
@@ -584,7 +588,30 @@ class PhaseSpace:
         plt.show()
 
     def plot_transverse_trace_space_intensity(self, beam_direction='z', plot_twiss_ellipse=True,
-                                             xlim=None, ylim=None, grid=True):  # pragma: no cover
+                                             xlim=None, ylim=None, grid=True, normalize=True,
+                                              bins=100, vmin=None, vmax=None):  # pragma: no cover
+        """
+        plot the intensity of the beam in trace space
+
+        :param beam_direction: the direction the beam is travelling in. "x", "y", or "z" (default)
+        :type beam_direction: str, optional
+        :param xlim: set the xlim for all plots, e.g. [-2,2]
+        :type xlim: list, optional
+        :param ylim: set the ylim for all plots, e.g. [-2,2]
+        :type ylim: list, optional
+        :param plot_twiss_ellipse: if True, RMS ellipse from twiss parameters is overlaid.
+        :type plot_twiss_ellipse: bool, optional
+        :param grid: turns grid on/off
+        :type grid: bool, optional
+        :param normalize: if True, data is displayed in range 0-100
+        :type normalize: bool, optional
+        :param bins: number of bins in X/Y direction. n_pixels = bins ** 2
+        :type bins: int, optional
+        :param vmin: minimum color range
+        :type vmin: float, optional
+        :param vmax: maximum color range
+        :type vmax: float, optional
+        """
         self.calculate_twiss_parameters(beam_direction=beam_direction)
         fig, axs = plt.subplots(nrows=len(self._unique_particles), ncols=2, squeeze=False)
         row = 0
@@ -601,32 +628,22 @@ class PhaseSpace:
             if not ylim:
                 ylim =  [np.min([div_data_1, div_data_2]), np.max([div_data_1, div_data_2])]
 
-            X = np.linspace(xlim[0], xlim[1], 100)
-            Y = np.linspace(ylim[0], ylim[1], 100)
+            X = np.linspace(xlim[0], xlim[1], bins)
+            Y = np.linspace(ylim[0], ylim[1], bins)
             # create an empty array:
-            ImageArray1 = np.zeros([X.shape[0], Y.shape[0]])
-            ImageArray2 = np.zeros([X.shape[0], Y.shape[0]])
+            _histnp1 = np.histogram2d(x_data_1, div_data_1,
+                                     weights=ps_data['weight'], bins=[X, Y])[0]
+            _histnp2 = np.histogram2d(x_data_2, div_data_2,
+                                     weights=ps_data['weight'], bins=[X, Y])[0]
 
-            for _x_1, _div_1, _x_2, _div_2, _weight in zip(x_data_1, div_data_1, x_data_2, div_data_2, weight):
-                if _x_1 < xlim[1] and _x_1 > xlim[0]:
-                    if _div_1 < ylim[1] and _div_1 > ylim[0]:
-                        # find the closest position in the image array:
-                        xpos1 = np.argmin(abs(X - _x_1))  ## nb big X is image coordinate, x is particle coordinate
-                        ypos1 = np.argmin(abs(Y - _div_1))
-                        # note indexing is row/column == y/x
-                        ImageArray1[ypos1, xpos1] = ImageArray1[ypos1, xpos1] + _weight
-                if _x_2 < xlim[1] and _x_1 > xlim[0]:
-                    if _div_2 < ylim[1] and _div_1 > ylim[0]:
-                        xpos2 = np.argmin(abs(X - _x_2))  ## nb big X is image coordinate, x is particle coordinate
-                        ypos2 = np.argmin(abs(Y - _div_2))
-                        # note indexing is row/column == y/x
-                        ImageArray2[ypos2, xpos2] = ImageArray1[ypos2, xpos2] + _weight
-
+            if normalize:
+                _histnp1 = _histnp1 * 100 / _histnp1.max()
+                _histnp2 = _histnp2 * 100 / _histnp2.max()
             # plot data:
             _extent = [xlim[0], xlim[1], ylim[0], ylim[1]]
             # _extent = None
-            _im1 = axs[row, 0].imshow(ImageArray1, extent=_extent, origin='lower',
-                                      cmap='inferno')
+            _im1 = axs[row, 0].imshow(_histnp1.T, extent=_extent, origin='lower',
+                                      cmap='inferno', vmin=vmin, vmax=vmax)
             fig.colorbar(_im1, ax=axs[row,0])
             axs[row, 0].set_xlabel(x_label_1)
             axs[row, 0].set_ylabel(y_label_1)
@@ -641,8 +658,8 @@ class PhaseSpace:
             axs[row, 0].set_ylim(ylim)
             axs[row, 0].set_aspect('auto')
 
-            _im2 = axs[row, 1].imshow(ImageArray2, extent=_extent, origin='lower',
-                                      cmap='inferno')
+            _im2 = axs[row, 1].imshow(_histnp2.T, extent=_extent, origin='lower',
+                                      cmap='inferno', vmin=vmin, vmax=vmax)
             fig.colorbar(_im2, ax=axs[row, 1])
             if plot_twiss_ellipse:
                 twiss_X, twiss_Y = self._get_ellipse_xy_points(elipse_parameters_2, x_data_2.min(), x_data_2.max(),
@@ -660,6 +677,56 @@ class PhaseSpace:
 
         plt.tight_layout()
         plt.show()
+
+    def plot_transverse_trace_space_hist(self, beam_direction='z', bins=100, xlim=None, ylim=None,
+                                         plot_twiss_ellipse=True, grid=True):
+        self.calculate_twiss_parameters(beam_direction=beam_direction)
+        fig, axs = plt.subplots(nrows=len(self._unique_particles), ncols=2, squeeze=False)
+        row = 0
+        for particle in self._unique_particles:
+            particle_name = particle_cfg.particle_properties[particle]['name']
+            ind = self._ps_data['particle type [pdg_code]'] == particle
+            ps_data = self._ps_data.loc[ind]
+            x_data_1, div_data_1, x_label_1, y_label_1, title_1, weight, elipse_parameters_1, \
+                x_data_2, div_data_2, x_label_2, y_label_2, title_2, elipse_parameters_2 = \
+                self._get_data_for_trace_space_plots(beam_direction, ps_data, particle_name)
+            if not xlim:
+                xlim = [np.min([x_data_1, x_data_2]), np.max([x_data_1, x_data_2])]
+            if not ylim:
+                ylim = [np.min([div_data_1, div_data_2]), np.max([div_data_1, div_data_2])]
+
+            X = np.linspace(xlim[0], xlim[1], bins)
+            Y = np.linspace(ylim[0], ylim[1], bins)
+            _hist1 = axs[row, 0].hist2d(x_data_1, div_data_1, bins=[X, Y], weights=ps_data['weight'], cmap='inferno')
+            fig.colorbar(_hist1[3], ax=axs[row,0])
+            axs[row, 0].set_xlabel(x_label_1)
+            axs[row, 0].set_ylabel(y_label_1)
+            axs[row, 0].set_title(title_1)
+            if plot_twiss_ellipse:
+                twiss_X, twiss_Y = self._get_ellipse_xy_points(elipse_parameters_1, x_data_1.min(), x_data_1.max(),
+                                                               div_data_1.min(), div_data_1.max())
+                axs[row, 0].scatter(twiss_X, twiss_Y, c='r', s=2)
+            if grid:
+                axs[row, 0].grid()
+
+            _hist2 = axs[row, 1].hist2d(x_data_2, div_data_2, bins=[X, Y], weights=ps_data['weight'], cmap='inferno')
+            fig.colorbar(_hist2[3], ax=axs[row, 1])
+            axs[row, 1].set_xlabel(x_label_2)
+            axs[row, 1].set_ylabel(y_label_2)
+            axs[row, 1].set_title(title_2)
+            axs[row, 1].set_xlim(xlim)
+            axs[row, 1].set_ylim(ylim)
+            if plot_twiss_ellipse:
+                twiss_X, twiss_Y = self._get_ellipse_xy_points(elipse_parameters_2, x_data_2.min(), x_data_2.max(),
+                                                               div_data_2.min(), div_data_2.max())
+                axs[row, 1].scatter(twiss_X, twiss_Y, c='r', s=2)
+            if grid:
+                axs[row, 1].grid()
+
+
+        plt.tight_layout()
+        plt.show()
+
 
     def plot_n_particles_v_time(self):  # pragma: no cover
         """
@@ -920,7 +987,6 @@ class PhaseSpace:
         reduce self._ps_data to only the required columns
         delete any other derived quantities such as twiss parameters
         this can be called whenever you want to reduce the memory footprint
-        It is also called internally whenever the user changes the data in ps_data
         """
         for col_name in self._ps_data.columns:
             if not col_name in ps_cfg.required_columns:
@@ -928,6 +994,7 @@ class PhaseSpace:
 
         self.twiss_parameters = {}
         self.energy_stats = {}
+        self._check_ps_data_format()
 
     def assess_density_versus_r(self, Rvals=None, verbose=True, beam_direction='z'):
         """
