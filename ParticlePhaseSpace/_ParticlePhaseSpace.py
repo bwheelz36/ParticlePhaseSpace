@@ -730,6 +730,14 @@ class PhaseSpace:
             data = pd.DataFrame(self.twiss_parameters[particle_name])
             print(data)
 
+    def fill_abs_momentum(self):
+        """
+        fill absolute momentum as Ptot [MeV/c]
+        :return:
+        """
+        self.ps_data['Ptot [MeV/c]'] = np.sqrt(self.ps_data['px [MeV/c]']**2 + self.ps_data['py [MeV/c]']**2 + self.ps_data['pz [MeV/c]']**2)
+
+
     def fill_kinetic_E(self):
         """
         adds kinetic energy into self._ps_data

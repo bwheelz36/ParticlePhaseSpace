@@ -28,7 +28,8 @@ allowed_columns = ['Ek [MeV]',  # Kinetic energy
                    'vz [m/s]',  # z velocity
                    'Direction Cosine X',  # x cosine of momentum
                    'Direction Cosine Y',  # y cosine of momentum
-                   'Direction Cosine Z']  # z cosine of momentum
+                   'Direction Cosine Z',  # z cosine of momentum
+                   'Ptot [MeV/c]']  # total momentum in MeV/c
 
 
 
