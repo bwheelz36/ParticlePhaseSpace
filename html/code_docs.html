@@ -118,6 +118,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_n_particles_v_time"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.plot_n_particles_v_time()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_particle_positions"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.plot_particle_positions()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_position_histogram"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.plot_position_histogram()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_transverse_trace_space_intensity"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.plot_transverse_trace_space_intensity()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_transverse_trace_space_scatter"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.plot_transverse_trace_space_scatter()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.print_energy_stats"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.print_energy_stats()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.print_twiss_parameters"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.print_twiss_parameters()</span></code></a></li>
@@ -398,7 +399,7 @@ before being randomly sampled.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_beam_intensity">
-<span class="sig-name descname"><span class="pre">plot_beam_intensity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beam_direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'z'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'intensity'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_beam_intensity" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">plot_beam_intensity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beam_direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'z'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'intensity'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_beam_intensity" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is alternative to plot_particle_positions(weight_position_plot=True); rather than a scatter plot of every particle, an
 image is formed by assigning particles to bins over a 2D grid. This is faster than generating a gaussian kde of intensity.
 In addition, this also allows to accumulate over energy as well as intensity.</p>
@@ -406,10 +407,15 @@ In addition, this also allows to accumulate over energy as well as intensity.</p
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>beam_direction</strong> (<em>str</em><em>, </em><em>optional</em>) – the direction the beam is travelling in. “x”, “y”, or “z” (default)</p></li>
-<li><p><strong>xlim</strong> (<em>list</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – set the xlim for all plots, e.g. [-2,2]</p></li>
-<li><p><strong>ylim</strong> (<em>list</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – set the ylim for all plots, e.g. [-2,2]</p></li>
+<li><p><strong>xlim</strong> (<em>list</em><em>, </em><em>optional</em>) – set the xlim for all plots, e.g. [-2,2]</p></li>
+<li><p><strong>ylim</strong> (<em>list</em><em>, </em><em>optional</em>) – set the ylim for all plots, e.g. [-2,2]</p></li>
+<li><p><strong>plot_twiss_ellipse</strong> (<em>bool</em><em>, </em><em>optional</em>) – if True, RMS ellipse from twiss parameters is overlaid.</p></li>
 <li><p><strong>quantity</strong> (<em>str</em>) – quantity to accumulate; either ‘intensity’ or ‘energy</p></li>
-<li><p><strong>grid</strong> (<em>bool</em>) – turns grid on/off</p></li>
+<li><p><strong>grid</strong> (<em>bool</em><em>, </em><em>optional</em>) – turns grid on/off</p></li>
+<li><p><strong>normalize</strong> (<em>bool</em><em>, </em><em>optional</em>) – if True, data is displayed in range 0-100</p></li>
+<li><p><strong>bins</strong> (<em>int</em><em>, </em><em>optional</em>) – number of bins in X/Y direction. n_pixels = bins ** 2</p></li>
+<li><p><strong>vmin</strong> (<em>float</em><em>, </em><em>optional</em>) – minimum color range</p></li>
+<li><p><strong>vmax</strong> (<em>float</em><em>, </em><em>optional</em>) – maximum color range</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -485,6 +491,27 @@ histograms are overlaid.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_transverse_trace_space_intensity">
+<span class="sig-name descname"><span class="pre">plot_transverse_trace_space_intensity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beam_direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'z'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_twiss_ellipse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_transverse_trace_space_intensity" title="Permalink to this definition">¶</a></dt>
+<dd><p>plot the intensity of the beam in trace space</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>beam_direction</strong> (<em>str</em><em>, </em><em>optional</em>) – the direction the beam is travelling in. “x”, “y”, or “z” (default)</p></li>
+<li><p><strong>xlim</strong> (<em>list</em><em>, </em><em>optional</em>) – set the xlim for all plots, e.g. [-2,2]</p></li>
+<li><p><strong>ylim</strong> (<em>list</em><em>, </em><em>optional</em>) – set the ylim for all plots, e.g. [-2,2]</p></li>
+<li><p><strong>plot_twiss_ellipse</strong> (<em>bool</em><em>, </em><em>optional</em>) – if True, RMS ellipse from twiss parameters is overlaid.</p></li>
+<li><p><strong>grid</strong> (<em>bool</em><em>, </em><em>optional</em>) – turns grid on/off</p></li>
+<li><p><strong>normalize</strong> (<em>bool</em><em>, </em><em>optional</em>) – if True, data is displayed in range 0-100</p></li>
+<li><p><strong>bins</strong> (<em>int</em><em>, </em><em>optional</em>) – number of bins in X/Y direction. n_pixels = bins ** 2</p></li>
+<li><p><strong>vmin</strong> (<em>float</em><em>, </em><em>optional</em>) – minimum color range</p></li>
+<li><p><strong>vmax</strong> (<em>float</em><em>, </em><em>optional</em>) – maximum color range</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_transverse_trace_space_scatter">
 <span class="sig-name descname"><span class="pre">plot_transverse_trace_space_scatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beam_direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'z'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_twiss_ellipse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_transverse_trace_space_scatter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a scatter plot of x versus x’=px/pz and y versus y’=py/pz (these definitions are for
@@ -553,8 +580,7 @@ a new PhaseSpace object is returned</p></li>
 <span class="sig-name descname"><span class="pre">reset_phase_space</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.reset_phase_space" title="Permalink to this definition">¶</a></dt>
 <dd><p>reduce self._ps_data to only the required columns
 delete any other derived quantities such as twiss parameters
-this can be called whenever you want to reduce the memory footprint
-It is also called internally whenever the user changes the data in ps_data</p>
+this can be called whenever you want to reduce the memory footprint</p>
 </dd></dl>
 
 </dd></dl>
