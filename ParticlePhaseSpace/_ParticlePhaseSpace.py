@@ -987,7 +987,6 @@ class PhaseSpace:
         reduce self._ps_data to only the required columns
         delete any other derived quantities such as twiss parameters
         this can be called whenever you want to reduce the memory footprint
-        It is also called internally whenever the user changes the data in ps_data
         """
         for col_name in self._ps_data.columns:
             if not col_name in ps_cfg.required_columns:
@@ -995,6 +994,7 @@ class PhaseSpace:
 
         self.twiss_parameters = {}
         self.energy_stats = {}
+        self._check_ps_data_format()
 
     def assess_density_versus_r(self, Rvals=None, verbose=True, beam_direction='z'):
         """
