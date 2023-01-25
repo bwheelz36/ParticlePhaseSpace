@@ -743,7 +743,10 @@ class PhaseSpace:
 
     def print_energy_stats(self, file_name=None):  # pragma: no cover
         """
-        Prints a sumary of the phase space to the screen.
+        Prints a summary of energy stats to the screen, which can optionally be saved to json
+
+        :param file_name: if specified, the data is saved as json in file_name
+        :type file_name: Path, str, optional
         """
         if not self.energy_stats:
             self.calculate_energy_statistics()
