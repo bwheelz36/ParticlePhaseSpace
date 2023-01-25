@@ -211,7 +211,7 @@ class PhaseSpace:
         :return:
         """
 
-        all_allowed_columns = ps_cfg.required_columns + ps_cfg.allowed_columns
+        all_allowed_columns = ps_cfg.required_columns + list(ps_cfg.allowed_columns.keys())
         for col_name in self._ps_data.columns:
             if not col_name in all_allowed_columns:
                 raise AttributeError(f'non allowed column name {col_name} in ps_data')
@@ -816,6 +816,18 @@ class PhaseSpace:
         """
         self._ps_data['rest mass [MeV/c^2]'] = ps_util.get_rest_masses_from_pdg_codes(self._ps_data['particle type [pdg_code]'])
         self._check_ps_data_format()
+
+    def fill_relativistic_mass(self):
+        """
+        add relativistic mass in MeV/c^2 to ps_data
+        :return:
+        """
+        if not 'gamma' in self._ps_data.columns:
+            self.fill_beta_and_gamma()
+        if not 'rest mass [MeV/c^2]' in self._ps_data.columns:
+            self.fill_rest_mass()
+
+        self._ps_data['relativistic mass [MeV/c^2]'] = np.multiply(self._ps_data['gamma'], self._ps_data['rest mass [MeV/c^2]'])
 
     def fill_velocity(self):
         """

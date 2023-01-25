@@ -18,19 +18,11 @@ PS = PhaseSpace(data)
 
 def test_all_allowed_columns_can_be_filled():
 
-    for col in ps_cfg.allowed_columns:
-        if col == 'Ek [MeV]':
-            PS.fill_kinetic_E()
-        elif col == 'rest mass [MeV/c^2]':
-            PS.fill_rest_mass()
-        elif col in 'gamma, beta':
-            PS.fill_beta_and_gamma()
-        elif col in 'vx [m/s], vy [m/s], vz [m/s]':
-            PS.fill_velocity()
-        elif col in 'Direction Cosine X, Direction Cosine Y, Direction Cosine Z':
-            PS.fill_direction_cosines()
-        else:
-            raise Exception(f'unable to fill required column {col}')
+    for col in list(ps_cfg.allowed_columns.keys()):
+        try:
+            PS.__getattribute__(ps_cfg.allowed_columns[col])()
+        except AttributeError:
+            raise AttributeError(f'unable to fill required column {col}')
 
 def test_downsample_phase_space():
 
@@ -111,7 +103,6 @@ def test_project_particles():
     PS_projected = PS.project_particles(beam_direction='y', distance=project_dist)
     # compare:
     assert np.allclose([x2, y2, z2], [PS_projected.ps_data['x [mm]'][0], PS_projected.ps_data['y [mm]'][0], PS_projected.ps_data['z [mm]'][0]])
-
 
 def test_reset_phase_space():
     PS.reset_phase_space()

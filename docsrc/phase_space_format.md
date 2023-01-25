@@ -28,8 +28,14 @@ two categories:
 |------------------------------------------------------------|------------------------------------------------------------------------------------------| ------------------------ |
 | Ek [MeV]                                                   | Kinetic energy in MeV                                                                    | `fill_kinetic_E`         |
 | rest mass [MeV/c^2]                                        | Particle rest mass in Mev/c^2                                                            | `fill_rest_mass`         |
+| 'relativistic mass [MeV/c^2]'                              | Particle mass in Mev/c^2                                                            | `fill_relativistic_mass`         |
 | beta                                                       | [Beta factor](https://en.wikipedia.org/wiki/Lorentz_factor) of particle                  | `fill_beta_and_gamma`    |
 | gamma                                                      | [Lorentz factor](https://en.wikipedia.org/wiki/Lorentz_factor) of particle               | `fill_beta_and_gamma`    |
 | vx [m/s], vy [m/s], vz [m/s]                               | relativistic particle velocity in m/s                                                    | `fill_velocity`          |
 | Direction Cosine X, Direction Cosine Y, Direction Cosine Z | [Direction Cosines](https://en.wikipedia.org/wiki/Direction_cosine) of particle momentum | `fill_direction_cosines` |
 
+## Notes on units
+
+In this code, I chose to only a single unit framework. This is because units are a frequent source
+of confusion and error, so the simplest and safest approach seems to be to just support one unit
+framework.

@@ -19,16 +19,17 @@ required_columns = ['x [mm]',  # x position of each particle
                     'particle id',  # id of each particle
                     'time [ps]']  # time each particle was scored
 
-allowed_columns = ['Ek [MeV]',  # Kinetic energy
-                   'rest mass [MeV/c^2]',  # rest mass
-                   'gamma',   # lorentz factor
-                   'beta',    # relatavistic beta v/c
-                   'vx [m/s]',  # x velocity
-                   'vy [m/s]',  # y velocity
-                   'vz [m/s]',  # z velocity
-                   'Direction Cosine X',  # x cosine of momentum
-                   'Direction Cosine Y',  # y cosine of momentum
-                   'Direction Cosine Z']  # z cosine of momentum
+allowed_columns = {'Ek [MeV]': 'fill_kinetic_E',  # Kinetic energy
+                   'rest mass [MeV/c^2]': 'fill_rest_mass',  # rest mass
+                   'relativistic mass [MeV/c^2]': 'fill_relativistic_mass',  # relatavistic mass
+                   'gamma': 'fill_beta_and_gamma',   # lorentz factor
+                   'beta': 'fill_beta_and_gamma',    # relatavistic beta v/c
+                   'vx [m/s]': 'fill_velocity',  # x velocity
+                   'vy [m/s]': 'fill_velocity',  # y velocity
+                   'vz [m/s]': 'fill_velocity',  # z velocity
+                   'Direction Cosine X': 'fill_direction_cosines',  # x cosine of momentum
+                   'Direction Cosine Y': 'fill_direction_cosines',  # y cosine of momentum
+                   'Direction Cosine Z': 'fill_direction_cosines'}  # z cosine of momentum
 
 
 

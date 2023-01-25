@@ -28,3 +28,11 @@ def test_columns_documented():
         for line in required_txt:
             found_entry.append(column in line)
         assert any(found_entry)
+
+    allowed_txt = pps_format_txt[allowed_heading_ind:]
+    for column in list(ps_cfg.allowed_columns.keys()):
+        found_entry = []
+        for line in allowed_txt:
+            found_entry.append(column in line)
+        if not any(found_entry):
+            raise Exception(f'required column {column} does not appear to be documented')
