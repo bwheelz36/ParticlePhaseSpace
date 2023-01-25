@@ -19,6 +19,14 @@ required_columns = ['x [mm]',  # x position of each particle
                     'particle id',  # id of each particle
                     'time [ps]']  # time each particle was scored
 
+'''
+The below defines all other quantities that can be calculated.
+each allowed method must have a defined method inside _ParticlePhaseSpace, the format of the below dict is:
+
+allowed_columns = {name of column: name of method to calculate it in _ParticlePhaseSpace}
+automatic testing is applied to ensure all these methods can be calculated
+'''
+
 allowed_columns = {'Ek [MeV]': 'fill_kinetic_E',  # Kinetic energy
                    'rest mass [MeV/c^2]': 'fill_rest_mass',  # rest mass
                    'relativistic mass [MeV/c^2]': 'fill_relativistic_mass',  # relatavistic mass

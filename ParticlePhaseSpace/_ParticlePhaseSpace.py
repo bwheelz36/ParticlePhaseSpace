@@ -132,14 +132,16 @@ class PhaseSpace:
     @ps_data.setter
     def ps_data(self, new_data_frame):
         """
-        gets run whenever ps_data gets changed
+        gets run whenever ps_data gets changed.
+        :warning!: this doesn't work in all situations; see here:
+        https://stackoverflow.com/questions/75205824/pandas-dataframe-as-a-property-of-a-class-setter-not-called-when-columns-change
+        So it is always advised to manually call reset_phase_space
+
         :param new_data_frame:
         :return:
         """
         self._ps_data = new_data_frame
         self.reset_phase_space()
-        self._check_ps_data_format()
-        self._unique_particles = self._ps_data['particle type [pdg_code]'].unique()
 
     def _weighted_median(self, data, weights):
         """
@@ -1007,6 +1009,7 @@ class PhaseSpace:
         self.twiss_parameters = {}
         self.energy_stats = {}
         self._check_ps_data_format()
+        self._unique_particles = self._ps_data['particle type [pdg_code]'].unique()
 
     def assess_density_versus_r(self, Rvals=None, verbose=True, beam_direction='z'):
         """
