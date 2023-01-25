@@ -31,7 +31,10 @@ allowed_columns = {'Ek [MeV]': 'fill_kinetic_E',  # Kinetic energy
                    'rest mass [MeV/c^2]': 'fill_rest_mass',  # rest mass
                    'relativistic mass [MeV/c^2]': 'fill_relativistic_mass',  # relatavistic mass
                    'gamma': 'fill_beta_and_gamma',   # lorentz factor
-                   'beta': 'fill_beta_and_gamma',    # relatavistic beta v/c
+                   'beta_x': 'fill_beta_and_gamma',    # relatavistic beta vx/c
+                   'beta_y': 'fill_beta_and_gamma',    # relatavistic beta vy/c
+                   'beta_z': 'fill_beta_and_gamma',    # relatavistic beta vz/c
+                   'beta_abs': 'fill_beta_and_gamma',    # relatavistic beta v/c
                    'vx [m/s]': 'fill_velocity',  # x velocity
                    'vy [m/s]': 'fill_velocity',  # y velocity
                    'vz [m/s]': 'fill_velocity',  # z velocity

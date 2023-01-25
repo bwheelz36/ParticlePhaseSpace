@@ -856,8 +856,12 @@ class PhaseSpace:
         if not 'rest mass [MeV/c^2]' in self._ps_data.columns:
             self.fill_rest_mass()
         TOT_P = np.sqrt(self._ps_data['px [MeV/c]'] ** 2 + self._ps_data['py [MeV/c]'] ** 2 + self._ps_data['pz [MeV/c]'] ** 2)
-        self._ps_data['beta'] = np.divide(TOT_P, self._ps_data['Ek [MeV]'] + self._ps_data['rest mass [MeV/c^2]'])
-        self._ps_data['gamma'] = 1 / np.sqrt(1 - np.square(self._ps_data['beta'] ))
+        self._ps_data['beta_abs'] = np.divide(TOT_P, self._ps_data['Ek [MeV]'] + self._ps_data['rest mass [MeV/c^2]'])
+        self._ps_data['beta_x'] = np.divide(self._ps_data['px [MeV/c]'], self._ps_data['Ek [MeV]'] + self._ps_data['rest mass [MeV/c^2]'])
+        self._ps_data['beta_y'] = np.divide(self._ps_data['py [MeV/c]'], self._ps_data['Ek [MeV]'] + self._ps_data['rest mass [MeV/c^2]'])
+        self._ps_data['beta_z'] = np.divide(self._ps_data['pz [MeV/c]'], self._ps_data['Ek [MeV]'] + self._ps_data['rest mass [MeV/c^2]'])
+        # assert np.allclose(np.sqrt(self._ps_data['beta_x']**2 + self._ps_data['beta_y']**2 +self._ps_data['beta_z']**2), self._ps_data['beta_abs'])
+        self._ps_data['gamma'] = 1 / np.sqrt(1 - np.square(self._ps_data['beta_abs']))
         self._check_ps_data_format()
 
     def fill_direction_cosines(self):

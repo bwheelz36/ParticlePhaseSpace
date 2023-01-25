@@ -166,3 +166,24 @@ def test_PS_reset():
     # this should have removed the twiss parameters and energy stats
     assert not PS.twiss_parameters
     assert not PS.energy_stats
+
+def test_beta_gamma_momentum_relation():
+    """
+    for charged particles, should have
+
+    pz = beta_z * gamma * rest_mass
+
+    :return:
+    """
+    data = DataLoaders.Load_TopasData(test_data_loc / 'coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp')
+    PS = PhaseSpace(data)
+    PS_electrons = PS('electrons')
+
+    PS_electrons.fill_beta_and_gamma()
+    PS_electrons.fill_rest_mass()
+    px = np.multiply(np.multiply(PS_electrons.ps_data['beta_x'], PS_electrons.ps_data['gamma']), PS_electrons.ps_data['rest mass [MeV/c^2]'])
+    assert np.allclose(px, PS_electrons.ps_data['px [MeV/c]'])
+    py = np.multiply(np.multiply(PS_electrons.ps_data['beta_y'], PS_electrons.ps_data['gamma']), PS_electrons.ps_data['rest mass [MeV/c^2]'])
+    assert np.allclose(py, PS_electrons.ps_data['py [MeV/c]'])
+    pz = np.multiply(np.multiply(PS_electrons.ps_data['beta_z'], PS_electrons.ps_data['gamma']), PS_electrons.ps_data['rest mass [MeV/c^2]'])
+    assert np.allclose(pz, PS_electrons.ps_data['pz [MeV/c]'])
