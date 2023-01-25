@@ -97,6 +97,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Phase Space Format</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#required-columns">Required Columns</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#allowed-columns">Allowed Columns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#notes-on-units">Notes on units</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="supported_particles.html">Supported particles</a></li>
@@ -252,7 +253,23 @@ to represent the phase space; all other data can be derived from these. Each Dat
 <td><p>Particle rest mass in Mev/c^2</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">fill_rest_mass</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p>beta</p></td>
+<tr class="row-even"><td><p>‘relativistic mass [MeV/c^2]’</p></td>
+<td><p>Particle mass in Mev/c^2</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">fill_relativistic_mass</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>beta_x</p></td>
+<td><p><a class="reference external" href="https://en.wikipedia.org/wiki/Lorentz_factor">x Beta factor</a> of particle</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">fill_beta_and_gamma</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>beta_y</p></td>
+<td><p><a class="reference external" href="https://en.wikipedia.org/wiki/Lorentz_factor">y Beta factor</a> of particle</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">fill_beta_and_gamma</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>beta_z</p></td>
+<td><p><a class="reference external" href="https://en.wikipedia.org/wiki/Lorentz_factor">z Beta factor</a> of particle</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">fill_beta_and_gamma</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>beta_abs</p></td>
 <td><p><a class="reference external" href="https://en.wikipedia.org/wiki/Lorentz_factor">Beta factor</a> of particle</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">fill_beta_and_gamma</span></code></p></td>
 </tr>
@@ -270,6 +287,12 @@ to represent the phase space; all other data can be derived from these. Each Dat
 </tr>
 </tbody>
 </table>
+</section>
+<section id="notes-on-units">
+<h2>Notes on units<a class="headerlink" href="#notes-on-units" title="Permalink to this heading">¶</a></h2>
+<p>In this code, I chose to only a single unit framework. This is because units are a frequent source
+of confusion and error, so the simplest and safest approach seems to be to just support one unit
+framework.</p>
 </section>
 </section>
 

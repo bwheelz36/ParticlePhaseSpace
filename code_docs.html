@@ -109,6 +109,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_beta_and_gamma"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.fill_beta_and_gamma()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_direction_cosines"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.fill_direction_cosines()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_kinetic_E"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.fill_kinetic_E()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_relativistic_mass"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.fill_relativistic_mass()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_rest_mass"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.fill_rest_mass()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_velocity"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.fill_velocity()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.filter_by_time"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.filter_by_time()</span></code></a></li>
@@ -350,20 +351,27 @@ V (direction cosine of momentum with respect to Y)
 <dl class="py method">
 <dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_kinetic_E">
 <span class="sig-name descname"><span class="pre">fill_kinetic_E</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_kinetic_E" title="Permalink to this definition">¶</a></dt>
-<dd><p>adds kinetic energy into self._ps_data</p>
+<dd><p>adds kinetic energy in MeV into self._ps_data</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_relativistic_mass">
+<span class="sig-name descname"><span class="pre">fill_relativistic_mass</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_relativistic_mass" title="Permalink to this definition">¶</a></dt>
+<dd><p>add relativistic mass in MeV/c^2 to ps_data
+:return:</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_rest_mass">
 <span class="sig-name descname"><span class="pre">fill_rest_mass</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_rest_mass" title="Permalink to this definition">¶</a></dt>
-<dd><p>add rest mass data to self._ps_data
+<dd><p>add rest mass in MeV to self.ps_data
 :return:</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_velocity">
 <span class="sig-name descname"><span class="pre">fill_velocity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_velocity" title="Permalink to this definition">¶</a></dt>
-<dd><p>add velocities into self._ps_data</p>
+<dd><p>add velocities in m/s into self._ps_data</p>
 </dd></dl>
 
 <dl class="py method">
@@ -534,7 +542,12 @@ beam_direction=’z’)</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.print_energy_stats">
 <span class="sig-name descname"><span class="pre">print_energy_stats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.print_energy_stats" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prints a sumary of the phase space to the screen.</p>
+<dd><p>Prints a summary of energy stats to the screen, which can optionally be saved to json</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_name</strong> (<em>Path</em><em>, </em><em>str</em><em>, </em><em>optional</em>) – if specified, the data is saved as json in file_name</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
