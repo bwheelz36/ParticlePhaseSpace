@@ -37,7 +37,7 @@ two categories:
 
 ## Notes on units
 
-In this code, I chose to only a single unit framework. This is because units are a frequent source
+In this code, I chose to use only a single unit framework. This is because units are a frequent source
 of confusion and error, so the simplest and safest approach seems to be to just support one unit
 framework. 
 If there is need, we could update the plots such that different units can be specified - however my thoughts/preference at the
@@ -61,35 +61,37 @@ but for momentum we make the following notes that may help in converting differe
 
 ### If energy/ direction cosines are specified:
 
-$$
-P = \sqrt{E^2 + E_0^2 }
-\\where
-\\E = E_k + E_0
-$$
+```python
+from math import sqrt
+P = sqrt(E**2 + E_0**2)
+```
 
+where
+```python
+E = E_k + E_0
+```
 E should be in units of MeV.
 
-To calculate $p_x\\$,  $p_x\\$ ,  $p_x\\$  from this, you must have something like the momentum cosines.
-$$
-p_x = P.DirectionCosine_x
-\\etc.
-$$
-
+To calculate px, py, and pz  from this, you must have something like the momentum cosines.
+```python
+p_x = P*DirectionCosine_x
+```
+etc.
 
 ### If beta/ gamma specified
 
 For charged particles, data may be specified in terms of beta/gamma. In that case:
-$$
-P = \beta.\gamma.rest\_energy
-\\p_x = \beta_x.\gamma.rest\_energy
-\\etc.
-$$
-$rest\_energy\\$ should be specified in MeV, e.g. for electrons the value is 0.511 MeV
+```python
+P = beta*gamma*rest_energy
+p_x = beta_x*gamma*rest_energy
+```
+etc.
+rest_energy should be specified in MeV, e.g. for electrons the value is 0.511 MeV
 
 ### If momentum is specified in SI units
 
-To convert from $kg.m/s\\$ to $MeV/c\\$
-$$
-P_{eV/c} = P_{SI} . c/q
-\\P_{MeV/c} = P_{MeV/c} . c/q . 1e-6
-$$
+To convert from kg.m/s to MeV/c
+```python
+P_ev_c = P_SI * (c/q)
+P_MeV_c = P_SI * (c/q) * 1e-6
+```
