@@ -799,7 +799,7 @@ class PhaseSpace:
 
     def fill_kinetic_E(self):
         """
-        adds kinetic energy into self._ps_data
+        adds kinetic energy in MeV into self._ps_data
         """
         if not hasattr(self,'_rest_masses'):
             self.fill_rest_mass()
@@ -811,7 +811,7 @@ class PhaseSpace:
 
     def fill_rest_mass(self):
         """
-        add rest mass data to self._ps_data
+        add rest mass in MeV to self.ps_data
         :return: 
         """
         self._ps_data['rest mass [MeV/c^2]'] = ps_util.get_rest_masses_from_pdg_codes(self._ps_data['particle type [pdg_code]'])
@@ -819,7 +819,7 @@ class PhaseSpace:
 
     def fill_velocity(self):
         """
-        add velocities into self._ps_data
+        add velocities in m/s into self._ps_data
         """
         if not 'rest mass [MeV/c^2]' in self._ps_data.columns:
             self.fill_rest_mass()
