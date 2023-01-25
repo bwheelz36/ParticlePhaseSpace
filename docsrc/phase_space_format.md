@@ -1,10 +1,11 @@
+
 # Phase Space Format
 
 The allowed columns in the phase space data are defined in the `__phase_space_config.py` file, and are split into
 two categories:
 
 1. **Required columns** are, as the name implies, required and present at all times. These are the core data used 
-  to represent the phase space; all other data can be derived from these. Each DataLoader must fill in these and only these columns to generate a valid import object.
+    to represent the phase space; all other data can be derived from these. Each DataLoader must fill in these and only these columns to generate a valid import object.
 2. **Allowed columns** can optionally be filled in using a `fill` method on a PhaseSpace object. For instance, to fill the allowed column `Ek [MeV]` you would use the `fill_kinetic_E` method. You are free to update the `allowed_columns` at any time, however in order for the code to pass testing you must:
   1. Write an associated `fill` method
   2. Update the test `test_all_allowed_columns_can_be_filled` inside `test_ParticlePhaseSpace`
@@ -38,4 +39,57 @@ two categories:
 
 In this code, I chose to only a single unit framework. This is because units are a frequent source
 of confusion and error, so the simplest and safest approach seems to be to just support one unit
-framework.
+framework. 
+If there is need, we could update the plots such that different units can be specified - however my thoughts/preference at the
+momentum is that only one set of units are used internally. 
+The units should be quite clear from the column names above, but to avoid ambiguity:
+
+
+| quantity | units   |
+| -------- | ------- |
+| distance | mm      |
+| momentum | MeV/c   |
+| Energy   | MeV     |
+| mass     | MeV/c^2 |
+| time     | ps      |
+| velocity | m/s     |
+
+## Reading in momentum
+
+Position-Momentum are the fundamental quantities read in by the DataLoaders. Position is (hopefully) trivial, 
+but for momentum we make the following notes that may help in converting different properties into momentum:
+
+### If energy/ direction cosines are specified:
+
+$$
+P = \sqrt{E^2 + E_0^2 }
+\\where
+\\E = E_k + E_0
+$$
+
+E should be in units of MeV.
+
+To calculate $p_x\\$,  $p_x\\$ ,  $p_x\\$  from this, you must have something like the momentum cosines.
+$$
+p_x = P.DirectionCosine_x
+\\etc.
+$$
+
+
+### If beta/ gamma specified
+
+For charged particles, data may be specified in terms of beta/gamma. In that case:
+$$
+P = \beta.\gamma.rest\_energy
+\\p_x = \beta_x.\gamma.rest\_energy
+\\etc.
+$$
+$rest\_energy\\$ should be specified in MeV, e.g. for electrons the value is 0.511 MeV
+
+### If momentum is specified in SI units
+
+To convert from $kg.m/s\\$ to $MeV/c\\$
+$$
+P_{eV/c} = P_{SI} . c/q
+\\P_{MeV/c} = P_{MeV/c} . c/q . 1e-6
+$$
