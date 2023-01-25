@@ -284,7 +284,7 @@ to represent the phase space; all other data can be derived from these. Each Dat
 </section>
 <section id="notes-on-units">
 <h2>Notes on units<a class="headerlink" href="#notes-on-units" title="Permalink to this heading">¶</a></h2>
-<p>In this code, I chose to only a single unit framework. This is because units are a frequent source
+<p>In this code, I chose to use only a single unit framework. This is because units are a frequent source
 of confusion and error, so the simplest and safest approach seems to be to just support one unit
 framework.
 If there is need, we could update the plots such that different units can be specified - however my thoughts/preference at the
@@ -324,35 +324,38 @@ The units should be quite clear from the column names above, but to avoid ambigu
 but for momentum we make the following notes that may help in converting different properties into momentum:</p>
 <section id="if-energy-direction-cosines-are-specified">
 <h3>If energy/ direction cosines are specified:<a class="headerlink" href="#if-energy-direction-cosines-are-specified" title="Permalink to this heading">¶</a></h3>
-<p>$$
-P = \sqrt{E^2 + E_0^2 }
-\where
-\E = E_k + E_0
-$$</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sqrt</span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">E</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">E_0</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">E</span> <span class="o">=</span> <span class="n">E_k</span> <span class="o">+</span> <span class="n">E_0</span>
+</pre></div>
+</div>
 <p>E should be in units of MeV.</p>
-<p>To calculate $p_x\$,  $p_x\$ ,  $p_x\$  from this, you must have something like the momentum cosines.
-$$
-p_x = P.DirectionCosine_x
-\etc.
-$$</p>
+<p>To calculate px, py, and pz  from this, you must have something like the momentum cosines.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">p_x</span> <span class="o">=</span> <span class="n">P</span><span class="o">*</span><span class="n">DirectionCosine_x</span>
+</pre></div>
+</div>
+<p>etc.</p>
 </section>
 <section id="if-beta-gamma-specified">
 <h3>If beta/ gamma specified<a class="headerlink" href="#if-beta-gamma-specified" title="Permalink to this heading">¶</a></h3>
-<p>For charged particles, data may be specified in terms of beta/gamma. In that case:
-$$
-P = \beta.\gamma.rest_energy
-\p_x = \beta_x.\gamma.rest_energy
-\etc.
-$$
-$rest_energy\$ should be specified in MeV, e.g. for electrons the value is 0.511 MeV</p>
+<p>For charged particles, data may be specified in terms of beta/gamma. In that case:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">P</span> <span class="o">=</span> <span class="n">beta</span><span class="o">*</span><span class="n">gamma</span><span class="o">*</span><span class="n">rest_energy</span>
+<span class="n">p_x</span> <span class="o">=</span> <span class="n">beta_x</span><span class="o">*</span><span class="n">gamma</span><span class="o">*</span><span class="n">rest_energy</span>
+</pre></div>
+</div>
+<p>etc.
+rest_energy should be specified in MeV, e.g. for electrons the value is 0.511 MeV</p>
 </section>
 <section id="if-momentum-is-specified-in-si-units">
 <h3>If momentum is specified in SI units<a class="headerlink" href="#if-momentum-is-specified-in-si-units" title="Permalink to this heading">¶</a></h3>
-<p>To convert from $kg.m/s\$ to $MeV/c\$
-$$
-P_{eV/c} = P_{SI} . c/q
-\P_{MeV/c} = P_{MeV/c} . c/q . 1e-6
-$$</p>
+<p>To convert from kg.m/s to MeV/c</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">P_ev_c</span> <span class="o">=</span> <span class="n">P_SI</span> <span class="o">*</span> <span class="p">(</span><span class="n">c</span><span class="o">/</span><span class="n">q</span><span class="p">)</span>
+<span class="n">P_MeV_c</span> <span class="o">=</span> <span class="n">P_SI</span> <span class="o">*</span> <span class="p">(</span><span class="n">c</span><span class="o">/</span><span class="n">q</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-6</span>
+</pre></div>
+</div>
 </section>
 </section>
 </section>
