@@ -19,16 +19,28 @@ required_columns = ['x [mm]',  # x position of each particle
                     'particle id',  # id of each particle
                     'time [ps]']  # time each particle was scored
 
-allowed_columns = ['Ek [MeV]',  # Kinetic energy
-                   'rest mass [MeV/c^2]',  # rest mass
-                   'gamma',   # lorentz factor
-                   'beta',    # relatavistic beta v/c
-                   'vx [m/s]',  # x velocity
-                   'vy [m/s]',  # y velocity
-                   'vz [m/s]',  # z velocity
-                   'Direction Cosine X',  # x cosine of momentum
-                   'Direction Cosine Y',  # y cosine of momentum
-                   'Direction Cosine Z']  # z cosine of momentum
+'''
+The below defines all other quantities that can be calculated.
+each allowed method must have a defined method inside _ParticlePhaseSpace, the format of the below dict is:
+
+allowed_columns = {name of column: name of method to calculate it in _ParticlePhaseSpace}
+automatic testing is applied to ensure all these methods can be calculated
+'''
+
+allowed_columns = {'Ek [MeV]': 'fill_kinetic_E',  # Kinetic energy
+                   'rest mass [MeV/c^2]': 'fill_rest_mass',  # rest mass
+                   'relativistic mass [MeV/c^2]': 'fill_relativistic_mass',  # relatavistic mass
+                   'gamma': 'fill_beta_and_gamma',   # lorentz factor
+                   'beta_x': 'fill_beta_and_gamma',    # relatavistic beta vx/c
+                   'beta_y': 'fill_beta_and_gamma',    # relatavistic beta vy/c
+                   'beta_z': 'fill_beta_and_gamma',    # relatavistic beta vz/c
+                   'beta_abs': 'fill_beta_and_gamma',    # relatavistic beta v/c
+                   'vx [m/s]': 'fill_velocity',  # x velocity
+                   'vy [m/s]': 'fill_velocity',  # y velocity
+                   'vz [m/s]': 'fill_velocity',  # z velocity
+                   'Direction Cosine X': 'fill_direction_cosines',  # x cosine of momentum
+                   'Direction Cosine Y': 'fill_direction_cosines',  # y cosine of momentum
+                   'Direction Cosine Z': 'fill_direction_cosines'}  # z cosine of momentum
 
 
 

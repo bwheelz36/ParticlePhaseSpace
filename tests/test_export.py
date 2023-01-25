@@ -27,7 +27,7 @@ def test_topas_export():
     data = DataLoaders.Load_PandasData(demo_data)
     PS = PhaseSpace(data)
     # ok: can we export this data:
-    DataExporters.Topas_Exporter(PS,output_location='.', output_name='test.phsp')
+    DataExporters.Topas_Exporter(PS, output_location='.', output_name='test.phsp')
     # now check we can read it back in:
     data = DataLoaders.Load_TopasData('test.phsp')
     PS2 = PhaseSpace(data)

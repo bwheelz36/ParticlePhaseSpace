@@ -132,14 +132,16 @@ class PhaseSpace:
     @ps_data.setter
     def ps_data(self, new_data_frame):
         """
-        gets run whenever ps_data gets changed
+        gets run whenever ps_data gets changed.
+        :warning!: this doesn't work in all situations; see here:
+        https://stackoverflow.com/questions/75205824/pandas-dataframe-as-a-property-of-a-class-setter-not-called-when-columns-change
+        So it is always advised to manually call reset_phase_space
+
         :param new_data_frame:
         :return:
         """
         self._ps_data = new_data_frame
         self.reset_phase_space()
-        self._check_ps_data_format()
-        self._unique_particles = self._ps_data['particle type [pdg_code]'].unique()
 
     def _weighted_median(self, data, weights):
         """
@@ -211,7 +213,7 @@ class PhaseSpace:
         :return:
         """
 
-        all_allowed_columns = ps_cfg.required_columns + ps_cfg.allowed_columns
+        all_allowed_columns = ps_cfg.required_columns + list(ps_cfg.allowed_columns.keys())
         for col_name in self._ps_data.columns:
             if not col_name in all_allowed_columns:
                 raise AttributeError(f'non allowed column name {col_name} in ps_data')
@@ -741,7 +743,10 @@ class PhaseSpace:
 
     def print_energy_stats(self, file_name=None):  # pragma: no cover
         """
-        Prints a sumary of the phase space to the screen.
+        Prints a summary of energy stats to the screen, which can optionally be saved to json
+
+        :param file_name: if specified, the data is saved as json in file_name
+        :type file_name: Path, str, optional
         """
         if not self.energy_stats:
             self.calculate_energy_statistics()
@@ -799,7 +804,7 @@ class PhaseSpace:
 
     def fill_kinetic_E(self):
         """
-        adds kinetic energy into self._ps_data
+        adds kinetic energy in MeV into self._ps_data
         """
         if not hasattr(self,'_rest_masses'):
             self.fill_rest_mass()
@@ -811,15 +816,27 @@ class PhaseSpace:
 
     def fill_rest_mass(self):
         """
-        add rest mass data to self._ps_data
+        add rest mass in MeV to self.ps_data
         :return: 
         """
         self._ps_data['rest mass [MeV/c^2]'] = ps_util.get_rest_masses_from_pdg_codes(self._ps_data['particle type [pdg_code]'])
         self._check_ps_data_format()
 
+    def fill_relativistic_mass(self):
+        """
+        add relativistic mass in MeV/c^2 to ps_data
+        :return:
+        """
+        if not 'gamma' in self._ps_data.columns:
+            self.fill_beta_and_gamma()
+        if not 'rest mass [MeV/c^2]' in self._ps_data.columns:
+            self.fill_rest_mass()
+
+        self._ps_data['relativistic mass [MeV/c^2]'] = np.multiply(self._ps_data['gamma'], self._ps_data['rest mass [MeV/c^2]'])
+
     def fill_velocity(self):
         """
-        add velocities into self._ps_data
+        add velocities in m/s into self._ps_data
         """
         if not 'rest mass [MeV/c^2]' in self._ps_data.columns:
             self.fill_rest_mass()
@@ -839,8 +856,12 @@ class PhaseSpace:
         if not 'rest mass [MeV/c^2]' in self._ps_data.columns:
             self.fill_rest_mass()
         TOT_P = np.sqrt(self._ps_data['px [MeV/c]'] ** 2 + self._ps_data['py [MeV/c]'] ** 2 + self._ps_data['pz [MeV/c]'] ** 2)
-        self._ps_data['beta'] = np.divide(TOT_P, self._ps_data['Ek [MeV]'] + self._ps_data['rest mass [MeV/c^2]'])
-        self._ps_data['gamma'] = 1 / np.sqrt(1 - np.square(self._ps_data['beta'] ))
+        self._ps_data['beta_abs'] = np.divide(TOT_P, self._ps_data['Ek [MeV]'] + self._ps_data['rest mass [MeV/c^2]'])
+        self._ps_data['beta_x'] = np.divide(self._ps_data['px [MeV/c]'], self._ps_data['Ek [MeV]'] + self._ps_data['rest mass [MeV/c^2]'])
+        self._ps_data['beta_y'] = np.divide(self._ps_data['py [MeV/c]'], self._ps_data['Ek [MeV]'] + self._ps_data['rest mass [MeV/c^2]'])
+        self._ps_data['beta_z'] = np.divide(self._ps_data['pz [MeV/c]'], self._ps_data['Ek [MeV]'] + self._ps_data['rest mass [MeV/c^2]'])
+        # assert np.allclose(np.sqrt(self._ps_data['beta_x']**2 + self._ps_data['beta_y']**2 +self._ps_data['beta_z']**2), self._ps_data['beta_abs'])
+        self._ps_data['gamma'] = 1 / np.sqrt(1 - np.square(self._ps_data['beta_abs']))
         self._check_ps_data_format()
 
     def fill_direction_cosines(self):
@@ -995,6 +1016,7 @@ class PhaseSpace:
         self.twiss_parameters = {}
         self.energy_stats = {}
         self._check_ps_data_format()
+        self._unique_particles = self._ps_data['particle type [pdg_code]'].unique()
 
     def assess_density_versus_r(self, Rvals=None, verbose=True, beam_direction='z'):
         """

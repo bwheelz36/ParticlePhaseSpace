@@ -37,27 +37,23 @@ class _DataExportersBase(ABC):
         check that the columns that are required for data export are actually allowed
         :return:
         """
-        allowed_columns = ps_cfg.required_columns + ps_cfg.allowed_columns
+        allowed_columns = ps_cfg.required_columns + list(ps_cfg.allowed_columns.keys())
         for col in self._required_columns:
             if not col in allowed_columns:
                 raise AttributeError(f'column: "{col}" is required for export, but is not an allowed column name.')
 
     def _fill_required_columns(self):
+        """
+        fill in any data required for the export
+        :return:
+        """
 
         for col in self._required_columns:
             if not col in self._PS.ps_data.columns:
-                if col == 'Ek [MeV]':
-                    self._PS.fill_kinetic_E()
-                elif col == 'rest mass [MeV/c^2]':
-                    self._PS.fill_rest_mass()
-                elif col in 'gamma, beta':
-                    self._PS.fill_beta_and_gamma()
-                elif col in 'vx [m/s], vy [m/s], vz [m/s]':
-                    self._PS.fill_velocity()
-                elif col in 'Direction Cosine X, Direction Cosine Y, Direction Cosine Z':
-                    self._PS.fill_direction_cosines()
-                else:
-                    raise Exception(f'unable to fill required column {col}')
+                try:
+                    self._PS.__getattribute__(ps_cfg.allowed_columns[col])()
+                except AttributeError:
+                    raise AttributeError(f'unable to fill required column {col}')
 
     @abstractmethod
     def _define_required_columns(self):

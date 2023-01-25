@@ -18,19 +18,11 @@ PS = PhaseSpace(data)
 
 def test_all_allowed_columns_can_be_filled():
 
-    for col in ps_cfg.allowed_columns:
-        if col == 'Ek [MeV]':
-            PS.fill_kinetic_E()
-        elif col == 'rest mass [MeV/c^2]':
-            PS.fill_rest_mass()
-        elif col in 'gamma, beta':
-            PS.fill_beta_and_gamma()
-        elif col in 'vx [m/s], vy [m/s], vz [m/s]':
-            PS.fill_velocity()
-        elif col in 'Direction Cosine X, Direction Cosine Y, Direction Cosine Z':
-            PS.fill_direction_cosines()
-        else:
-            raise Exception(f'unable to fill required column {col}')
+    for col in list(ps_cfg.allowed_columns.keys()):
+        try:
+            PS.__getattribute__(ps_cfg.allowed_columns[col])()
+        except AttributeError:
+            raise AttributeError(f'unable to fill required column {col}')
 
 def test_downsample_phase_space():
 
@@ -112,7 +104,6 @@ def test_project_particles():
     # compare:
     assert np.allclose([x2, y2, z2], [PS_projected.ps_data['x [mm]'][0], PS_projected.ps_data['y [mm]'][0], PS_projected.ps_data['z [mm]'][0]])
 
-
 def test_reset_phase_space():
     PS.reset_phase_space()
     # following this only required columns should be included:
@@ -175,3 +166,24 @@ def test_PS_reset():
     # this should have removed the twiss parameters and energy stats
     assert not PS.twiss_parameters
     assert not PS.energy_stats
+
+def test_beta_gamma_momentum_relation():
+    """
+    for charged particles, should have
+
+    pz = beta_z * gamma * rest_mass
+
+    :return:
+    """
+    data = DataLoaders.Load_TopasData(test_data_loc / 'coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp')
+    PS = PhaseSpace(data)
+    PS_electrons = PS('electrons')
+
+    PS_electrons.fill_beta_and_gamma()
+    PS_electrons.fill_rest_mass()
+    px = np.multiply(np.multiply(PS_electrons.ps_data['beta_x'], PS_electrons.ps_data['gamma']), PS_electrons.ps_data['rest mass [MeV/c^2]'])
+    assert np.allclose(px, PS_electrons.ps_data['px [MeV/c]'])
+    py = np.multiply(np.multiply(PS_electrons.ps_data['beta_y'], PS_electrons.ps_data['gamma']), PS_electrons.ps_data['rest mass [MeV/c^2]'])
+    assert np.allclose(py, PS_electrons.ps_data['py [MeV/c]'])
+    pz = np.multiply(np.multiply(PS_electrons.ps_data['beta_z'], PS_electrons.ps_data['gamma']), PS_electrons.ps_data['rest mass [MeV/c^2]'])
+    assert np.allclose(pz, PS_electrons.ps_data['pz [MeV/c]'])
