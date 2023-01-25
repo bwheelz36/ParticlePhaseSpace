@@ -18,7 +18,11 @@ bibliography: paper.bib
 
 # Summary
 
-In accelerator particle physics, a description of the positions and directions of an ensemble of particles is termed a phase space. For a given particle at a given time, 6 properties are required; for example, position-momentum: [x y z px py pz].  To extend this description to arbitrary particles at an arbitrary time, the particle species (e.g. electron, x-ray. etc.), time at which its properties were recorded, and the statistical weight (importance) of the particle must also be included. Phase space data is widely used in the simulation of particle accelerators to store results; in particular phase space data is commonly both the input and output of accelerator simulations. Unfortunately, there is no widely accepted format for phase space data, nor are there common open source libraries for handling this data. 
+In accelerator particle physics, a description of the positions and directions of an ensemble of particles is termed a phase space. For a given particle at a given time, 6 properties are required; for example, position-momentum: [x y z px py pz].  To extend this description to arbitrary particles at an arbitrary time, the particle species (e.g. electron, x-ray. etc.), time at which its properties were recorded must also be included. Finally, it is common in simulations to represent many particles with one 'macro particle'; in this case, the statistical weight of each particle in the dataset must also be recorded. 
+
+Simulation frameworks are widely used for the design and fine tuning of particle accelerators ranging in scope from the large hadron collider to the humble x-ray tube. In these simulations, 
+
+Phase space data is widely used in the simulation of particle accelerators to store results; in particular phase space data is commonly both the input and output of accelerator simulations. Unfortunately, there is no widely accepted format for phase space data, nor are there common open source libraries for handling this data. 
 
 # Statement of need
 
