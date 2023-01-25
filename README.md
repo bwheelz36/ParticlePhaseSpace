@@ -2,7 +2,7 @@
 
 ![tests](https://github.com/bwheelz36/ParticlePhaseSpace/actions/workflows/run_tests.yml/badge.svg)![tests](https://github.com/bwheelz36/ParticlePhaseSpace/actions/workflows/build_docs.yml/badge.svg)[![codecov](https://codecov.io/gh/bwheelz36/ParticlePhaseSpace/branch/main/graph/badge.svg?token=T44KBJ7INR)](https://codecov.io/gh/bwheelz36/ParticlePhaseSpace)[![PyPI version](https://badge.fury.io/py/ParticlePhaseSpace.svg)](https://badge.fury.io/py/ParticlePhaseSpace)
 
-common library for dealing with particle phase spaces. This library supports the read in, analysis, and export of particle phase space data.
+Common library for dealing with particle phase spaces. This library supports the read in, analysis, and export of particle phase space data.
 It provides an extensible mechanisms to make it easy to convert between the multitude of different phase space formats in existence.
 
 ## Install and Requirements
