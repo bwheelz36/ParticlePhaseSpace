@@ -1,6 +1,7 @@
 import numpy as np
 import ParticlePhaseSpace.__phase_space_config__ as ps_cfg
 import ParticlePhaseSpace.__particle_config__ as particle_cfg
+# from ParticlePhaseSpace import ParticlePhaseSpaceUnits
 
 def _check_particle_types(pdg_codes):
     """
@@ -27,3 +28,20 @@ def get_rest_masses_from_pdg_codes(pdg_codes):
         particle_rest_mass[ind] = particle_cfg.particle_properties[particle_type]['rest_mass']
     return particle_rest_mass
 
+def get_column_names(units):
+
+    # if not isinstance(units, ParticlePhaseSpaceUnits):
+    #     raise TypeError('units must be an instance of articlePhaseSpace.ParticlePhaseSpaceUnits')
+
+    column_names = {'x': 0,
+                    'y': 0,
+                    'z': 0,
+                    'px:': 0,
+                    'py': 0,
+                    'Ek': 0,
+                    'vx': 0,
+                    'vy': 0,
+                    'vz': 0,
+                    'time': 0,
+                    'mass': 0}
+    return column_names

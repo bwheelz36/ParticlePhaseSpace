@@ -6,8 +6,12 @@ from pathlib import Path
 from .utilities import get_rest_masses_from_pdg_codes
 import ParticlePhaseSpace.__phase_space_config__ as ps_cfg
 import ParticlePhaseSpace.__particle_config__ as particle_cfg
+from ParticlePhaseSpace.__unit_config__ import _UnitSet
 import warnings
+from ParticlePhaseSpace import ParticlePhaseSpaceUnits
 from scipy import constants
+
+units=ParticlePhaseSpaceUnits()
 
 class _DataLoadersBase(ABC):
     """
@@ -15,8 +19,13 @@ class _DataLoadersBase(ABC):
     Inherited by new instances of DataLoaders
     """
 
-    def __init__(self, input_data, particle_type=None):
+    def __init__(self, input_data, particle_type=None, units=units('mm_MeV')):
         self.data = pd.DataFrame()
+        if not isinstance(units, _UnitSet):
+            raise TypeError('units must be an instance of articlePhaseSpace.__unit_config__._UnitSet.'
+                            'UnitSets are accessed through the ParticlePhaseSpaceUnits class')
+        self.units = units
+
 
         if particle_type:
             if not isinstance(particle_type, str):
