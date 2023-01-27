@@ -1,7 +1,8 @@
 import numpy as np
 import ParticlePhaseSpace.__phase_space_config__ as ps_cfg
 import ParticlePhaseSpace.__particle_config__ as particle_cfg
-# from ParticlePhaseSpace import ParticlePhaseSpaceUnits
+from ParticlePhaseSpace import ParticlePhaseSpaceUnits
+from ParticlePhaseSpace.__unit_config__ import _UnitSet
 
 def _check_particle_types(pdg_codes):
     """
@@ -28,20 +29,49 @@ def get_rest_masses_from_pdg_codes(pdg_codes):
         particle_rest_mass[ind] = particle_cfg.particle_properties[particle_type]['rest_mass']
     return particle_rest_mass
 
-def get_column_names(units):
+def get_all_column_names(units: _UnitSet):
+    """
+    return a dictionary of column names appropriate for the unit set defined in units
+
+    :param units: instance of _UnitSet defining the units to generate column names for
+    :type units: _UnitSet
+    :return: column_names: dictionary of unit-appropriate columns names
+    """
 
     # if not isinstance(units, ParticlePhaseSpaceUnits):
     #     raise TypeError('units must be an instance of articlePhaseSpace.ParticlePhaseSpaceUnits')
 
-    column_names = {'x': 0,
-                    'y': 0,
-                    'z': 0,
-                    'px:': 0,
-                    'py': 0,
-                    'Ek': 0,
-                    'vx': 0,
-                    'vy': 0,
-                    'vz': 0,
-                    'time': 0,
-                    'mass': 0}
+    column_names = {'x': f'x [{units.length.label}]',
+                    'y': f'y [{units.length.label}]',
+                    'z': f'z [{units.length.label}]',
+                    'px': f'px [{units.momentum.label}]',
+                    'py': f'py [{units.momentum.label}]',
+                    'pz': f'pz [{units.momentum.label}]',
+                    'vx': f'vx [{units.velocity.label}]',
+                    'vy': f'vy [{units.velocity.label}]',
+                    'vz': f'vz [{units.velocity.label}]',
+                    'time': f'time [{units.time.label}]',
+                    'rest_mass': f'pz [{units.mass.label}]',
+                    'relativistic_mass': f'relativistic mass [{units.mass.label}]',
+                    'Ek': f'Ek [{units.energy.label}]',
+                    'beta_x': 'beta_x',
+                    'beta_y': 'beta_y',
+                    'beta_z': 'beta_z',
+                    'beta_abs': 'beta_abs',
+                    'gamma': 'gamma',
+                    'DirCosX': 'Direction Cosine X',
+                    'DirCosY': 'Direction Cosine Y',
+                    'DirCosZ': 'Direction Cosine Z',
+                    'particle type': 'particle type [pdg_code]',
+                    'weight': 'weight',
+                    'particle id': 'particle id'}
     return column_names
+
+def get_required_column_names(units: _UnitSet):
+
+    all_column_names = get_all_column_names(units)
+    required_columns = ps_cfg.required_columns
+    required_column_names = []
+    for column in required_columns:
+        required_column_names.append(all_column_names[column])
+    return required_column_names

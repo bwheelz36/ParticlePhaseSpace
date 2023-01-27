@@ -43,7 +43,9 @@ class PhaseSpace:
             raise TypeError(f'ParticlePhaseSpace must be instantiated with a valid object'
                             f'from DataLoaders, not {type(data_loader)}')
         self._ps_data = data_loader.data
-        self._unique_particles = self._ps_data['particle type [pdg_code]'].unique()
+        self._units = data_loader._units
+        self._columns = ps_util.get_all_column_names(self._units)
+        self._unique_particles = self._ps_data[self._columns['particle type']].unique()
         self.twiss_parameters = {}
         self.energy_stats = {}
 
@@ -123,7 +125,7 @@ class PhaseSpace:
         return new_instance
 
     def __len__(self):
-        return self.ps_data.shape[0]
+        return self._ps_data.shape[0]
 
     @property
     def ps_data(self):
@@ -213,7 +215,7 @@ class PhaseSpace:
         :return:
         """
 
-        all_allowed_columns = ps_cfg.required_columns + list(ps_cfg.allowed_columns.keys())
+        all_allowed_columns = ps_util.get_all_column_names(self._units)
         for col_name in self._ps_data.columns:
             if not col_name in all_allowed_columns:
                 raise AttributeError(f'non allowed column name {col_name} in ps_data')
@@ -479,7 +481,7 @@ class PhaseSpace:
         if not quantity in ['intensity', 'energy']:
             raise NotImplementedError('quantity must be "intensity" or "energy"')
 
-        if not 'Ek [MeV]' in self.ps_data.columns:
+        if not 'Ek [MeV]' in self._ps_data.columns:
             self.fill_kinetic_E()
         for particle in self._unique_particles:
             ind = self._ps_data['particle type [pdg_code]'] == particle
@@ -501,10 +503,10 @@ class PhaseSpace:
             if ylim is None:
                 ylim = [ps_data['y [mm]'].min(), ps_data['y [mm]'].max()]
             if quantity == 'intensity':
-                _title = f"2D histogram;\n{particle_cfg.particle_properties[particle]['name']}"
+                _title = f"n_particles intensity;\n{particle_cfg.particle_properties[particle]['name']}"
                 _weight = ps_data['weight']
             elif quantity == 'energy':
-                _title = f"accumulated energy;\n{particle_cfg.particle_properties[particle]['name']}"
+                _title = f"energy intensity;\n{particle_cfg.particle_properties[particle]['name']}"
                 _weight = np.multiply(ps_data['weight'], ps_data['Ek [MeV]'])
             X = np.linspace(xlim[0], xlim[1], bins)
             Y = np.linspace(ylim[0], ylim[1], bins)
@@ -816,7 +818,7 @@ class PhaseSpace:
 
     def fill_rest_mass(self):
         """
-        add rest mass in MeV to self.ps_data
+        add rest mass in MeV to self._ps_data
         :return: 
         """
         self._ps_data['rest mass [MeV/c^2]'] = ps_util.get_rest_masses_from_pdg_codes(self._ps_data['particle type [pdg_code]'])
@@ -1029,7 +1031,7 @@ class PhaseSpace:
         :return density_data: a dataframe containing the roi vals and the proportion of particles inside
         """
 
-        if self.ps_data['weight'].max() > 1:
+        if self._ps_data['weight'].max() > 1:
             warnings.warn('AssessDensityVersusR function ignores particle weights')
 
         if Rvals is None:
@@ -1038,14 +1040,14 @@ class PhaseSpace:
         if not isinstance(Rvals, (list, np.ndarray)):
             Rvals = list(Rvals)
         if beam_direction == 'x':
-            r = np.sqrt(self.ps_data['z [mm]']**2 + self.ps_data['y [mm]']**2)
+            r = np.sqrt(self._ps_data['z [mm]']**2 + self._ps_data['y [mm]']**2)
         elif beam_direction == 'y':
-            r = np.sqrt(self.ps_data['x [mm]']**2 + self.ps_data['z [mm]']**2)
+            r = np.sqrt(self._ps_data['x [mm]']**2 + self._ps_data['z [mm]']**2)
         elif beam_direction == 'z':
-            r = np.sqrt(self.ps_data['x [mm]']**2 + self.ps_data['y [mm]']**2)
+            r = np.sqrt(self._ps_data['x [mm]']**2 + self._ps_data['y [mm]']**2)
 
 
-        numparticles = self.ps_data['x [mm]'].shape[0]
+        numparticles = self._ps_data['x [mm]'].shape[0]
         rad_prop = []
 
         for rcheck in Rvals:

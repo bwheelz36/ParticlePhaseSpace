@@ -1,3 +1,5 @@
+from .__unit_config__ import ParticlePhaseSpaceUnits
+
 """
 This file defined the format of the phase space data.
 
@@ -8,16 +10,16 @@ This file defined the format of the phase space data.
 - The existence of columns not defined here is not allowed and will cause the code to exit.
 """
 
-required_columns = ['x [mm]',  # x position of each particle
-                    'y [mm]',  # y position of each particle
-                    'z [mm]',  # z position of each particle
-                    'px [MeV/c]',  # x momentum of each particle
-                    'py [MeV/c]',  # y momentum of each particle
-                    'pz [MeV/c]',  # z momentum of each particle
-                    'particle type [pdg_code]',  # [pdg code](https://pdg.lbl.gov/2012/mcdata/mc_particle_id_contents.html) for each particle
+required_columns = ['x',  # x position of each particle
+                    'y',  # y position of each particle
+                    'z',  # z position of each particle
+                    'px',  # x momentum of each particle
+                    'py',  # y momentum of each particle
+                    'pz',  # z momentum of each particle
+                    'particle type',  # [pdg code](https://pdg.lbl.gov/2012/mcdata/mc_particle_id_contents.html) for each particle
                     'weight',  # statistical weight of each particle (defaults to 1)
                     'particle id',  # id of each particle
-                    'time [ps]']  # time each particle was scored
+                    'time']  # time each particle was scored
 
 '''
 The below defines all other quantities that can be calculated.
