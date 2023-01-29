@@ -108,7 +108,7 @@ def test_reset_phase_space():
     PS.reset_phase_space()
     # following this only required columns should be included:
     for col_name in PS.ps_data.columns:
-        if not col_name in ps_cfg.required_columns:
+        if not col_name in ps_cfg.get_required_column_names(PS._units):
             raise AttributeError(f'non allowed column "{col_name}" in data.')
 
 def test_get_particle_density():

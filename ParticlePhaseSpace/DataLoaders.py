@@ -6,10 +6,9 @@ from pathlib import Path
 from .utilities import get_rest_masses_from_pdg_codes
 import ParticlePhaseSpace.__phase_space_config__ as ps_cfg
 import ParticlePhaseSpace.__particle_config__ as particle_cfg
-from ParticlePhaseSpace.__unit_config__ import _UnitSet
+from ParticlePhaseSpace import UnitSet
 import warnings
 from ParticlePhaseSpace import ParticlePhaseSpaceUnits
-from ParticlePhaseSpace.utilities import get_all_column_names, get_required_column_names
 
 units=ParticlePhaseSpaceUnits()
 
@@ -21,11 +20,11 @@ class _DataLoadersBase(ABC):
 
     def __init__(self, input_data, particle_type=None, units=units('mm_MeV')):
         self.data = pd.DataFrame()
-        if not isinstance(units, _UnitSet):
+        if not isinstance(units, UnitSet):
             raise TypeError('units must be an instance of articlePhaseSpace.__unit_config__._UnitSet.'
                             'UnitSets are accessed through the ParticlePhaseSpaceUnits class')
         self._units = units
-        self._columns = get_all_column_names(self._units)
+        self._columns = ps_cfg.get_all_column_names(self._units)
 
 
         if particle_type:
@@ -71,7 +70,7 @@ class _DataLoadersBase(ABC):
         4. "particle id" should be unique
         """
         # required columns present?
-        required_columns = get_required_column_names(self._units)
+        required_columns = ps_cfg.get_required_column_names(self._units)
         for col_name in required_columns:
             if not col_name in self.data.columns:
                 raise AttributeError(f'invalid data input; required column "{col_name}" is missing')
@@ -108,7 +107,7 @@ class _DataLoadersBase(ABC):
         """
         if not hasattr(self,'_rest_masses'):
             self._rest_masses = get_rest_masses_from_pdg_codes(self.data['particle type [pdg_code]'])
-        Totm = np.sqrt((self.data['px [MeV/c]'] ** 2 + self.data['py [MeV/c]'] ** 2 + self.data['pz [MeV/c]'] ** 2))
+        Totm = np.sqrt((self.data[self._columns['px']] ** 2 + self.data[self._columns['py']] ** 2 + self.data[self._columns['pz']] ** 2))
         self.TOT_E = np.sqrt(Totm ** 2 + self._rest_masses ** 2)
         Ek_internal = np.subtract(self.TOT_E, self._rest_masses)
 

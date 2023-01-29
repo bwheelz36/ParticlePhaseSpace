@@ -8,21 +8,25 @@ sys.path.insert(0, str(this_file_loc.parent))
 from ParticlePhaseSpace import DataExporters
 from ParticlePhaseSpace import DataLoaders
 from ParticlePhaseSpace import PhaseSpace
+import ParticlePhaseSpace.__phase_space_config__ as ps_cfg
+from ParticlePhaseSpace import ParticlePhaseSpaceUnits
 import pytest
 
 def test_topas_export():
 
+    units = ParticlePhaseSpaceUnits()('mm_MeV')
+    all_allowed_columns = ps_cfg.get_all_column_names(units)
     demo_data = pd.DataFrame(
-                    {'x [mm]': [0, 1, 2],
-                     'y [mm]': [0, 1, 2],
-                     'z [mm]': [0, 1, 2],
-                     'px [MeV/c]': [1, 1, 2],
-                     'py [MeV/c]': [1, 1, 2],
-                     'pz [MeV/c]': [1, 1, 2],
-                     'particle type [pdg_code]': [11, 11, 11],
-                     'weight': [0, 1, 2],
-                     'particle id': [0, 1, 2],
-                     'time [ps]': [0, 0, 0]})
+                    {all_allowed_columns['x']: [0, 1, 2],
+                     all_allowed_columns['y']: [0, 1, 2],
+                     all_allowed_columns['z']: [0, 1, 2],
+                     all_allowed_columns['px']: [1, 1, 2],
+                     all_allowed_columns['py']: [1, 1, 2],
+                     all_allowed_columns['pz']: [1, 1, 2],
+                     all_allowed_columns['particle type']: [11, 11, 11],
+                     all_allowed_columns['weight']: [0, 1, 2],
+                     all_allowed_columns['particle id']: [0, 1, 2],
+                     all_allowed_columns['time']: [0, 0, 0]})
 
     data = DataLoaders.Load_PandasData(demo_data)
     PS = PhaseSpace(data)
@@ -35,3 +39,27 @@ def test_topas_export():
     gah = PS.ps_data - PS2.ps_data
     assert all(gah.max() < 1e-5)
 
+def test_export_with_different_units():
+    """
+    The topas data exporter expects to get data with units mm_MeV;
+    this tests that it is able to convert different units sets
+    :return:
+    """
+    units = ParticlePhaseSpaceUnits()('SI')
+    all_allowed_columns = ps_cfg.get_all_column_names(units)
+    demo_data = pd.DataFrame(
+        {all_allowed_columns['x']: [0, 1, 2],
+         all_allowed_columns['y']: [0, 1, 2],
+         all_allowed_columns['z']: [0, 1, 2],
+         all_allowed_columns['px']: [1, 1, 2],
+         all_allowed_columns['py']: [1, 1, 2],
+         all_allowed_columns['pz']: [1, 1, 2],
+         all_allowed_columns['particle type']: [11, 11, 11],
+         all_allowed_columns['weight']: [0, 1, 2],
+         all_allowed_columns['particle id']: [0, 1, 2],
+         all_allowed_columns['time']: [0, 0, 0]})
+
+    data = DataLoaders.Load_PandasData(demo_data, units=units)
+    PS = PhaseSpace(data)
+    # ok: can we export this data:
+    DataExporters.Topas_Exporter(PS, output_location='.', output_name='test.phsp')
