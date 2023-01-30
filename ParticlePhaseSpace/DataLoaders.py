@@ -254,3 +254,42 @@ class Load_TibarayData(_DataLoadersBase):
         self.data[self._columns['px']] = np.multiply(Bx, Gamma) * particle_cfg.particle_properties[self._particle_type]['rest_mass']
         self.data[self._columns['py']] = np.multiply(By, Gamma) * particle_cfg.particle_properties[self._particle_type]['rest_mass']
         self.data[self._columns['pz']] = np.multiply(Bz, Gamma) * particle_cfg.particle_properties[self._particle_type]['rest_mass']
+
+
+class NewDataLoader(_DataLoadersBase):
+
+    def _import_data(self):
+        Data = np.loadtxt(self._input_data, skiprows=1)
+        self.data['x [mm]'] = Data[:, 0]
+        self.data['y [mm]'] = Data[:, 1]
+        self.data['z [mm]'] = Data[:, 2]
+        self.data['px [MeV/c]'] = Data[:, 3]
+        self.data['py [MeV/c]'] = Data[:, 4]
+        self.data['pz [MeV/c]'] = Data[:, 5]
+        self.data['particle type [pdg_code]'] = particle_cfg.particle_properties[self._particle_type]['name']
+        # we also need to fill in weight, particle id, and time; since none of these are specified we just use all
+        # ones for weight, 1,2,3... for particle id, and all zeros for time:
+        self.data['weight'] = np.ones(Data.shape[0])
+        self.data['particle id'] = np.arange(len(self.data))
+
+        self.data['time [ps]'] = 0  # may want to replace with time feature if available?
+
+        # because we have momentum and energy, we can double check that our momentum to energy conversion is
+        # consisten with the values in the phase space:
+        E = Data[:, 6]
+        self._check_energy_consistency(Ek=E)
+
+    def _check_input_data(self):
+        # is the input a file?
+        if not Path(self._input_data).is_file():
+            raise FileNotFoundError(f'input data file {self._import_data()} does not exist')
+        # does it have the right extension?
+        if not Path(self._input_data).suffix == '.dat':
+            raise Exception('This data loaders requires a *.dat file')
+        # the header is on the first line; does it look correct?
+        with open(self._input_data) as f:
+            first_line = f.readline()
+            if not first_line == 'x (mm)\ty (mm)\tz (mm)\tpx (MeV/c)\tpy (MeV/c)\tpz (MeV/c)\tE (MeV)\n':
+                raise Exception('file header does not look correct')
+        if not self._particle_type:
+            raise Exception('this data loader requires particle_type to be specified')

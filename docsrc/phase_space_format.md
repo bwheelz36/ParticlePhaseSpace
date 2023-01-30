@@ -16,43 +16,29 @@ two categories:
 
 | Column name                        | Description                                                  |
 | ---------------------------------- | ------------------------------------------------------------ |
-| x [mm], y [mm], z [mm]             | The position of each particle in mm                          |
-| px [MeV/c], py [MeV/c], pz [MeV/c] | the relativistic momentum of each particle in MeV/c          |
+| x [units], y [units], z [units]    | The position of each particle in mm                          |
+| px [units], py [units], pz [units] | the relativistic momentum of each particle in MeV/c          |
 | particle type [pdg_code]           | The particle type, encoded as an integer [pdg code](https://pdg.lbl.gov/2012/mcdata/mc_particle_id_contents.html) |
 | weight                             | the statistical weight of each particle. This is used to calculate weighted statistics. In many cases this will be 1 for all particles |
 | particle id                        | each particle in the phase space must have a unique integer particle ID |
-| time [ps]                          | the time the particle was recorded (in many cases this will be 0 for all particles) |
+| time [units]                       | the time the particle was recorded (in many cases this will be 0 for all particles) |
 
 ## Allowed Columns
 
-| Column Name                                                | Description                                                                              | fill method              |
-|------------------------------------------------------------|------------------------------------------------------------------------------------------| ------------------------ |
-| Ek [MeV]                                                   | Kinetic energy in MeV                                                                    | `fill_kinetic_E`         |
-| rest mass [MeV/c^2]                                        | Particle rest mass in Mev/c^2                                                            | `fill_rest_mass`         |
-| 'relativistic mass [MeV/c^2]'                              | Particle mass in Mev/c^2                                                                 | `fill_relativistic_mass` |
-| beta_x, beta_y, beta_z, beta_abs                           | [x Beta factor](https://en.wikipedia.org/wiki/Lorentz_factor) of particle                | `fill_beta_and_gamma`    |
-| gamma                                                      | [Lorentz factor](https://en.wikipedia.org/wiki/Lorentz_factor) of particle               | `fill_beta_and_gamma`    |
-| vx [m/s], vy [m/s], vz [m/s]                               | relativistic particle velocity in m/s                                                    | `fill_velocity`          |
+| Column Name                                                | Description                                                  | fill method              |
+| ---------------------------------------------------------- | ------------------------------------------------------------ | ------------------------ |
+| Ek [units]                                                 | Kinetic energy                                               | `fill_kinetic_E`         |
+| rest mass [units]                                          | Particle rest mass                                           | `fill_rest_mass`         |
+| p_abs                                                      | Total momentum                                               | `fill_absolute_momentum` |
+| relativistic mass [units]                                  | Particle mass                                                | `fill_relativistic_mass` |
+| beta_x, beta_y, beta_z, beta_abs                           | [x Beta factor](https://en.wikipedia.org/wiki/Lorentz_factor) of particle | `fill_beta_and_gamma`    |
+| gamma                                                      | [Lorentz factor](https://en.wikipedia.org/wiki/Lorentz_factor) of particle | `fill_beta_and_gamma`    |
+| vx [units], vy [units], vz [units]                         | relativistic particle velocity in m/s                        | `fill_velocity`          |
 | Direction Cosine X, Direction Cosine Y, Direction Cosine Z | [Direction Cosines](https://en.wikipedia.org/wiki/Direction_cosine) of particle momentum | `fill_direction_cosines` |
 
-## Notes on units
+## Units
 
-In this code, I chose to use only a single unit framework. This is because units are a frequent source
-of confusion and error, so the simplest and safest approach seems to be to just support one unit
-framework. 
-If there is need, we could update the plots such that different units can be specified - however my thoughts/preference at the
-momentum is that only one set of units are used internally. 
-The units should be quite clear from the column names above, but to avoid ambiguity:
-
-
-| quantity | units   |
-| -------- | ------- |
-| distance | mm      |
-| momentum | MeV/c   |
-| Energy   | MeV     |
-| mass     | MeV/c^2 |
-| time     | ps      |
-| velocity | m/s     |
+This code can work with several different unit sets, and new unit sets can also be easily defined. Rather than attempt to document these here, see the 'living documentation' in notebook format [here](https://bwheelz36.github.io/ParticlePhaseSpace/units.html). This example shows the different unit sets available, how to use them, and how to add new unit sets if none of the existing ones are what you want.
 
 ## Reading in momentum
 
@@ -90,7 +76,8 @@ rest_energy should be specified in MeV, e.g. for electrons the value is 0.511 Me
 
 ### If momentum is specified in SI units
 
-To convert from kg.m/s to MeV/c
+We always use some form of `eV/c` for momentum. In the somewhat unusual situation that momentum is specified in the SI `kg.m/s` you can convert it as per below:
+
 ```python
 P_ev_c = P_SI * (c/q)
 P_MeV_c = P_SI * (c/q) * 1e-6

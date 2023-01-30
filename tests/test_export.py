@@ -45,7 +45,7 @@ def test_export_with_different_units():
     this tests that it is able to convert different units sets
     :return:
     """
-    units = ParticlePhaseSpaceUnits()('SI')
+    units = ParticlePhaseSpaceUnits()('m_eV')
     all_allowed_columns = ps_cfg.get_all_column_names(units)
     demo_data = pd.DataFrame(
         {all_allowed_columns['x']: [0, 1, 2],

@@ -22,6 +22,7 @@ this_file_loc = Path(__file__).parent
 shutil.copy(this_file_loc.parent / 'examples' / 'basic_example.ipynb', this_file_loc)
 shutil.copy(this_file_loc.parent / 'examples' / 'new_data_loader.ipynb', this_file_loc)
 shutil.copy(this_file_loc.parent / 'examples' / 'new_data_exporter.ipynb', this_file_loc)
+shutil.copy(this_file_loc.parent / 'examples' / 'units.ipynb', this_file_loc)
 
 # -- Project information -----------------------------------------------------
 

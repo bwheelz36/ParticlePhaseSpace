@@ -420,10 +420,10 @@ class PhaseSpace:
                 print('generating weighted scatter plot...can be slow...')
                 xy = np.vstack([x_data, y_data])
                 k = gaussian_kde(xy, weights=self._ps_data['weight'][ind])
-                if x_data.shape[0] > _kde_data_grid:
+                down_sample_factor = np.round(x_data.shape[0] / _kde_data_grid)
+                if down_sample_factor>1:
                     # in this case we can downsample for display
-                    down_sample_factor = np.round(x_data.shape[0] / _kde_data_grid)
-                    print(f'down sampling scatter plot data by factor of {down_sample_factor}')
+                    print(f'down sampling kde data by factor of {down_sample_factor}')
                     rng = np.random.default_rng()
                     rng.shuffle(xy)  # operates in place for some confusing reason
                     xy = rng.choice(xy, int(x_data.shape[0] / down_sample_factor), replace=False, axis=1, shuffle=False)
@@ -684,14 +684,17 @@ class PhaseSpace:
         plt.tight_layout()
         plt.show()
 
-    def plot_n_particles_v_time(self):  # pragma: no cover
+    def plot_n_particles_v_time(self, n_bins: int=100):  # pragma: no cover
         """
         basic plot of number of particles versus time; useful for quickly seperating out different bunches
         of electrons such that you can apply the 'filter_by_time' method
+
+        :param n_bins: number of bins for histogram
+        :type n_bins: int
         """
         plt.figure()
-        plt.hist(self._ps_data[self._columns['time']], 100)
-        plt.xlabel('time ps')
+        plt.hist(self._ps_data[self._columns['time']], n_bins)
+        plt.xlabel(f'time {self._units.time.label}')
         plt.ylabel('N particles')
         plt.tight_layout()
 
@@ -720,11 +723,11 @@ class PhaseSpace:
         print(f'number of unique particle species: {len(self._unique_particles): d}')
         for particle in self.energy_stats:
             print(f'    {self.energy_stats[particle]["number"]: d} {particle_cfg.particle_properties[particle]["name"]}'
-                  f'\n        mean energy: {self.energy_stats[particle]["mean energy"]: 1.2f} MeV'
-                  f'\n        median energy: {self.energy_stats[particle]["median energy"]: 1.2f} MeV'
-                  f'\n        Energy spread IQR: {self.energy_stats[particle]["energy spread IQR"]: 1.2f} MeV'
-                  f'\n        min energy {self.energy_stats[particle]["min energy"]: 1.2f} MeV'
-                  f'\n        max energy {self.energy_stats[particle]["max energy"]: 1.2f} MeV')
+                  f'\n        mean energy: {self.energy_stats[particle]["mean energy"]: 1.2f} {self._units.energy.label}'
+                  f'\n        median energy: {self.energy_stats[particle]["median energy"]: 1.2f} {self._units.energy.label}'
+                  f'\n        Energy spread IQR: {self.energy_stats[particle]["energy spread IQR"]: 1.2f} {self._units.energy.label}'
+                  f'\n        min energy {self.energy_stats[particle]["min energy"]: 1.2f} {self._units.energy.label}'
+                  f'\n        max energy {self.energy_stats[particle]["max energy"]: 1.2f} {self._units.energy.label}')
 
     def print_twiss_parameters(self, file_name=None, beam_direction='z'):  #pragma: no cover
         """
@@ -759,26 +762,22 @@ class PhaseSpace:
     def fill_kinetic_E(self):
         """
         Uses `energy-momementum relation <https://en.wikipedia.org/wiki/Energy%E2%80%93momentum_relation>`_ to add
-         kinetic energy in MeV into self._ps_data
+         kinetic energy into self._ps_data
         """
         if not self._columns['rest mass'] in self._ps_data.columns:
             self.fill_rest_mass()
         if not self._columns['p_abs'] in self._ps_data.columns:
             self.fill_absolute_momentum()
 
-        if self._units.label in ['SI']:
-            rest_energy = self._ps_data[self._columns['rest mass']] * constants.c ** 2
-            TOT_E = np.sqrt(((self._ps_data[self._columns['p_abs']]*constants.c)**2) + (rest_energy)**2)
-            Kin_E = TOT_E - rest_energy
-        else:
-            TOT_E = np.sqrt(self._ps_data[self._columns['p_abs']] ** 2 + self._ps_data[self._columns['rest mass']] ** 2)
-            Kin_E = np.subtract(TOT_E, self._ps_data[self._columns['rest mass']])
+
+        TOT_E = np.sqrt(self._ps_data[self._columns['p_abs']] ** 2 + self._ps_data[self._columns['rest mass']] ** 2)
+        Kin_E = np.subtract(TOT_E, self._ps_data[self._columns['rest mass']])
         self._ps_data[self._columns['Ek']] = Kin_E
         self._check_ps_data_format()
 
     def fill_rest_mass(self):
         """
-        add rest mass in MeV to self._ps_data
+        add rest mass to self._ps_data
         :return: 
         """
         rest_mass_MeV = ps_util.get_rest_masses_from_pdg_codes(self._ps_data['particle type [pdg_code]'])
@@ -788,7 +787,7 @@ class PhaseSpace:
 
     def fill_relativistic_mass(self):
         """
-        add relativistic mass in MeV/c^2 to ps_data
+        add relativistic mass to ps_data
         :return:
         """
         if not self._columns['gamma'] in self._ps_data.columns:
@@ -833,9 +832,6 @@ class PhaseSpace:
             self.fill_rest_mass()
         if not self._columns['p_abs'] in self._ps_data.columns:
             self.fill_absolute_momentum()
-
-        if self._units.label == 'SI':
-            print('hello')
 
         self._ps_data['beta_abs'] = np.divide(self._ps_data[self._columns['p_abs']], self._ps_data[self._columns['Ek']] + self._ps_data[self._columns['rest mass']])
         self._ps_data[self._columns['beta_x']] = np.divide(self._ps_data[self._columns['px']], self._ps_data[self._columns['Ek']] + self._ps_data[self._columns['rest mass']])

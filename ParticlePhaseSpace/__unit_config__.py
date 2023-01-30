@@ -107,13 +107,13 @@ class ParticlePhaseSpaceUnits:
                               mass_units=_unit('keV/c^2', 1e3),
                               velocity_units=_unit('m/s', 1))
 
-        # self.SI = UnitSet(label='SI',
-        #                   length_units=_unit('m', 1e-3),
-        #                   energy_units=_unit('J', constants.elementary_charge*1e6),
-        #                   momentum_units=_unit('kg.m/s', constants.elementary_charge*1e6/constants.c),
-        #                   time_units=_unit('s', 1e-12),
-        #                   mass_units=_unit('kg', constants.elementary_charge * 1e6/constants.c**2),
-        #                   velocity_units=_unit('m/s', 1))
+        self.m_eV = UnitSet(label='m_eV',
+                              length_units=_unit('m', 1e-3),
+                              energy_units=_unit('eV', 1e6),
+                              momentum_units=_unit('eV/c', 1e6),
+                              time_units=_unit('s', 1e-9),
+                              mass_units=_unit('eV/c^2', 1e6),
+                              velocity_units=_unit('m/s', 1))
 
         self._get_unit_attributes()
         self._check_attributes()
