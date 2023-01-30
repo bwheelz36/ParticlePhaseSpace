@@ -5,6 +5,8 @@ from pathlib import Path
 from abc import ABC, abstractmethod
 from ParticlePhaseSpace import __phase_space_config__ as ps_cfg
 from ParticlePhaseSpace import __particle_config__ as particle_cfg
+from ParticlePhaseSpace import ParticlePhaseSpaceUnits
+from ParticlePhaseSpace import UnitSet
 import warnings
 
 class _DataExportersBase(ABC):
@@ -18,14 +20,26 @@ class _DataExportersBase(ABC):
             raise TypeError(f'PhaseSpaceInstance must be an instance of ParticlePhaseSpace.PhaseSpace,'
                             f'not {type(PhaseSpaceInstance)}')
         self._PS = PhaseSpaceInstance
+
+        self._units = self._PS._units
+        self._set_expected_units()
+        self._check_and_convert_units()
         self._output_location = Path(output_location)
         self._check_output_location_exists()
         self._output_name = output_name
         self._required_columns = []  # filled in _define_required_columns
         self._define_required_columns()
+        # self._convert_required_columns_to_expected_units()
         self._check_required_columns_allowed()
         self._fill_required_columns()
         self._export_data()
+
+    def _convert_required_columns_to_expected_units(self):
+        _columns = ps_cfg.get_all_column_names(self._expected_units)
+        _required_columns_with_units = []
+        for col in self._required_columns:
+            _required_columns_with_units.append(_columns[col])
+        self._required_columns = _required_columns_with_units
 
     def _check_output_location_exists(self):
         if not self._output_location.is_dir():
@@ -37,6 +51,7 @@ class _DataExportersBase(ABC):
         check that the columns that are required for data export are actually allowed
         :return:
         """
+        allowed_columns = list(ps_cfg.get_all_column_names(self._units).values())
         allowed_columns = ps_cfg.required_columns + list(ps_cfg.allowed_columns.keys())
         for col in self._required_columns:
             if not col in allowed_columns:
@@ -47,13 +62,31 @@ class _DataExportersBase(ABC):
         fill in any data required for the export
         :return:
         """
+        allowed_columns = ps_cfg.required_columns + list(ps_cfg.allowed_columns.keys())
 
         for col in self._required_columns:
+            if col in ps_cfg.required_columns:
+                continue
             if not col in self._PS.ps_data.columns:
                 try:
                     self._PS.__getattribute__(ps_cfg.allowed_columns[col])()
-                except AttributeError:
+                except (AttributeError, KeyError):
                     raise AttributeError(f'unable to fill required column {col}')
+
+    def _check_and_convert_units(self):
+        if not isinstance(self._units, UnitSet):
+            raise TypeError('The units of the PhaseSpace data are invalid')
+        if not hasattr(self,'_expected_units'):
+            raise AttributeError("_expected_units must be set in the _set_expected_units method")
+        if not isinstance(self._expected_units, UnitSet):
+            raise TypeError('_expected_units must be an instnace of _UnitSet')
+
+        if not self._units.label == self._expected_units.label:
+            # will eventually put conversion method here
+            try:
+                self._PS.set_units(self._expected_units)
+            except AttributeError:
+                raise AttributeError(f'unable to convert data to requested units: {self._expected_units.label}')
 
     @abstractmethod
     def _define_required_columns(self):
@@ -71,6 +104,10 @@ class _DataExportersBase(ABC):
         """
         pass
 
+    @abstractmethod
+    def _set_expected_units(self):
+        pass
+
 
 class Topas_Exporter(_DataExportersBase):
     """
@@ -82,8 +119,9 @@ class Topas_Exporter(_DataExportersBase):
     """
 
     def _define_required_columns(self):
-        self._required_columns = ['x [mm]', 'y [mm]', 'z [mm]', 'Direction Cosine X', 'Direction Cosine Y',
-                                  'Direction Cosine Z', 'Ek [MeV]', 'weight', 'particle id']
+        self._required_columns = ['x', 'y', 'z', 'Direction Cosine X', 'Direction Cosine Y',
+                                  'Direction Cosine Z', 'Ek', 'weight', 'particle id']
+
 
     def _export_data(self):
         """
@@ -195,3 +233,5 @@ class Topas_Exporter(_DataExportersBase):
             f.write('\n')
         f.close()
 
+    def _set_expected_units(self):
+        self._expected_units = ParticlePhaseSpaceUnits()('mm_MeV')

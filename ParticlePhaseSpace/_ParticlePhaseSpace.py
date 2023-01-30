@@ -15,6 +15,7 @@ import ParticlePhaseSpace.__particle_config__ as particle_cfg
 from ParticlePhaseSpace.DataLoaders import _DataLoadersBase
 from ParticlePhaseSpace import utilities as ps_util
 from ParticlePhaseSpace import DataLoaders
+from ParticlePhaseSpace import UnitSet, ParticlePhaseSpaceUnits
 
 class _FigureSpecs:
     """
@@ -42,8 +43,11 @@ class PhaseSpace:
         if not isinstance(data_loader, _DataLoadersBase):
             raise TypeError(f'ParticlePhaseSpace must be instantiated with a valid object'
                             f'from DataLoaders, not {type(data_loader)}')
-        self._ps_data = data_loader.data
-        self._unique_particles = self._ps_data['particle type [pdg_code]'].unique()
+        self._ps_data = data_loader.data.copy(deep=True)
+        self._units = data_loader._units
+        self._conversions = ps_util.get_unit_conversions(self._units, ParticlePhaseSpaceUnits()('mm_MeV'))
+        self._columns = ps_cfg.get_all_column_names(self._units)
+        self._unique_particles = self._ps_data[self._columns['particle type']].unique()
         self.twiss_parameters = {}
         self.energy_stats = {}
 
@@ -81,7 +85,7 @@ class PhaseSpace:
             particle_data.reset_index(inplace=True, drop=True)
             # delete any non required columns
             for col_name in particle_data.columns:
-                if not col_name in ps_cfg.required_columns:
+                if not col_name in ps_cfg.get_required_column_names(self._units):
                     particle_data.drop(columns=col_name, inplace=True)
             # create a new instance of _DataImportersBase based on particle_data
             particle_data_loader = DataLoaders.Load_PandasData(particle_data)
@@ -101,7 +105,7 @@ class PhaseSpace:
         new_data = pd.concat([self._ps_data, other.ps_data])
 
         for col_name in new_data.columns:
-            if not col_name in ps_cfg.required_columns:
+            if not col_name in ps_cfg.get_required_column_names(self._units):
                 new_data.drop(columns=col_name, inplace=True)
         new_data_loader = DataLoaders.Load_PandasData(new_data)
         new_instance = PhaseSpace(new_data_loader)
@@ -116,14 +120,14 @@ class PhaseSpace:
             .drop('_merge', axis=1)\
             .reset_index(drop=True)
         for col_name in new_data.columns:
-            if not col_name in ps_cfg.required_columns:
+            if not col_name in ps_cfg.get_required_column_names(self._units):
                 new_data.drop(columns=col_name, inplace=True)
         new_data_loader = DataLoaders.Load_PandasData(new_data)
         new_instance = PhaseSpace(new_data_loader)
         return new_instance
 
     def __len__(self):
-        return self.ps_data.shape[0]
+        return self._ps_data.shape[0]
 
     @property
     def ps_data(self):
@@ -213,7 +217,7 @@ class PhaseSpace:
         :return:
         """
 
-        all_allowed_columns = ps_cfg.required_columns + list(ps_cfg.allowed_columns.keys())
+        all_allowed_columns = list(ps_cfg.get_all_column_names(self._units).values())
         for col_name in self._ps_data.columns:
             if not col_name in all_allowed_columns:
                 raise AttributeError(f'non allowed column name {col_name} in ps_data')
@@ -224,7 +228,7 @@ class PhaseSpace:
         given the parameters of an ellipse, return a set of points in XY which meet those parameters
         :return:
         """
-        gamma = ellipse_parameters['gamma']
+        gamma = ellipse_parameters[self._columns['gamma']]
         alpha = ellipse_parameters['alpha']
         beta = ellipse_parameters['beta']
         epsilon = ellipse_parameters['epsilon']
@@ -246,47 +250,47 @@ class PhaseSpace:
 
     def _get_data_for_trace_space_plots(self, beam_direction, ps_data, particle_name):  # pragma: no cover
         if beam_direction == 'z':
-            x_data_1 = ps_data['x [mm]']
-            div_data_1 = np.divide(ps_data['px [MeV/c]'], ps_data['pz [MeV/c]'])
-            x_label_1 = 'x [mm]'
+            x_data_1 = ps_data[self._columns['x']]
+            div_data_1 = np.divide(ps_data[self._columns['px']], ps_data[self._columns['pz']])
+            x_label_1 = self._columns['x']
             y_label_1 = "x' [rad]"
             title_1 = particle_name + ': x'
             weight = ps_data['weight']
             elipse_parameters_1 = self.twiss_parameters[particle_name]['x']
 
-            x_data_2 = ps_data['y [mm]']
-            div_data_2 = np.divide(ps_data['py [MeV/c]'], ps_data['pz [MeV/c]'])
-            x_label_2 = 'y [mm]'
+            x_data_2 = ps_data[self._columns['y']]
+            div_data_2 = np.divide(ps_data[self._columns['py']], ps_data[self._columns['pz']])
+            x_label_2 = self._columns['y']
             y_label_2 = "y' [rad]"
             title_2 = particle_name + ': y'
             elipse_parameters_2 = self.twiss_parameters[particle_name]['y']
         elif beam_direction == 'x':
-            x_data_1 = ps_data['y [mm]']
-            div_data_1 = np.divide(ps_data['py [MeV/c]'], ps_data['px [MeV/c]'])
-            x_label_1 = 'y [mm]'
+            x_data_1 = ps_data[self._columns['y']]
+            div_data_1 = np.divide(ps_data[self._columns['py']], ps_data[self._columns['px']])
+            x_label_1 = self._columns['y']
             y_label_1 = "y' [rad]"
             title_1 = particle_name + ': x'
             weight = ps_data['weight']
             elipse_parameters_1 = self.twiss_parameters[particle_name]['y']
 
-            x_data_2 = ps_data['z [mm]']
-            div_data_2 = np.divide(ps_data['pz [MeV/c]'], ps_data['px [MeV/c]'])
-            x_label_2 = 'z [mm]'
+            x_data_2 = ps_data[self._columns['z']]
+            div_data_2 = np.divide(ps_data[self._columns['pz']], ps_data[self._columns['px']])
+            x_label_2 = self._columns['z']
             y_label_2 = "z' [rad]"
             title_2 = particle_name + ': y'
             elipse_parameters_2 = self.twiss_parameters[particle_name]['z']
         elif beam_direction == 'y':
-            x_data_1 = ps_data['x [mm]']
-            div_data_1 = np.divide(ps_data['px [MeV/c]'], ps_data['py [MeV/c]'])
-            x_label_1 = 'x [mm]'
+            x_data_1 = ps_data[self._columns['x']]
+            div_data_1 = np.divide(ps_data[self._columns['px']], ps_data[self._columns['py']])
+            x_label_1 = self._columns['x']
             y_label_1 = "x' [rad]"
             title_1 = particle_name + ': x'
             weight = ps_data['weight']
             elipse_parameters_1 = self.twiss_parameters[particle_name]['x']
 
-            x_data_2 = ps_data['z [mm]']
-            div_data_2 = np.divide(ps_data['pz [MeV/c]'], ps_data['py [MeV/c]'])
-            x_label_2 = 'z [mm]'
+            x_data_2 = ps_data[self._columns['z']]
+            div_data_2 = np.divide(ps_data[self._columns['pz']], ps_data[self._columns['py']])
+            x_label_2 = self._columns['z']
             y_label_2 = "z' [rad]"
             title_2 = particle_name + ': y'
             elipse_parameters_2 = self.twiss_parameters[particle_name]['z']
@@ -308,16 +312,16 @@ class PhaseSpace:
         :return: None
         """
         Efig, axs = plt.subplots()
-        if not 'Ek [MeV]' in self._ps_data.columns:
+        if not self._columns['Ek'] in self._ps_data.columns:
             self.fill_kinetic_E()
         legend = []
         for particle in self._unique_particles:
             legend.append(particle_cfg.particle_properties[particle]['name'])
             ind = self._ps_data['particle type [pdg_code]'] == particle
-            Eplot = self._ps_data['Ek [MeV]'][ind]
+            Eplot = self._ps_data[self._columns['Ek']][ind]
             n, bins, patches = axs.hist(Eplot, bins=n_bins, weights=self._ps_data['weight'][ind], alpha=.5)
 
-        axs.set_xlabel('Energy [MeV]', fontsize=_FigureSpecs.LabelFontSize)
+        axs.set_xlabel(self._columns['Ek'], fontsize=_FigureSpecs.LabelFontSize)
         axs.set_ylabel('N counts', fontsize=_FigureSpecs.LabelFontSize)
         if title:
             axs.set_title(title, fontsize=_FigureSpecs.TitleFontSize)
@@ -343,25 +347,25 @@ class PhaseSpace:
         for particle in self._unique_particles:
             legend.append(particle_cfg.particle_properties[particle]['name'])
             ind = self._ps_data['particle type [pdg_code]'] == particle
-            x_plot = self._ps_data['x [mm]'][ind]
-            y_plot = self._ps_data['y [mm]'][ind]
-            z_plot = self._ps_data['z [mm]'][ind]
+            x_plot = self._ps_data[self._columns['x']][ind]
+            y_plot = self._ps_data[self._columns['y']][ind]
+            z_plot = self._ps_data[self._columns['z']][ind]
             axs[0].hist(x_plot, bins=n_bins, weights=self._ps_data['weight'][ind], alpha=alpha)
             axs[1].hist(y_plot, bins=n_bins, weights=self._ps_data['weight'][ind], alpha=alpha)
             axs[2].hist(z_plot, bins=n_bins, weights=self._ps_data['weight'][ind], alpha=alpha)
 
-        axs[0].set_xlabel('x [mm]')
+        axs[0].set_xlabel(self._columns['x'])
         axs[0].set_ylabel('counts')
-        axs[0].set_title('x [mm]')
+        axs[0].set_title(self._columns['x'])
         axs[0].legend(legend)
 
-        axs[1].set_xlabel('y [mm]')
+        axs[1].set_xlabel(self._columns['y'])
         axs[1].set_ylabel('counts')
-        axs[1].set_title('y [mm]')
+        axs[1].set_title(self._columns['y'])
 
-        axs[2].set_xlabel('Z position [mm]')
+        axs[2].set_xlabel(self._columns['z'])
         axs[2].set_ylabel('counts')
-        axs[2].set_title('z [mm]')
+        axs[2].set_title(self._columns['z'])
 
         plt.tight_layout()
         plt.show()
@@ -394,20 +398,20 @@ class PhaseSpace:
             ps_data = self._ps_data.loc[ind]
             axs_title = particle_cfg.particle_properties[particle]['name']
             if beam_direction == 'x':
-                x_data = ps_data['y [mm]']
-                y_data = ps_data['z [mm]']
-                x_label = 'y [mm]'
-                y_label = 'z [mm]'
+                x_data = ps_data[self._columns['y']]
+                y_data = ps_data[self._columns['z']]
+                x_label = self._columns['y']
+                y_label = self._columns['z']
             elif beam_direction == 'y':
-                x_data = ps_data['x [mm]']
-                y_data = ps_data['z [mm]']
-                x_label = 'x [mm]'
-                y_label = 'z [mm]'
+                x_data = ps_data[self._columns['x']]
+                y_data = ps_data[self._columns['z']]
+                x_label = self._columns['x']
+                y_label = self._columns['z']
             elif beam_direction == 'z':
-                x_data = ps_data['x [mm]']
-                y_data = ps_data['y [mm]']
-                x_label = 'x [mm]'
-                y_label = 'y [mm]'
+                x_data = ps_data[self._columns['x']]
+                y_data = ps_data[self._columns['y']]
+                x_label = self._columns['x']
+                y_label = self._columns['y']
             else:
                 raise NotImplementedError('beam_direction must be "x", "y", or "z"')
 
@@ -416,10 +420,10 @@ class PhaseSpace:
                 print('generating weighted scatter plot...can be slow...')
                 xy = np.vstack([x_data, y_data])
                 k = gaussian_kde(xy, weights=self._ps_data['weight'][ind])
-                if x_data.shape[0] > _kde_data_grid:
+                down_sample_factor = np.round(x_data.shape[0] / _kde_data_grid)
+                if down_sample_factor>1:
                     # in this case we can downsample for display
-                    down_sample_factor = np.round(x_data.shape[0] / _kde_data_grid)
-                    print(f'down sampling scatter plot data by factor of {down_sample_factor}')
+                    print(f'down sampling kde data by factor of {down_sample_factor}')
                     rng = np.random.default_rng()
                     rng.shuffle(xy)  # operates in place for some confusing reason
                     xy = rng.choice(xy, int(x_data.shape[0] / down_sample_factor), replace=False, axis=1, shuffle=False)
@@ -479,38 +483,38 @@ class PhaseSpace:
         if not quantity in ['intensity', 'energy']:
             raise NotImplementedError('quantity must be "intensity" or "energy"')
 
-        if not 'Ek [MeV]' in self.ps_data.columns:
+        if not self._columns['Ek'] in self._ps_data.columns:
             self.fill_kinetic_E()
         for particle in self._unique_particles:
             ind = self._ps_data['particle type [pdg_code]'] == particle
             ps_data = self._ps_data.loc[ind]
             if beam_direction == 'x':
-                loop_data = zip(ps_data['z [mm]'], ps_data['y [mm]'], ps_data['Ek [MeV]'], ps_data['weight'])
-                _xlabel = 'z [mm]'
-                _ylabel = 'y [mm]'
+                loop_data = zip(ps_data[self._columns['z']], ps_data[self._columns['y']], ps_data[self._columns['Ek']], ps_data['weight'])
+                _xlabel = self._columns['z']
+                _ylabel = self._columns['y']
             if beam_direction == 'y':
-                loop_data = zip(ps_data['x [mm]'], ps_data['z [mm]'], ps_data['Ek [MeV]'], ps_data['weight'])
-                _xlabel = 'x [mm]'
-                _ylabel = 'z [mm]'
+                loop_data = zip(ps_data[self._columns['x']], ps_data[self._columns['z']], ps_data[self._columns['Ek']], ps_data['weight'])
+                _xlabel = self._columns['x']
+                _ylabel = self._columns['z']
             if beam_direction == 'z':
-                loop_data = zip(ps_data['x [mm]'], ps_data['y [mm]'], ps_data['Ek [MeV]'], ps_data['weight'])
-                _xlabel = 'x [mm]'
-                _ylabel = 'y [mm]'
+                loop_data = zip(ps_data[self._columns['x']], ps_data[self._columns['y']], ps_data[self._columns['Ek']], ps_data['weight'])
+                _xlabel = self._columns['x']
+                _ylabel = self._columns['y']
             if xlim is None:
-                xlim = [ps_data['x [mm]'].min(), ps_data['x [mm]'].max()]
+                xlim = [ps_data[self._columns['x']].min(), ps_data[self._columns['x']].max()]
             if ylim is None:
-                ylim = [ps_data['y [mm]'].min(), ps_data['y [mm]'].max()]
+                ylim = [ps_data[self._columns['y']].min(), ps_data[self._columns['y']].max()]
             if quantity == 'intensity':
-                _title = f"2D histogram;\n{particle_cfg.particle_properties[particle]['name']}"
+                _title = f"n_particles intensity;\n{particle_cfg.particle_properties[particle]['name']}"
                 _weight = ps_data['weight']
             elif quantity == 'energy':
-                _title = f"accumulated energy;\n{particle_cfg.particle_properties[particle]['name']}"
-                _weight = np.multiply(ps_data['weight'], ps_data['Ek [MeV]'])
+                _title = f"energy intensity;\n{particle_cfg.particle_properties[particle]['name']}"
+                _weight = np.multiply(ps_data['weight'], ps_data[self._columns['Ek']])
             X = np.linspace(xlim[0], xlim[1], bins)
             Y = np.linspace(ylim[0], ylim[1], bins)
             # create an empty array:
             extent = [xlim[0], xlim[1], ylim[0], ylim[1]]
-            _histnp = np.histogram2d(ps_data['x [mm]'], ps_data['y [mm]'],
+            _histnp = np.histogram2d(ps_data[self._columns['x']], ps_data[self._columns['y']],
                                      weights=_weight, bins=[X, Y])[0]
 
             if normalize:
@@ -680,64 +684,17 @@ class PhaseSpace:
         plt.tight_layout()
         plt.show()
 
-    def plot_transverse_trace_space_hist(self, beam_direction='z', bins=100, xlim=None, ylim=None,
-                                         plot_twiss_ellipse=True, grid=True):
-        self.calculate_twiss_parameters(beam_direction=beam_direction)
-        fig, axs = plt.subplots(nrows=len(self._unique_particles), ncols=2, squeeze=False)
-        row = 0
-        for particle in self._unique_particles:
-            particle_name = particle_cfg.particle_properties[particle]['name']
-            ind = self._ps_data['particle type [pdg_code]'] == particle
-            ps_data = self._ps_data.loc[ind]
-            x_data_1, div_data_1, x_label_1, y_label_1, title_1, weight, elipse_parameters_1, \
-                x_data_2, div_data_2, x_label_2, y_label_2, title_2, elipse_parameters_2 = \
-                self._get_data_for_trace_space_plots(beam_direction, ps_data, particle_name)
-            if not xlim:
-                xlim = [np.min([x_data_1, x_data_2]), np.max([x_data_1, x_data_2])]
-            if not ylim:
-                ylim = [np.min([div_data_1, div_data_2]), np.max([div_data_1, div_data_2])]
-
-            X = np.linspace(xlim[0], xlim[1], bins)
-            Y = np.linspace(ylim[0], ylim[1], bins)
-            _hist1 = axs[row, 0].hist2d(x_data_1, div_data_1, bins=[X, Y], weights=ps_data['weight'], cmap='inferno')
-            fig.colorbar(_hist1[3], ax=axs[row,0])
-            axs[row, 0].set_xlabel(x_label_1)
-            axs[row, 0].set_ylabel(y_label_1)
-            axs[row, 0].set_title(title_1)
-            if plot_twiss_ellipse:
-                twiss_X, twiss_Y = self._get_ellipse_xy_points(elipse_parameters_1, x_data_1.min(), x_data_1.max(),
-                                                               div_data_1.min(), div_data_1.max())
-                axs[row, 0].scatter(twiss_X, twiss_Y, c='r', s=2)
-            if grid:
-                axs[row, 0].grid()
-
-            _hist2 = axs[row, 1].hist2d(x_data_2, div_data_2, bins=[X, Y], weights=ps_data['weight'], cmap='inferno')
-            fig.colorbar(_hist2[3], ax=axs[row, 1])
-            axs[row, 1].set_xlabel(x_label_2)
-            axs[row, 1].set_ylabel(y_label_2)
-            axs[row, 1].set_title(title_2)
-            axs[row, 1].set_xlim(xlim)
-            axs[row, 1].set_ylim(ylim)
-            if plot_twiss_ellipse:
-                twiss_X, twiss_Y = self._get_ellipse_xy_points(elipse_parameters_2, x_data_2.min(), x_data_2.max(),
-                                                               div_data_2.min(), div_data_2.max())
-                axs[row, 1].scatter(twiss_X, twiss_Y, c='r', s=2)
-            if grid:
-                axs[row, 1].grid()
-
-
-        plt.tight_layout()
-        plt.show()
-
-
-    def plot_n_particles_v_time(self):  # pragma: no cover
+    def plot_n_particles_v_time(self, n_bins: int=100):  # pragma: no cover
         """
         basic plot of number of particles versus time; useful for quickly seperating out different bunches
         of electrons such that you can apply the 'filter_by_time' method
+
+        :param n_bins: number of bins for histogram
+        :type n_bins: int
         """
         plt.figure()
-        plt.hist(self._ps_data['time [ps]'], 100)
-        plt.xlabel('time ps')
+        plt.hist(self._ps_data[self._columns['time']], n_bins)
+        plt.xlabel(f'time {self._units.time.label}')
         plt.ylabel('N particles')
         plt.tight_layout()
 
@@ -766,11 +723,11 @@ class PhaseSpace:
         print(f'number of unique particle species: {len(self._unique_particles): d}')
         for particle in self.energy_stats:
             print(f'    {self.energy_stats[particle]["number"]: d} {particle_cfg.particle_properties[particle]["name"]}'
-                  f'\n        mean energy: {self.energy_stats[particle]["mean energy"]: 1.2f} MeV'
-                  f'\n        median energy: {self.energy_stats[particle]["median energy"]: 1.2f} MeV'
-                  f'\n        Energy spread IQR: {self.energy_stats[particle]["energy spread IQR"]: 1.2f} MeV'
-                  f'\n        min energy {self.energy_stats[particle]["min energy"]: 1.2f} MeV'
-                  f'\n        max energy {self.energy_stats[particle]["max energy"]: 1.2f} MeV')
+                  f'\n        mean energy: {self.energy_stats[particle]["mean energy"]: 1.2f} {self._units.energy.label}'
+                  f'\n        median energy: {self.energy_stats[particle]["median energy"]: 1.2f} {self._units.energy.label}'
+                  f'\n        Energy spread IQR: {self.energy_stats[particle]["energy spread IQR"]: 1.2f} {self._units.energy.label}'
+                  f'\n        min energy {self.energy_stats[particle]["min energy"]: 1.2f} {self._units.energy.label}'
+                  f'\n        max energy {self.energy_stats[particle]["max energy"]: 1.2f} {self._units.energy.label}')
 
     def print_twiss_parameters(self, file_name=None, beam_direction='z'):  #pragma: no cover
         """
@@ -804,64 +761,84 @@ class PhaseSpace:
 
     def fill_kinetic_E(self):
         """
-        adds kinetic energy in MeV into self._ps_data
+        Uses `energy-momementum relation <https://en.wikipedia.org/wiki/Energy%E2%80%93momentum_relation>`_ to add
+         kinetic energy into self._ps_data
         """
-        if not hasattr(self,'_rest_masses'):
+        if not self._columns['rest mass'] in self._ps_data.columns:
             self.fill_rest_mass()
-        Totm = np.sqrt(self._ps_data['px [MeV/c]'] ** 2 + self._ps_data['py [MeV/c]'] ** 2 + self._ps_data['pz [MeV/c]'] ** 2)
-        TOT_E = np.sqrt(Totm ** 2 + self._ps_data['rest mass [MeV/c^2]'] ** 2)
-        Kin_E = np.subtract(TOT_E, self._ps_data['rest mass [MeV/c^2]'])
-        self._ps_data['Ek [MeV]'] = Kin_E
+        if not self._columns['p_abs'] in self._ps_data.columns:
+            self.fill_absolute_momentum()
+
+
+        TOT_E = np.sqrt(self._ps_data[self._columns['p_abs']] ** 2 + self._ps_data[self._columns['rest mass']] ** 2)
+        Kin_E = np.subtract(TOT_E, self._ps_data[self._columns['rest mass']])
+        self._ps_data[self._columns['Ek']] = Kin_E
         self._check_ps_data_format()
 
     def fill_rest_mass(self):
         """
-        add rest mass in MeV to self.ps_data
+        add rest mass to self._ps_data
         :return: 
         """
-        self._ps_data['rest mass [MeV/c^2]'] = ps_util.get_rest_masses_from_pdg_codes(self._ps_data['particle type [pdg_code]'])
+        rest_mass_MeV = ps_util.get_rest_masses_from_pdg_codes(self._ps_data['particle type [pdg_code]'])
+        rest_mass_correct_units = rest_mass_MeV / self._conversions['mass']
+        self._ps_data[self._columns['rest mass']] = rest_mass_correct_units
         self._check_ps_data_format()
 
     def fill_relativistic_mass(self):
         """
-        add relativistic mass in MeV/c^2 to ps_data
+        add relativistic mass to ps_data
         :return:
         """
-        if not 'gamma' in self._ps_data.columns:
+        if not self._columns['gamma'] in self._ps_data.columns:
             self.fill_beta_and_gamma()
-        if not 'rest mass [MeV/c^2]' in self._ps_data.columns:
+        if not self._columns['rest mass'] in self._ps_data.columns:
             self.fill_rest_mass()
 
-        self._ps_data['relativistic mass [MeV/c^2]'] = np.multiply(self._ps_data['gamma'], self._ps_data['rest mass [MeV/c^2]'])
+        self._ps_data[self._columns['relativistic mass']] = np.multiply(self._ps_data[self._columns['gamma']], self._ps_data[self._columns['rest mass']])
+        self._check_ps_data_format()
 
     def fill_velocity(self):
         """
         add velocities in m/s into self._ps_data
         """
-        if not 'rest mass [MeV/c^2]' in self._ps_data.columns:
+        if not self._columns['rest mass'] in self._ps_data.columns:
             self.fill_rest_mass()
-        if not 'gamma' in self._ps_data.columns:
+        if not self._columns['gamma'] in self._ps_data.columns:
             self.fill_beta_and_gamma()
-        self._ps_data['vx [m/s]'] = np.divide(self._ps_data['px [MeV/c]'], (self._ps_data['gamma'] * self._ps_data['rest mass [MeV/c^2]']))
-        self._ps_data['vy [m/s]'] = np.divide(self._ps_data['py [MeV/c]'], (self._ps_data['gamma'] * self._ps_data['rest mass [MeV/c^2]']))
-        self._ps_data['vz [m/s]'] = np.divide(self._ps_data['pz [MeV/c]'], (self._ps_data['gamma'] * self._ps_data['rest mass [MeV/c^2]']))
+        # self._ps_data[self._columns['vx']] = np.divide(self._ps_data[self._columns['px']], (self._ps_data[self._columns['gamma']] * self._ps_data[self._columns['rest mass']]))
+        # self._ps_data[self._columns['vy']] = np.divide(self._ps_data[self._columns['py']], (self._ps_data[self._columns['gamma']] * self._ps_data[self._columns['rest mass']]))
+        # self._ps_data[self._columns['vz']] = np.divide(self._ps_data[self._columns['pz']], (self._ps_data[self._columns['gamma']] * self._ps_data[self._columns['rest mass']]))
+
+        self._ps_data[self._columns['vx']] = np.multiply(self._ps_data[self._columns['beta_x']], constants.c)
+        self._ps_data[self._columns['vy']] = np.multiply(self._ps_data[self._columns['beta_y']], constants.c)
+        self._ps_data[self._columns['vz']] = np.multiply(self._ps_data[self._columns['beta_z']], constants.c)
         self._check_ps_data_format()
+
+    def fill_absolute_momentum(self):
+
+        self._ps_data[self._columns['p_abs']] = np.sqrt(
+            self._ps_data[self._columns['px']] ** 2 +
+            self._ps_data[self._columns['py']] ** 2 +
+            self._ps_data[self._columns['pz']] ** 2)
 
     def fill_beta_and_gamma(self):
         """
         add the relatavistic beta and gamma factors into self._ps_data
         """
-        if not 'Ek [MeV]' in self._ps_data.columns:
+        if not self._columns['Ek'] in self._ps_data.columns:
             self.fill_kinetic_E()
-        if not 'rest mass [MeV/c^2]' in self._ps_data.columns:
+        if not self._columns['rest mass'] in self._ps_data.columns:
             self.fill_rest_mass()
-        TOT_P = np.sqrt(self._ps_data['px [MeV/c]'] ** 2 + self._ps_data['py [MeV/c]'] ** 2 + self._ps_data['pz [MeV/c]'] ** 2)
-        self._ps_data['beta_abs'] = np.divide(TOT_P, self._ps_data['Ek [MeV]'] + self._ps_data['rest mass [MeV/c^2]'])
-        self._ps_data['beta_x'] = np.divide(self._ps_data['px [MeV/c]'], self._ps_data['Ek [MeV]'] + self._ps_data['rest mass [MeV/c^2]'])
-        self._ps_data['beta_y'] = np.divide(self._ps_data['py [MeV/c]'], self._ps_data['Ek [MeV]'] + self._ps_data['rest mass [MeV/c^2]'])
-        self._ps_data['beta_z'] = np.divide(self._ps_data['pz [MeV/c]'], self._ps_data['Ek [MeV]'] + self._ps_data['rest mass [MeV/c^2]'])
-        # assert np.allclose(np.sqrt(self._ps_data['beta_x']**2 + self._ps_data['beta_y']**2 +self._ps_data['beta_z']**2), self._ps_data['beta_abs'])
-        self._ps_data['gamma'] = 1 / np.sqrt(1 - np.square(self._ps_data['beta_abs']))
+        if not self._columns['p_abs'] in self._ps_data.columns:
+            self.fill_absolute_momentum()
+
+        self._ps_data['beta_abs'] = np.divide(self._ps_data[self._columns['p_abs']], self._ps_data[self._columns['Ek']] + self._ps_data[self._columns['rest mass']])
+        self._ps_data[self._columns['beta_x']] = np.divide(self._ps_data[self._columns['px']], self._ps_data[self._columns['Ek']] + self._ps_data[self._columns['rest mass']])
+        self._ps_data[self._columns['beta_y']] = np.divide(self._ps_data[self._columns['py']], self._ps_data[self._columns['Ek']] + self._ps_data[self._columns['rest mass']])
+        self._ps_data[self._columns['beta_z']] = np.divide(self._ps_data[self._columns['pz']], self._ps_data[self._columns['Ek']] + self._ps_data[self._columns['rest mass']])
+        # assert np.allclose(np.sqrt(self._ps_data[self._columns['beta_x']]**2 + self._ps_data[self._columns['beta_y']]**2 +self._ps_data[self._columns['beta_z']]**2), self._ps_data['beta_abs'])
+        self._ps_data[self._columns['gamma']] = 1 / np.sqrt(1 - np.square(self._ps_data['beta_abs']))
         self._check_ps_data_format()
 
     def fill_direction_cosines(self):
@@ -872,10 +849,10 @@ class PhaseSpace:
         :return:
         """
 
-        V = np.sqrt(self._ps_data['px [MeV/c]'] ** 2 + self._ps_data['py [MeV/c]'] ** 2 + self._ps_data['pz [MeV/c]'] ** 2)
-        self._ps_data['Direction Cosine X'] = self._ps_data['px [MeV/c]'] / V
-        self._ps_data['Direction Cosine Y'] = self._ps_data['py [MeV/c]'] / V
-        self._ps_data['Direction Cosine Z'] = self._ps_data['pz [MeV/c]'] / V
+        V = np.sqrt(self._ps_data[self._columns['px']] ** 2 + self._ps_data[self._columns['py']] ** 2 + self._ps_data[self._columns['pz']] ** 2)
+        self._ps_data[self._columns['Direction Cosine X']] = self._ps_data[self._columns['px']] / V
+        self._ps_data[self._columns['Direction Cosine Y']] = self._ps_data[self._columns['py']] / V
+        self._ps_data[self._columns['Direction Cosine Z']] = self._ps_data[self._columns['pz']] / V
         self._check_ps_data_format()
 
     def get_downsampled_phase_space(self, downsample_factor=10):
@@ -890,9 +867,9 @@ class PhaseSpace:
         new_data = self._ps_data.sample(frac=1).reset_index(drop=True)  # this shuffles the data
         new_data = new_data.sample(frac=1/downsample_factor, ignore_index=True)
         for col_name in new_data.columns:
-            if not col_name in ps_cfg.required_columns:
+            if not col_name in ps_cfg.get_required_column_names(self._units):
                 new_data.drop(columns=col_name, inplace=True)
-        new_data_loader = DataLoaders.Load_PandasData(new_data)
+        new_data_loader = DataLoaders.Load_PandasData(new_data, units=self._units)
         new_instance = PhaseSpace(new_data_loader)
         return new_instance
 
@@ -905,14 +882,14 @@ class PhaseSpace:
         :return: None
         """
         if beam_direction == 'x':
-            intersection_columns = ['x [mm]', 'px [MeV/c]']
-            direction_columns = [['z [mm]', 'pz [MeV/c]'], ['y [mm]', 'py [MeV/c]']]
+            intersection_columns = [self._columns['x'], self._columns['px']]
+            direction_columns = [[self._columns['z'], self._columns['pz']], [self._columns['y'], self._columns['py']]]
         elif beam_direction == 'y':
-            intersection_columns = ['y [mm]', 'py [MeV/c]']
-            direction_columns = [['x [mm]', 'px [MeV/c]'], ['z [mm]', 'pz [MeV/c]']]
+            intersection_columns = [self._columns['y'], self._columns['py']]
+            direction_columns = [[self._columns['x'], self._columns['px']], [self._columns['z'], self._columns['pz']]]
         elif beam_direction == 'z':
-            intersection_columns = ['z [mm]', 'pz [MeV/c]']
-            direction_columns = [['x [mm]', 'px [MeV/c]'], ['y [mm]', 'py [MeV/c]']]
+            intersection_columns = [self._columns['z'], self._columns['pz']]
+            direction_columns = [[self._columns['x'], self._columns['px']], [self._columns['y'], self._columns['py']]]
         else:
             raise NotImplementedError('beam direction must be "x", "y", or "z"')
         for particle in self._unique_particles:
@@ -934,10 +911,10 @@ class PhaseSpace:
                 self.twiss_parameters[particle_name][calc_dir[0][0]] = {'epsilon': epsilon,
                                                          'alpha': alpha,
                                                          'beta': beta,
-                                                         'gamma': gamma}
+                                                         self._columns['gamma']: gamma}
 
     def calculate_energy_statistics(self):
-        if not 'Ek [MeV]' in self._ps_data.columns:
+        if not self._columns['Ek'] in self._ps_data.columns:
             self.fill_kinetic_E()
         for particle in self._unique_particles:
             particle_name = particle_cfg.particle_properties[particle]['name']
@@ -946,13 +923,13 @@ class PhaseSpace:
             ps_data = self._ps_data[ind]
 
             self.energy_stats[particle_name]['number'] = np.count_nonzero(ind)
-            meanEnergy, stdEnergy = self._weighted_avg_and_std(ps_data['Ek [MeV]'], ps_data['weight'])
-            self.energy_stats[particle_name]['min energy'] = ps_data['Ek [MeV]'].min()
-            self.energy_stats[particle_name]['max energy'] = ps_data['Ek [MeV]'].max()
+            meanEnergy, stdEnergy = self._weighted_avg_and_std(ps_data[self._columns['Ek']], ps_data['weight'])
+            self.energy_stats[particle_name]['min energy'] = ps_data[self._columns['Ek']].min()
+            self.energy_stats[particle_name]['max energy'] = ps_data[self._columns['Ek']].max()
             self.energy_stats[particle_name]['mean energy'] = meanEnergy
             self.energy_stats[particle_name]['std mean'] = stdEnergy
-            self.energy_stats[particle_name]['median energy'] = self._weighted_median(ps_data['Ek [MeV]'], ps_data['weight'])
-            q75, q25 = self._weighted_quantile(ps_data['Ek [MeV]'], [0.25, 0.75], sample_weight=ps_data['weight'])
+            self.energy_stats[particle_name]['median energy'] = self._weighted_median(ps_data[self._columns['Ek']], ps_data['weight'])
+            q75, q25 = self._weighted_quantile(ps_data[self._columns['Ek']], [0.25, 0.75], sample_weight=ps_data['weight'])
             self.energy_stats[particle_name]['energy spread IQR'] = q25 - q75
 
     def project_particles(self, beam_direction='z', distance=100, in_place=False):
@@ -969,32 +946,32 @@ class PhaseSpace:
         :return: new_instance: if in_place = False, a new PhaseSpace object is returned
         """
         if beam_direction == 'x':
-            new_x = self._ps_data['x [mm]'] + distance
-            new_y = self._ps_data['y [mm]'] + np.divide(self._ps_data['py [MeV/c]'], self._ps_data['px [MeV/c]']) * distance
-            new_z = self._ps_data['z [mm]'] + np.divide(self._ps_data['pz [MeV/c]'], self._ps_data['px [MeV/c]']) * distance
+            new_x = self._ps_data[self._columns['x']] + distance
+            new_y = self._ps_data[self._columns['y']] + np.divide(self._ps_data[self._columns['py']], self._ps_data[self._columns['px']]) * distance
+            new_z = self._ps_data[self._columns['z']] + np.divide(self._ps_data[self._columns['pz']], self._ps_data[self._columns['px']]) * distance
         elif beam_direction == 'y':
-            new_x = self._ps_data['x [mm]'] + np.divide(self._ps_data['px [MeV/c]'], self._ps_data['py [MeV/c]']) * distance
-            new_y = self._ps_data['y [mm]'] + distance
-            new_z = self._ps_data['z [mm]'] + np.divide(self._ps_data['pz [MeV/c]'], self._ps_data['py [MeV/c]']) * distance
+            new_x = self._ps_data[self._columns['x']] + np.divide(self._ps_data[self._columns['px']], self._ps_data[self._columns['py']]) * distance
+            new_y = self._ps_data[self._columns['y']] + distance
+            new_z = self._ps_data[self._columns['z']] + np.divide(self._ps_data[self._columns['pz']], self._ps_data[self._columns['py']]) * distance
         elif beam_direction == 'z':
-            new_x = self._ps_data['x [mm]'] + np.divide(self._ps_data['px [MeV/c]'], self._ps_data['pz [MeV/c]']) * distance
-            new_y = self._ps_data['y [mm]'] + np.divide(self._ps_data['py [MeV/c]'], self._ps_data['pz [MeV/c]']) * distance
-            new_z = self._ps_data['z [mm]'] + distance
+            new_x = self._ps_data[self._columns['x']] + np.divide(self._ps_data[self._columns['px']], self._ps_data[self._columns['pz']]) * distance
+            new_y = self._ps_data[self._columns['y']] + np.divide(self._ps_data[self._columns['py']], self._ps_data[self._columns['pz']]) * distance
+            new_z = self._ps_data[self._columns['z']] + distance
         else:
             raise NotImplementedError('beam_direction must be "x", "y", or "z"')
 
         if in_place:
-            self._ps_data['x [mm]'] = new_x
-            self._ps_data['y [mm]'] = new_y
-            self._ps_data['z [mm]'] = new_z
+            self._ps_data[self._columns['x']] = new_x
+            self._ps_data[self._columns['y']] = new_y
+            self._ps_data[self._columns['z']] = new_z
         else:
             ps_data = self._ps_data.copy(deep=True)
             for col_name in ps_data.columns:
-                if not col_name in ps_cfg.required_columns:
+                if not col_name in ps_cfg.get_required_column_names(self._units):
                     ps_data.drop(columns=col_name, inplace=True)
-            ps_data['x [mm]'] = new_x
-            ps_data['y [mm]'] = new_y
-            ps_data['z [mm]'] = new_z
+            ps_data[self._columns['x']] = new_x
+            ps_data[self._columns['y']] = new_y
+            ps_data[self._columns['z']] = new_z
             new_data = DataLoaders.Load_PandasData(ps_data)
             new_instance = PhaseSpace(new_data)
             return  new_instance
@@ -1010,7 +987,7 @@ class PhaseSpace:
         this can be called whenever you want to reduce the memory footprint
         """
         for col_name in self._ps_data.columns:
-            if not col_name in ps_cfg.required_columns:
+            if not col_name in ps_cfg.get_required_column_names(self._units):
                 self._ps_data.drop(columns=col_name, inplace=True)
 
         self.twiss_parameters = {}
@@ -1029,7 +1006,7 @@ class PhaseSpace:
         :return density_data: a dataframe containing the roi vals and the proportion of particles inside
         """
 
-        if self.ps_data['weight'].max() > 1:
+        if self._ps_data['weight'].max() > 1:
             warnings.warn('AssessDensityVersusR function ignores particle weights')
 
         if Rvals is None:
@@ -1038,14 +1015,14 @@ class PhaseSpace:
         if not isinstance(Rvals, (list, np.ndarray)):
             Rvals = list(Rvals)
         if beam_direction == 'x':
-            r = np.sqrt(self.ps_data['z [mm]']**2 + self.ps_data['y [mm]']**2)
+            r = np.sqrt(self._ps_data[self._columns['z']]**2 + self._ps_data[self._columns['y']]**2)
         elif beam_direction == 'y':
-            r = np.sqrt(self.ps_data['x [mm]']**2 + self.ps_data['z [mm]']**2)
+            r = np.sqrt(self._ps_data[self._columns['x']]**2 + self._ps_data[self._columns['z']]**2)
         elif beam_direction == 'z':
-            r = np.sqrt(self.ps_data['x [mm]']**2 + self.ps_data['y [mm]']**2)
+            r = np.sqrt(self._ps_data[self._columns['x']]**2 + self._ps_data[self._columns['y']]**2)
 
 
-        numparticles = self.ps_data['x [mm]'].shape[0]
+        numparticles = self._ps_data[self._columns['x']].shape[0]
         rad_prop = []
 
         for rcheck in Rvals:
@@ -1068,10 +1045,10 @@ class PhaseSpace:
         :type t_finish: float
         :return: new_instance: a new phase space object with data filtered by time
         """
-        ind = np.logical_and(self._ps_data['time [ps]'] >= t_start, self._ps_data['time [ps]'] <= t_finish)
+        ind = np.logical_and(self._ps_data[self._columns['time']] >= t_start, self._ps_data[self._columns['time']] <= t_finish)
         ps_data = self._ps_data[ind]
         for col_name in ps_data.columns:
-            if not col_name in ps_cfg.required_columns:
+            if not col_name in ps_cfg.get_required_column_names(self._units):
                 ps_data.drop(columns=col_name, inplace=True)
         # create a new instance of _DataImportersBase based on particle_data
         ps_data_loader = DataLoaders.Load_PandasData(ps_data)
@@ -1079,3 +1056,37 @@ class PhaseSpace:
         print(f'Original data contains {len(self): d} particles')
         print(f'Filtered data contains {len(new_instance): d} particles')
         return new_instance
+
+    def set_units(self, new_units: UnitSet):
+        """
+        converts ps_data to a new unit set.
+        This will also reset the phase space to just the required columns
+
+        :param new_units: the new units to convert to
+        :type new_units: UnitSet
+        """
+
+        # reset phase space:
+        self.reset_phase_space()
+        # get conversion factors
+        conversions = ps_util.get_unit_conversions(self._units, new_units)
+        # convert data
+        self._ps_data[self._columns['x']] =  self._ps_data[self._columns['x']] * conversions['length']
+        self._ps_data[self._columns['y']] = self._ps_data[self._columns['y']] * conversions['length']
+        self._ps_data[self._columns['z']] = self._ps_data[self._columns['z']] * conversions['length']
+        self._ps_data[self._columns['px']] = self._ps_data[self._columns['px']] * conversions['momentum']
+        self._ps_data[self._columns['py']] = self._ps_data[self._columns['py']] * conversions['momentum']
+        self._ps_data[self._columns['pz']] = self._ps_data[self._columns['pz']] * conversions['momentum']
+        self._ps_data[self._columns['time']] = self._ps_data[self._columns['time']] * conversions['time']
+        # get new column names
+        old_columns_names = ps_cfg.get_required_column_names(self._units)
+        new_column_names = ps_cfg.get_required_column_names(new_units)
+        rename_dict = {old_columns_names[i]: new_column_names[i] for i in range(len(old_columns_names))}
+        self._ps_data.rename(columns=rename_dict, inplace=True)
+        # update self._columns
+        self._columns = ps_cfg.get_all_column_names(new_units)
+        self._units = new_units
+        self._conversions = ps_util.get_unit_conversions(self._units, ParticlePhaseSpaceUnits()('mm_MeV'))
+
+    def get_units(self):
+        return self._units

@@ -6,8 +6,11 @@ from pathlib import Path
 from .utilities import get_rest_masses_from_pdg_codes
 import ParticlePhaseSpace.__phase_space_config__ as ps_cfg
 import ParticlePhaseSpace.__particle_config__ as particle_cfg
+from ParticlePhaseSpace import UnitSet
 import warnings
-from scipy import constants
+from ParticlePhaseSpace import ParticlePhaseSpaceUnits
+
+units=ParticlePhaseSpaceUnits()
 
 class _DataLoadersBase(ABC):
     """
@@ -15,8 +18,14 @@ class _DataLoadersBase(ABC):
     Inherited by new instances of DataLoaders
     """
 
-    def __init__(self, input_data, particle_type=None):
+    def __init__(self, input_data, particle_type=None, units=units('mm_MeV')):
         self.data = pd.DataFrame()
+        if not isinstance(units, UnitSet):
+            raise TypeError('units must be an instance of articlePhaseSpace.__unit_config__._UnitSet.'
+                            'UnitSets are accessed through the ParticlePhaseSpaceUnits class')
+        self._units = units
+        self._columns = ps_cfg.get_all_column_names(self._units)
+
 
         if particle_type:
             if not isinstance(particle_type, str):
@@ -61,25 +70,26 @@ class _DataLoadersBase(ABC):
         4. "particle id" should be unique
         """
         # required columns present?
-        for col_name in ps_cfg.required_columns:
+        required_columns = ps_cfg.get_required_column_names(self._units)
+        for col_name in required_columns:
             if not col_name in self.data.columns:
                 raise AttributeError(f'invalid data input; required column "{col_name}" is missing')
 
         # all columns allowed?
         for col_name in self.data.columns:
-            if not col_name in ps_cfg.required_columns:
+            if not col_name in required_columns:
                 raise AttributeError(f'non allowed column "{col_name}" in data.')
 
         # are NaNs present?
         if self.data.isnull().values.any():
             raise AttributeError(f'input data may not contain NaNs')
 
-        tot_mom = np.sqrt(self.data['px [MeV/c]']**2 + self.data['py [MeV/c]']**2 + self.data['pz [MeV/c]']**2)
+        tot_mom = np.sqrt(self.data[self._columns['px']]**2 + self.data[self._columns['py']]**2 + self.data[self._columns['pz']]**2)
         if not np.min(tot_mom)>0:
             raise Exception('particles with zero absolute momentum make no sense')
 
         # is every particle ID unique?
-        if not len(self.data['particle id'].unique()) == len(self.data['particle id']):
+        if not len(self.data[self._columns['particle id']].unique()) == len(self.data[self._columns['particle id']]):
             raise Exception('you have attempted to create a data set with non'
                                  'unique "particle id" fields, which is not allowed')
 
@@ -97,7 +107,7 @@ class _DataLoadersBase(ABC):
         """
         if not hasattr(self,'_rest_masses'):
             self._rest_masses = get_rest_masses_from_pdg_codes(self.data['particle type [pdg_code]'])
-        Totm = np.sqrt((self.data['px [MeV/c]'] ** 2 + self.data['py [MeV/c]'] ** 2 + self.data['pz [MeV/c]'] ** 2))
+        Totm = np.sqrt((self.data[self._columns['px']] ** 2 + self.data[self._columns['py']] ** 2 + self.data[self._columns['pz']] ** 2))
         self.TOT_E = np.sqrt(Totm ** 2 + self._rest_masses ** 2)
         Ek_internal = np.subtract(self.TOT_E, self._rest_masses)
 
@@ -131,13 +141,13 @@ class Load_TopasData(_DataLoadersBase):
         """
         topas_phase_space = tp.read_ntuple(self._input_data)
         ParticleTypes = topas_phase_space['Particle Type (in PDG Format)']
-        self.data['particle type [pdg_code]'] = ParticleTypes.astype(int)
-        self.data['x [mm]'] = topas_phase_space['Position X [cm]'] * 1e1
-        self.data['y [mm]'] = topas_phase_space['Position Y [cm]'] * 1e1
-        self.data['z [mm]'] = topas_phase_space['Position Z [cm]'] * 1e1
-        self.data['weight'] = topas_phase_space['Weight']
-        self.data['particle id'] = np.arange(len(self.data))  # may want to replace with track ID if available?
-        self.data['time [ps]'] = 0  # may want to replace with time feature if available?
+        self.data[self._columns['particle type']] = ParticleTypes.astype(int)
+        self.data[self._columns['x']] = topas_phase_space['Position X [cm]'] * 1e1
+        self.data[self._columns['y']] = topas_phase_space['Position Y [cm]'] * 1e1
+        self.data[self._columns['z']] = topas_phase_space['Position Z [cm]'] * 1e1
+        self.data[self._columns['weight']] = topas_phase_space['Weight']
+        self.data[self._columns['particle id']] = np.arange(len(self.data))  # may want to replace with track ID if available?
+        self.data[self._columns['time']] = 0  # may want to replace with time feature if available?
         # figure out the momentums:
         ParticleDir = topas_phase_space['Flag to tell if Third Direction Cosine is Negative (1 means true)']
         DirCosineX = topas_phase_space['Direction Cosine X']
@@ -145,11 +155,11 @@ class Load_TopasData(_DataLoadersBase):
         E = topas_phase_space['Energy [MeV]']
         self._rest_masses = get_rest_masses_from_pdg_codes(self.data['particle type [pdg_code]'])
         P = np.sqrt((E + self._rest_masses) ** 2 - self._rest_masses ** 2)
-        self.data['px [MeV/c]'] = np.multiply(P, DirCosineX)
-        self.data['py [MeV/c]'] = np.multiply(P, DirCosineY)
-        temp = P ** 2 - self.data['px [MeV/c]'] ** 2 - self.data['py [MeV/c]'] ** 2
+        self.data[self._columns['px']] = np.multiply(P, DirCosineX)
+        self.data[self._columns['py']] = np.multiply(P, DirCosineY)
+        temp = P ** 2 - self.data[self._columns['px']] ** 2 - self.data[self._columns['py']] ** 2
         ParticleDir = [-1 if elem else 1 for elem in ParticleDir]
-        self.data['pz [MeV/c]'] = np.multiply(np.sqrt(temp), ParticleDir)
+        self.data[self._columns['pz']] = np.multiply(np.sqrt(temp), ParticleDir)
         self._check_energy_consistency(Ek=E)
 
     def _check_input_data(self):
@@ -226,21 +236,60 @@ class Load_TibarayData(_DataLoadersBase):
 
     def _import_data(self):
         Data = np.loadtxt(self._input_data, skiprows=1)
-        self.data['x [mm]'] = Data[:, 0] * 1e3  # mm to m
-        self.data['y [mm]'] = Data[:, 1] * 1e3
-        self.data['z [mm]'] = Data[:, 2] * 1e3
+        self.data[self._columns['x']] = Data[:, 0] * 1e3  # mm to m
+        self.data[self._columns['y']] = Data[:, 1] * 1e3
+        self.data[self._columns['z']] = Data[:, 2] * 1e3
         Bx = Data[:, 4]
         By = Data[:, 5]
         Bz = Data[:, 6]
         Gamma = Data[:, 7]
-        self.data['time [ps]'] = Data[:, 8] * 1e9
+        self.data[self._columns['time']] = Data[:, 8] * 1e9
         m = Data[:, 9]
         q = Data[:, 10]
-        self.data['weight'] = Data[:, 11]
+        self.data[self._columns['weight']] = Data[:, 11]
         rmacro = Data[:, 12]
-        self.data['particle id'] = Data[:, 13]
-        self.data['particle type [pdg_code]'] = particle_cfg.particle_properties[self._particle_type]['pdg_code']
+        self.data[self._columns['particle id']] = Data[:, 13]
+        self.data[self._columns['particle type']] = particle_cfg.particle_properties[self._particle_type]['pdg_code']
 
-        self.data['px [MeV/c]'] = np.multiply(Bx, Gamma) * particle_cfg.particle_properties[self._particle_type]['rest_mass']
-        self.data['py [MeV/c]'] = np.multiply(By, Gamma) * particle_cfg.particle_properties[self._particle_type]['rest_mass']
-        self.data['pz [MeV/c]'] = np.multiply(Bz, Gamma) * particle_cfg.particle_properties[self._particle_type]['rest_mass']
+        self.data[self._columns['px']] = np.multiply(Bx, Gamma) * particle_cfg.particle_properties[self._particle_type]['rest_mass']
+        self.data[self._columns['py']] = np.multiply(By, Gamma) * particle_cfg.particle_properties[self._particle_type]['rest_mass']
+        self.data[self._columns['pz']] = np.multiply(Bz, Gamma) * particle_cfg.particle_properties[self._particle_type]['rest_mass']
+
+
+class NewDataLoader(_DataLoadersBase):
+
+    def _import_data(self):
+        Data = np.loadtxt(self._input_data, skiprows=1)
+        self.data['x [mm]'] = Data[:, 0]
+        self.data['y [mm]'] = Data[:, 1]
+        self.data['z [mm]'] = Data[:, 2]
+        self.data['px [MeV/c]'] = Data[:, 3]
+        self.data['py [MeV/c]'] = Data[:, 4]
+        self.data['pz [MeV/c]'] = Data[:, 5]
+        self.data['particle type [pdg_code]'] = particle_cfg.particle_properties[self._particle_type]['name']
+        # we also need to fill in weight, particle id, and time; since none of these are specified we just use all
+        # ones for weight, 1,2,3... for particle id, and all zeros for time:
+        self.data['weight'] = np.ones(Data.shape[0])
+        self.data['particle id'] = np.arange(len(self.data))
+
+        self.data['time [ps]'] = 0  # may want to replace with time feature if available?
+
+        # because we have momentum and energy, we can double check that our momentum to energy conversion is
+        # consisten with the values in the phase space:
+        E = Data[:, 6]
+        self._check_energy_consistency(Ek=E)
+
+    def _check_input_data(self):
+        # is the input a file?
+        if not Path(self._input_data).is_file():
+            raise FileNotFoundError(f'input data file {self._import_data()} does not exist')
+        # does it have the right extension?
+        if not Path(self._input_data).suffix == '.dat':
+            raise Exception('This data loaders requires a *.dat file')
+        # the header is on the first line; does it look correct?
+        with open(self._input_data) as f:
+            first_line = f.readline()
+            if not first_line == 'x (mm)\ty (mm)\tz (mm)\tpx (MeV/c)\tpy (MeV/c)\tpz (MeV/c)\tE (MeV)\n':
+                raise Exception('file header does not look correct')
+        if not self._particle_type:
+            raise Exception('this data loader requires particle_type to be specified')
