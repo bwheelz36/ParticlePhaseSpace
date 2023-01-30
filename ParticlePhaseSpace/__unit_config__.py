@@ -107,14 +107,15 @@ class ParticlePhaseSpaceUnits:
                               mass_units=_unit('keV/c^2', 1e3),
                               velocity_units=_unit('m/s', 1))
 
-        self.SI = UnitSet(label='SI',
-                          length_units=_unit('m', 1e-3),
-                          energy_units=_unit('J', constants.elementary_charge*1e6),
-                          momentum_units=_unit('kg.m/s', constants.elementary_charge*1e6/constants.c),
-                          time_units=_unit('s', 1e-12),
-                          mass_units=_unit('kg', constants.elementary_charge * 1e6 / (constants.c**2)),
-                          velocity_units=_unit('m/s', 1))
+        # self.SI = UnitSet(label='SI',
+        #                   length_units=_unit('m', 1e-3),
+        #                   energy_units=_unit('J', constants.elementary_charge*1e6),
+        #                   momentum_units=_unit('kg.m/s', constants.elementary_charge*1e6/constants.c),
+        #                   time_units=_unit('s', 1e-12),
+        #                   mass_units=_unit('kg', constants.elementary_charge * 1e6/constants.c**2),
+        #                   velocity_units=_unit('m/s', 1))
 
+        self._get_unit_attributes()
         self._check_attributes()
 
     def __call__(self, unit_tag):
@@ -125,19 +126,23 @@ class ParticlePhaseSpaceUnits:
                                  f'\nFor a list of valid unit sets please call print on this object')
 
     def __str__(self):
-
-        attributes = filter(lambda a: not a.startswith('__'), dir(self))
         attribute_string = 'Available Unit Sets'
         attribute_string = attribute_string + '\n=================\n'
-        for attribute in attributes:
-            if attribute in ['_check_attributes', '_repr_pretty_']:
-                continue
+        for attribute in self._attributes:
             unit_string = self(attribute).__str__()
             attribute_string = attribute_string + unit_string + '\n'
             attribute_string = attribute_string + '\n=================\n'
         attribute_string = attribute_string[:-19]
 
         return attribute_string
+
+    def _get_unit_attributes(self):
+        all_attributes = filter(lambda a: not a.startswith('__'), dir(self))
+        self._attributes = []
+        for attribute in all_attributes:
+            if attribute in ['_check_attributes', '_repr_pretty_', '_get_unit_attributes', 'get_available_unit_strings']:
+                continue
+            self._attributes.append(attribute)
 
     def _repr_pretty_(self, p, cycle):
         if cycle:
@@ -146,11 +151,9 @@ class ParticlePhaseSpaceUnits:
             p.text(str(self))
 
     def _check_attributes(self):
-        attributes = filter(lambda a: not a.startswith('__'), dir(self))
-        for attribute in attributes:
-            if attribute in ['_check_attributes', '_repr_pretty_']:
-                continue
+        for attribute in self._attributes:
             if not isinstance(getattr(self, attribute), UnitSet):
                 raise TypeError('ParticlePhaseSpaceUnits units must have only _UnitSet type attributes')
 
-
+    def get_available_unit_strings(self):
+        return self._attributes

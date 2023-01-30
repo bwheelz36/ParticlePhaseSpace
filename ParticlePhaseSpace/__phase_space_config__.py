@@ -42,7 +42,8 @@ allowed_columns = {'Ek': 'fill_kinetic_E',  # Kinetic energy
                    'vz': 'fill_velocity',  # z velocity
                    'Direction Cosine X': 'fill_direction_cosines',  # x cosine of momentum
                    'Direction Cosine Y': 'fill_direction_cosines',  # y cosine of momentum
-                   'Direction Cosine Z': 'fill_direction_cosines'}  # z cosine of momentum
+                   'Direction Cosine Z': 'fill_direction_cosines',  # z cosine of momentum
+                   'p_abs': 'fill_absolute_momentum'}
 
 def _check_all_column_names(column_names: dict):
 
@@ -76,6 +77,7 @@ def get_all_column_names(units: UnitSet):
                     'px': f'px [{units.momentum.label}]',
                     'py': f'py [{units.momentum.label}]',
                     'pz': f'pz [{units.momentum.label}]',
+                    'p_abs': f'p_abs [{units.momentum.label}]',
                     'vx': f'vx [{units.velocity.label}]',
                     'vy': f'vy [{units.velocity.label}]',
                     'vz': f'vz [{units.velocity.label}]',

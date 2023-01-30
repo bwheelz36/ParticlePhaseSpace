@@ -758,13 +758,21 @@ class PhaseSpace:
 
     def fill_kinetic_E(self):
         """
-        adds kinetic energy in MeV into self._ps_data
+        Uses `energy-momementum relation <https://en.wikipedia.org/wiki/Energy%E2%80%93momentum_relation>`_ to add
+         kinetic energy in MeV into self._ps_data
         """
-        if not hasattr(self,'_rest_masses'):
+        if not self._columns['rest mass'] in self._ps_data.columns:
             self.fill_rest_mass()
-        Totm = np.sqrt(self._ps_data[self._columns['px']] ** 2 + self._ps_data[self._columns['py']] ** 2 + self._ps_data[self._columns['pz']] ** 2)
-        TOT_E = np.sqrt(Totm ** 2 + self._ps_data[self._columns['rest mass']] ** 2)
-        Kin_E = np.subtract(TOT_E, self._ps_data[self._columns['rest mass']])
+        if not self._columns['p_abs'] in self._ps_data.columns:
+            self.fill_absolute_momentum()
+
+        if self._units.label in ['SI']:
+            rest_energy = self._ps_data[self._columns['rest mass']] * constants.c ** 2
+            TOT_E = np.sqrt(((self._ps_data[self._columns['p_abs']]*constants.c)**2) + (rest_energy)**2)
+            Kin_E = TOT_E - rest_energy
+        else:
+            TOT_E = np.sqrt(self._ps_data[self._columns['p_abs']] ** 2 + self._ps_data[self._columns['rest mass']] ** 2)
+            Kin_E = np.subtract(TOT_E, self._ps_data[self._columns['rest mass']])
         self._ps_data[self._columns['Ek']] = Kin_E
         self._check_ps_data_format()
 
@@ -808,6 +816,13 @@ class PhaseSpace:
         self._ps_data[self._columns['vz']] = np.multiply(self._ps_data[self._columns['beta_z']], constants.c)
         self._check_ps_data_format()
 
+    def fill_absolute_momentum(self):
+
+        self._ps_data[self._columns['p_abs']] = np.sqrt(
+            self._ps_data[self._columns['px']] ** 2 +
+            self._ps_data[self._columns['py']] ** 2 +
+            self._ps_data[self._columns['pz']] ** 2)
+
     def fill_beta_and_gamma(self):
         """
         add the relatavistic beta and gamma factors into self._ps_data
@@ -816,8 +831,13 @@ class PhaseSpace:
             self.fill_kinetic_E()
         if not self._columns['rest mass'] in self._ps_data.columns:
             self.fill_rest_mass()
-        TOT_P = np.sqrt(self._ps_data[self._columns['px']] ** 2 + self._ps_data[self._columns['py']] ** 2 + self._ps_data[self._columns['pz']] ** 2)
-        self._ps_data['beta_abs'] = np.divide(TOT_P, self._ps_data[self._columns['Ek']] + self._ps_data[self._columns['rest mass']])
+        if not self._columns['p_abs'] in self._ps_data.columns:
+            self.fill_absolute_momentum()
+
+        if self._units.label == 'SI':
+            print('hello')
+
+        self._ps_data['beta_abs'] = np.divide(self._ps_data[self._columns['p_abs']], self._ps_data[self._columns['Ek']] + self._ps_data[self._columns['rest mass']])
         self._ps_data[self._columns['beta_x']] = np.divide(self._ps_data[self._columns['px']], self._ps_data[self._columns['Ek']] + self._ps_data[self._columns['rest mass']])
         self._ps_data[self._columns['beta_y']] = np.divide(self._ps_data[self._columns['py']], self._ps_data[self._columns['Ek']] + self._ps_data[self._columns['rest mass']])
         self._ps_data[self._columns['beta_z']] = np.divide(self._ps_data[self._columns['pz']], self._ps_data[self._columns['Ek']] + self._ps_data[self._columns['rest mass']])
