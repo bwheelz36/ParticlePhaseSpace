@@ -8,18 +8,20 @@
     "# Writing a new data exporter\n",
     "\n",
     "Writing a new DataExporter is very similar process to [writing a new DataLoader](https://bwheelz36.github.io/ParticlePhaseSpace/new_data_loader.html#).\n",
-    "As an example: lets say that I want to export some topas to the format that he originally sent his data to me in the [data import example](https://bwheelz36.github.io/ParticlePhaseSpace/new_data_loader.html#):\n",
+    "As an example: lets say that I want to export some topas to the same format used in the [data import example](https://bwheelz36.github.io/ParticlePhaseSpace/new_data_loader.html#):\n",
     "\n",
     "```\n",
     "x (mm)\ty (mm)\tz (mm)\tpx (MeV/c)\tpy (MeV/c)\tpz (MeV/c)\tE (MeV)\n",
     "```\n",
+    "\n",
+    "> Note that these units already match those in the unit set of `mm_MeV`\n",
     "\n",
     "To do this, we would create a data exporter as follows:"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 1,
+   "execution_count": 2,
    "id": "8b8cfdb7",
    "metadata": {},
    "outputs": [],
@@ -32,6 +34,7 @@
     "from ParticlePhaseSpace._ParticlePhaseSpace import PhaseSpace\n",
     "import numpy as np\n",
     "import ParticlePhaseSpace.__particle_config__ as particle_cfg\n",
+    "from ParticlePhaseSpace import ParticlePhaseSpaceUnits\n",
     "\n",
     "class NewDataExporter(_DataExportersBase):\n",
     "    \n",
@@ -39,6 +42,9 @@
     "        pass\n",
     "        \n",
     "    def _export_data(self):\n",
+    "        pass\n",
+    "    \n",
+    "    def _set_expected_units(self):\n",
     "        pass"
    ]
   },
@@ -47,9 +53,10 @@
    "id": "d28c1c36",
    "metadata": {},
    "source": [
-    "Our job is to fill in these two blank methods.\n",
+    "Our job is to fill in these blank methods.\n",
     "\n",
-    "- in `_define_required_columns` you must list all the columns required for your data export. These column names must match  the [allowed columns] from the phase space specification. \n",
+    "- in `_define_required_columns` you must list all the columns required for your data export. These column names must match  the [allowed columns] from the phase space specification.\n",
+    "- in `set_expected_units` you should list the units your exporter is expecting. If the units in the data it receives are different, it will attempt to convert the data to the correct units.\n",
     "- `_export_data` is where the data export will actually happen.\n",
     "\n",
     "The filled in data exporter for the case in hand looks like this:"
@@ -57,7 +64,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 2,
+   "execution_count": 3,
    "id": "c814a61a",
    "metadata": {},
    "outputs": [],
@@ -65,8 +72,12 @@
     "class NewDataExporter(_DataExportersBase):\n",
     "\n",
     "    def _define_required_columns(self):\n",
-    "        self._required_columns = ['x [mm]', 'y [mm]', 'z [mm]', 'px [MeV/c]', 'py [MeV/c]', 'pz [MeV/c]', 'Ek [MeV]']\n",
-    "\n",
+    "        self._required_columns = ['x', 'y', 'z', 'px', 'py', 'pz', 'Ek']\n",
+    "    \n",
+    "    def _set_expected_units(self):\n",
+    "        self._expected_units = ParticlePhaseSpaceUnits()('mm_MeV')\n",
+    "    \n",
+    "    \n",
     "    def _export_data(self):\n",
     "\n",
     "        if not Path(self._output_name).suffix == '.dat':\n",
@@ -97,17 +108,17 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 3,
+   "execution_count": 4,
    "id": "48e6a00f",
    "metadata": {},
    "outputs": [
     {
      "data": {
       "text/plain": [
-       "<__main__.NewDataExporter at 0x7fb193ef7ca0>"
+       "<__main__.NewDataExporter at 0x7f0b5ddba8b0>"
       ]
      },
-     "execution_count": 3,
+     "execution_count": 4,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -134,7 +145,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 4,
+   "execution_count": 5,
    "id": "c6fae3c8",
    "metadata": {},
    "outputs": [],
@@ -229,7 +240,7 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.10.6"
+   "version": "3.9.5"
   }
  },
  "nbformat": 4,

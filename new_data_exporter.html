@@ -47,7 +47,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Phase Space Format" href="phase_space_format.html" />
+    <link rel="next" title="Working with different units" href="units.html" />
     <link rel="prev" title="Writing a new data loader" href="new_data_loader.html" /> 
 </head>
 
@@ -102,6 +102,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#Testing-the-data-export">Testing the data export</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="units.html">Working with different units</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="phase_space_format.html">Phase Space Format</a></li>
@@ -457,13 +458,16 @@ div.rendered_html tbody tr:hover {
 </style>
 <section id="Writing-a-new-data-exporter">
 <h1>Writing a new data exporter<a class="headerlink" href="#Writing-a-new-data-exporter" title="Permalink to this heading">¶</a></h1>
-<p>Writing a new DataExporter is very similar process to <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/new_data_loader.html#">writing a new DataLoader</a>. As an example: lets say that I want to export some topas to the format that he originally sent his data to me in the <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/new_data_loader.html#">data import example</a>:</p>
+<p>Writing a new DataExporter is very similar process to <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/new_data_loader.html#">writing a new DataLoader</a>. As an example: lets say that I want to export some topas to the same format used in the <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/new_data_loader.html#">data import example</a>:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>x (mm)  y (mm)  z (mm)  px (MeV/c)  py (MeV/c)  pz (MeV/c)  E (MeV)
 </pre></div>
 </div>
+<blockquote>
+<div><p>Note that these units already match those in the unit set of <code class="docutils literal notranslate"><span class="pre">mm_MeV</span></code></p>
+</div></blockquote>
 <p>To do this, we would create a data exporter as follows:</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
@@ -474,6 +478,7 @@ div.rendered_html tbody tr:hover {
 <span class="kn">from</span> <span class="nn">ParticlePhaseSpace._ParticlePhaseSpace</span> <span class="kn">import</span> <span class="n">PhaseSpace</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">ParticlePhaseSpace.__particle_config__</span> <span class="k">as</span> <span class="nn">particle_cfg</span>
+<span class="kn">from</span> <span class="nn">ParticlePhaseSpace</span> <span class="kn">import</span> <span class="n">ParticlePhaseSpaceUnits</span>
 
 <span class="k">class</span> <span class="nc">NewDataExporter</span><span class="p">(</span><span class="n">_DataExportersBase</span><span class="p">):</span>
 
@@ -482,23 +487,31 @@ div.rendered_html tbody tr:hover {
 
     <span class="k">def</span> <span class="nf">_export_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_set_expected_units</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
 </pre></div>
 </div>
 </div>
-<p>Our job is to fill in these two blank methods.</p>
+<p>Our job is to fill in these blank methods.</p>
 <ul class="simple">
 <li><p>in <code class="docutils literal notranslate"><span class="pre">_define_required_columns</span></code> you must list all the columns required for your data export. These column names must match the [allowed columns] from the phase space specification.</p></li>
+<li><p>in <code class="docutils literal notranslate"><span class="pre">set_expected_units</span></code> you should list the units your exporter is expecting. If the units in the data it receives are different, it will attempt to convert the data to the correct units.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">_export_data</span></code> is where the data export will actually happen.</p></li>
 </ul>
 <p>The filled in data exporter for the case in hand looks like this:</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">NewDataExporter</span><span class="p">(</span><span class="n">_DataExportersBase</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">_define_required_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_required_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;x [mm]&#39;</span><span class="p">,</span> <span class="s1">&#39;y [mm]&#39;</span><span class="p">,</span> <span class="s1">&#39;z [mm]&#39;</span><span class="p">,</span> <span class="s1">&#39;px [MeV/c]&#39;</span><span class="p">,</span> <span class="s1">&#39;py [MeV/c]&#39;</span><span class="p">,</span> <span class="s1">&#39;pz [MeV/c]&#39;</span><span class="p">,</span> <span class="s1">&#39;Ek [MeV]&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_required_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="s1">&#39;px&#39;</span><span class="p">,</span> <span class="s1">&#39;py&#39;</span><span class="p">,</span> <span class="s1">&#39;pz&#39;</span><span class="p">,</span> <span class="s1">&#39;Ek&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_set_expected_units</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_expected_units</span> <span class="o">=</span> <span class="n">ParticlePhaseSpaceUnits</span><span class="p">()(</span><span class="s1">&#39;mm_MeV&#39;</span><span class="p">)</span>
+
 
     <span class="k">def</span> <span class="nf">_export_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
@@ -523,7 +536,7 @@ div.rendered_html tbody tr:hover {
 <h2>Testing the data export<a class="headerlink" href="#Testing-the-data-export" title="Permalink to this heading">¶</a></h2>
 <p>Let’s test the use case of loading in some topas data, and exporting it with this data exporter:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># load topas data:</span>
@@ -539,17 +552,17 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;__main__.NewDataExporter at 0x7fb193ef7ca0&gt;
+&lt;__main__.NewDataExporter at 0x7f0b5ddba8b0&gt;
 </pre></div></div>
 </div>
 <p>To verify that this worked, we can recycle the <a href="#id1"><span class="problematic" id="id2">`data loader &lt;&gt;`__</span></a> we wrote to read this data and check if it works</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ParticlePhaseSpace.DataLoaders</span> <span class="kn">import</span> <span class="n">_DataLoadersBase</span>
@@ -622,7 +635,7 @@ div.rendered_html tbody tr:hover {
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="phase_space_format.html" class="btn btn-neutral float-right" title="Phase Space Format" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="units.html" class="btn btn-neutral float-right" title="Working with different units" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="new_data_loader.html" class="btn btn-neutral float-left" title="Writing a new data loader" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 

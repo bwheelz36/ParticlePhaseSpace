@@ -100,6 +100,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#ParticlePhaseSpace.DataLoaders.Load_PandasData"><code class="docutils literal notranslate"><span class="pre">Load_PandasData</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ParticlePhaseSpace.DataLoaders.Load_TibarayData"><code class="docutils literal notranslate"><span class="pre">Load_TibarayData</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ParticlePhaseSpace.DataLoaders.Load_TopasData"><code class="docutils literal notranslate"><span class="pre">Load_TopasData</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ParticlePhaseSpace.DataLoaders.NewDataLoader"><code class="docutils literal notranslate"><span class="pre">NewDataLoader</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-ParticlePhaseSpace._ParticlePhaseSpace">Particle Phase Space</a><ul>
@@ -125,6 +126,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.print_twiss_parameters"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.print_twiss_parameters()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.project_particles"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.project_particles()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.reset_phase_space"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.reset_phase_space()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.set_units"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.set_units()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -233,7 +235,7 @@
 <span id="data-loaders"></span><h2>Data Loaders<a class="headerlink" href="#module-ParticlePhaseSpace.DataLoaders" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="ParticlePhaseSpace.DataLoaders.Load_PandasData">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ParticlePhaseSpace.DataLoaders.</span></span><span class="sig-name descname"><span class="pre">Load_PandasData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace.DataLoaders.Load_PandasData" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ParticlePhaseSpace.DataLoaders.</span></span><span class="sig-name descname"><span class="pre">Load_PandasData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units=&lt;ParticlePhaseSpace.__unit_config__.UnitSet</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace.DataLoaders.Load_PandasData" title="Permalink to this definition">¶</a></dt>
 <dd><p>loads in pandas data of the format. This is used internally by ParticlePhaseSpace, and can also be used
 externally in cases where it is not desired to write a dedicated new data loader:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ParticlePhaseSpace</span> <span class="kn">import</span> <span class="n">DataLoaders</span>
@@ -258,7 +260,7 @@ externally in cases where it is not desired to write a dedicated new data loader
 
 <dl class="py class">
 <dt class="sig sig-object py" id="ParticlePhaseSpace.DataLoaders.Load_TibarayData">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ParticlePhaseSpace.DataLoaders.</span></span><span class="sig-name descname"><span class="pre">Load_TibarayData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace.DataLoaders.Load_TibarayData" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ParticlePhaseSpace.DataLoaders.</span></span><span class="sig-name descname"><span class="pre">Load_TibarayData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units=&lt;ParticlePhaseSpace.__unit_config__.UnitSet</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace.DataLoaders.Load_TibarayData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load ASCII data from tibaray of format
 <cite>x y z rxy Bx By Bz G t m q nmacro rmacro ID</cite>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data_loc</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;../tests/test_data/tibaray_test.dat&#39;</span><span class="p">)</span>
@@ -270,7 +272,7 @@ externally in cases where it is not desired to write a dedicated new data loader
 
 <dl class="py class">
 <dt class="sig sig-object py" id="ParticlePhaseSpace.DataLoaders.Load_TopasData">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ParticlePhaseSpace.DataLoaders.</span></span><span class="sig-name descname"><span class="pre">Load_TopasData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace.DataLoaders.Load_TopasData" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ParticlePhaseSpace.DataLoaders.</span></span><span class="sig-name descname"><span class="pre">Load_TopasData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units=&lt;ParticlePhaseSpace.__unit_config__.UnitSet</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace.DataLoaders.Load_TopasData" title="Permalink to this definition">¶</a></dt>
 <dd><p>DataLoader for <a class="reference external" href="https://topas.readthedocs.io/en/latest/">Topas</a> data.
 This data loader will read in both ascii and binary topas phase space (phsp) files.
 At present, we do not handle time or particle-id fields which may or may not be present in topas data.
@@ -286,6 +288,11 @@ Behind the scenes, it relies on <a class="reference external" href="https://gith
 </pre></div>
 </div>
 </dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ParticlePhaseSpace.DataLoaders.NewDataLoader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ParticlePhaseSpace.DataLoaders.</span></span><span class="sig-name descname"><span class="pre">NewDataLoader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units=&lt;ParticlePhaseSpace.__unit_config__.UnitSet</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace.DataLoaders.NewDataLoader" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </section>
 <section id="module-ParticlePhaseSpace._ParticlePhaseSpace">
@@ -351,20 +358,23 @@ V (direction cosine of momentum with respect to Y)
 <dl class="py method">
 <dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_kinetic_E">
 <span class="sig-name descname"><span class="pre">fill_kinetic_E</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_kinetic_E" title="Permalink to this definition">¶</a></dt>
-<dd><p>adds kinetic energy in MeV into self._ps_data</p>
+<dd><dl class="simple">
+<dt>Uses <a class="reference external" href="https://en.wikipedia.org/wiki/Energy%E2%80%93momentum_relation">energy-momementum relation</a> to add</dt><dd><p>kinetic energy into self._ps_data</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_relativistic_mass">
 <span class="sig-name descname"><span class="pre">fill_relativistic_mass</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_relativistic_mass" title="Permalink to this definition">¶</a></dt>
-<dd><p>add relativistic mass in MeV/c^2 to ps_data
+<dd><p>add relativistic mass to ps_data
 :return:</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_rest_mass">
 <span class="sig-name descname"><span class="pre">fill_rest_mass</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_rest_mass" title="Permalink to this definition">¶</a></dt>
-<dd><p>add rest mass in MeV to self.ps_data
+<dd><p>add rest mass to self._ps_data
 :return:</p>
 </dd></dl>
 
@@ -452,9 +462,14 @@ Each particle spcies present in the phase space is overlaid  on the same plot.</
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_n_particles_v_time">
-<span class="sig-name descname"><span class="pre">plot_n_particles_v_time</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_n_particles_v_time" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">plot_n_particles_v_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_bins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_n_particles_v_time" title="Permalink to this definition">¶</a></dt>
 <dd><p>basic plot of number of particles versus time; useful for quickly seperating out different bunches
 of electrons such that you can apply the ‘filter_by_time’ method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>n_bins</strong> (<em>int</em>) – number of bins for histogram</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -594,6 +609,18 @@ a new PhaseSpace object is returned</p></li>
 <dd><p>reduce self._ps_data to only the required columns
 delete any other derived quantities such as twiss parameters
 this can be called whenever you want to reduce the memory footprint</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.set_units">
+<span class="sig-name descname"><span class="pre">set_units</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_units</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">UnitSet</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.set_units" title="Permalink to this definition">¶</a></dt>
+<dd><p>converts ps_data to a new unit set.
+This will also reset the phase space to just the required columns</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>new_units</strong> (<em>UnitSet</em>) – the new units to convert to</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
