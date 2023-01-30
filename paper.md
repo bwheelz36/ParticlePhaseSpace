@@ -39,6 +39,7 @@ Although the use of phase space data is well established, there is no consistent
 
 - The ability to calculate additional beam properties such as energy, lorentz factor, direction cosines from this data. This functionality has been designed to be easily extensible to new quantities in terms of documentation and testing.
 - Tests ensuring that all of the above quantities are well documented
+- Extensible support for different unit sets
 - Various methods for analysis and visualisation of particle positions, energy
 - Methods to project the particles to new positions based on their initial momentum/position
 - Calculation and visualiastion of the twiss parameters
