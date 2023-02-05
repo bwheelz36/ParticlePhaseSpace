@@ -25,6 +25,8 @@ class _DataLoadersBase(ABC):
                             'UnitSets are accessed through the ParticlePhaseSpaceUnits class')
         self._units = units
         self._columns = ps_cfg.get_all_column_names(self._units)
+        self._energy_consistency_check_cutoff = .001 * self._units.energy.conversion # in cases where it is possible to check energy/momentum consistency,
+        # discrepencies greater than this will raise an error
 
 
         if particle_type:
@@ -112,7 +114,7 @@ class _DataLoadersBase(ABC):
         Ek_internal = np.subtract(self.TOT_E, self._rest_masses)
 
         E_error = max(Ek - Ek_internal)
-        if E_error > .01:  # .01 MeV is an aribitrary cut off
+        if E_error > self._energy_consistency_check_cutoff:  # .01 MeV is an aribitrary cut off
             raise Exception('Energy check failed: read in of data may be incorrect')
 
 
@@ -158,6 +160,24 @@ class Load_TopasData(_DataLoadersBase):
         self.data[self._columns['px']] = np.multiply(P, DirCosineX)
         self.data[self._columns['py']] = np.multiply(P, DirCosineY)
         temp = P ** 2 - self.data[self._columns['px']] ** 2 - self.data[self._columns['py']] ** 2
+        _negative_temp_ind = temp < 0
+        if any(_negative_temp_ind):
+            # this should never happen, but does occur when pz is essentially 0. we will attempt to resolve it here.
+            negative_locations = np.where(_negative_temp_ind)[0]
+            n_negative_locations = np.count_nonzero(_negative_temp_ind)
+            momentum_precision_factor = 1e-3
+            for location in negative_locations:
+                relative_difference = np.divide(np.sqrt(abs(temp[location])), P[location])
+                if relative_difference < momentum_precision_factor:
+                    temp[location] = 0
+                else:
+                    raise Exception(f'failed to calculate momentums from topas data. Possible solution is to increase'
+                                    f'the value of momentum_precision_factor, currently set to {momentum_precision_factor: 1.2e}'
+                                    f'and failed data has value {relative_difference: 1.2e}')
+            warnings.warn(f'{n_negative_locations: d} entries returned invalid pz values and were set to zero.'
+                          f'\nWe will now check that momentum and energy are consistent to within '
+                          f'{self._energy_consistency_check_cutoff: 1.4f} {self._units.energy.label}')
+
         ParticleDir = [-1 if elem else 1 for elem in ParticleDir]
         self.data[self._columns['pz']] = np.multiply(np.sqrt(temp), ParticleDir)
         self._check_energy_consistency(Ek=E)
@@ -254,3 +274,4 @@ class Load_TibarayData(_DataLoadersBase):
         self.data[self._columns['px']] = np.multiply(Bx, Gamma) * particle_cfg.particle_properties[self._particle_type]['rest_mass']
         self.data[self._columns['py']] = np.multiply(By, Gamma) * particle_cfg.particle_properties[self._particle_type]['rest_mass']
         self.data[self._columns['pz']] = np.multiply(Bz, Gamma) * particle_cfg.particle_properties[self._particle_type]['rest_mass']
+
