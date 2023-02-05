@@ -25,6 +25,8 @@ class _DataLoadersBase(ABC):
                             'UnitSets are accessed through the ParticlePhaseSpaceUnits class')
         self._units = units
         self._columns = ps_cfg.get_all_column_names(self._units)
+        self._energy_consistency_check_cutoff = .001 * self._units.energy.conversion # in cases where it is possible to check energy/momentum consistency,
+        # discrepencies greater than this will raise an error
 
 
         if particle_type:
@@ -112,7 +114,7 @@ class _DataLoadersBase(ABC):
         Ek_internal = np.subtract(self.TOT_E, self._rest_masses)
 
         E_error = max(Ek - Ek_internal)
-        if E_error > .01:  # .01 MeV is an aribitrary cut off
+        if E_error > self._energy_consistency_check_cutoff:  # .01 MeV is an aribitrary cut off
             raise Exception('Energy check failed: read in of data may be incorrect')
 
 
@@ -158,6 +160,24 @@ class Load_TopasData(_DataLoadersBase):
         self.data[self._columns['px']] = np.multiply(P, DirCosineX)
         self.data[self._columns['py']] = np.multiply(P, DirCosineY)
         temp = P ** 2 - self.data[self._columns['px']] ** 2 - self.data[self._columns['py']] ** 2
+        _negative_temp_ind = temp < 0
+        if any(_negative_temp_ind):
+            # this should never happen, but does occur when pz is essentially 0. we will attempt to resolve it here.
+            negative_locations = np.where(_negative_temp_ind)[0]
+            n_negative_locations = np.count_nonzero(_negative_temp_ind)
+            momentum_precision_factor = 1e-3
+            for location in negative_locations:
+                relative_difference = np.divide(np.sqrt(abs(temp[location])), P[location])
+                if relative_difference < momentum_precision_factor:
+                    temp[location] = 0
+                else:
+                    raise Exception(f'failed to calculate momentums from topas data. Possible solution is to increase'
+                                    f'the value of momentum_precision_factor, currently set to {momentum_precision_factor: 1.2e}'
+                                    f'and failed data has value {relative_difference: 1.2e}')
+            warnings.warn(f'{n_negative_locations: d} entries returned invalid pz values and were set to zero.'
+                          f'\nWe will now check that momentum and energy are consistent to within '
+                          f'{self._energy_consistency_check_cutoff: 1.4f} {self._units.energy.label}')
+
         ParticleDir = [-1 if elem else 1 for elem in ParticleDir]
         self.data[self._columns['pz']] = np.multiply(np.sqrt(temp), ParticleDir)
         self._check_energy_consistency(Ek=E)
@@ -254,42 +274,3 @@ class Load_TibarayData(_DataLoadersBase):
         self.data[self._columns['px']] = np.multiply(Bx, Gamma) * particle_cfg.particle_properties[self._particle_type]['rest_mass']
         self.data[self._columns['py']] = np.multiply(By, Gamma) * particle_cfg.particle_properties[self._particle_type]['rest_mass']
         self.data[self._columns['pz']] = np.multiply(Bz, Gamma) * particle_cfg.particle_properties[self._particle_type]['rest_mass']
-
-
-class NewDataLoader(_DataLoadersBase):
-
-    def _import_data(self):
-        Data = np.loadtxt(self._input_data, skiprows=1)
-        self.data['x [mm]'] = Data[:, 0]
-        self.data['y [mm]'] = Data[:, 1]
-        self.data['z [mm]'] = Data[:, 2]
-        self.data['px [MeV/c]'] = Data[:, 3]
-        self.data['py [MeV/c]'] = Data[:, 4]
-        self.data['pz [MeV/c]'] = Data[:, 5]
-        self.data['particle type [pdg_code]'] = particle_cfg.particle_properties[self._particle_type]['name']
-        # we also need to fill in weight, particle id, and time; since none of these are specified we just use all
-        # ones for weight, 1,2,3... for particle id, and all zeros for time:
-        self.data['weight'] = np.ones(Data.shape[0])
-        self.data['particle id'] = np.arange(len(self.data))
-
-        self.data['time [ps]'] = 0  # may want to replace with time feature if available?
-
-        # because we have momentum and energy, we can double check that our momentum to energy conversion is
-        # consisten with the values in the phase space:
-        E = Data[:, 6]
-        self._check_energy_consistency(Ek=E)
-
-    def _check_input_data(self):
-        # is the input a file?
-        if not Path(self._input_data).is_file():
-            raise FileNotFoundError(f'input data file {self._import_data()} does not exist')
-        # does it have the right extension?
-        if not Path(self._input_data).suffix == '.dat':
-            raise Exception('This data loaders requires a *.dat file')
-        # the header is on the first line; does it look correct?
-        with open(self._input_data) as f:
-            first_line = f.readline()
-            if not first_line == 'x (mm)\ty (mm)\tz (mm)\tpx (MeV/c)\tpy (MeV/c)\tpz (MeV/c)\tE (MeV)\n':
-                raise Exception('file header does not look correct')
-        if not self._particle_type:
-            raise Exception('this data loader requires particle_type to be specified')
