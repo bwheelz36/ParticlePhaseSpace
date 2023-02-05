@@ -964,6 +964,7 @@ class PhaseSpace:
             self._ps_data[self._columns['x']] = new_x
             self._ps_data[self._columns['y']] = new_y
             self._ps_data[self._columns['z']] = new_z
+            self.reset_phase_space()
         else:
             ps_data = self._ps_data.copy(deep=True)
             for col_name in ps_data.columns:
@@ -974,7 +975,7 @@ class PhaseSpace:
             ps_data[self._columns['z']] = new_z
             new_data = DataLoaders.Load_PandasData(ps_data)
             new_instance = PhaseSpace(new_data)
-            return  new_instance
+            return new_instance
 
 
 
