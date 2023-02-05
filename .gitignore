@@ -164,3 +164,4 @@ cython_debug/
 *.header
 docs/*
 *temp*
+/examples/test_new_exporter.dat
