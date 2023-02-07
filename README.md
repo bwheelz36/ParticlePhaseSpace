@@ -21,3 +21,10 @@ The source code for the [worked examples](https://bwheelz36.github.io/ParticlePh
 - **examples:** source code for the [worked examples](https://acrf-image-x-institute.github.io/TopasOpt/worked_examples.html) provided in the docs
 - **docsrc:** markdown/rst documentation.
 - **tests:** tests which are run through github actions
+
+## Other packages for analysis of particle phase space data
+
+Below is a (almost certainly incomplete) list of other packages I have come accross for analysis of particle phase space data:
+
+- [p2sat](https://github.com/lesnat/p2sat)
+- [postpic](https://github.com/skuschel/postpic)
