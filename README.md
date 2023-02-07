@@ -18,7 +18,7 @@ The source code for the [worked examples](https://bwheelz36.github.io/ParticlePh
 ## Directory Structure
 
 - **ParticlePhaseSpaace:** source code
-- **examples:** source code for the [worked examples](https://acrf-image-x-institute.github.io/TopasOpt/worked_examples.html) provided in the docs
+- **examples:** source code for the [worked examples](https://bwheelz36.github.io/ParticlePhaseSpace/examples.html) provided in the docs
 - **docsrc:** markdown/rst documentation.
 - **tests:** tests which are run through github actions
 
