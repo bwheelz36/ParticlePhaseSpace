@@ -302,13 +302,15 @@ class PhaseSpace:
 
     # public methods
 
-    def plot_energy_hist_1D(self, n_bins=100, title=None):  # pragma: no cover
+    def plot_energy_hist_1D(self, n_bins=100, grid=False):  # pragma: no cover
         """
         generate a histogram plot of paritcle energies.
         Each particle spcies present in the phase space is overlaid  on the same plot.
 
         :param n_bins: number of bins in histogram
-        :param title: title of histogram
+        :type n_bins: int, optional
+        :param grid: turns grid on/off
+        :type grid: bool, optional
         :return: None
         """
         Efig, axs = plt.subplots()
@@ -323,15 +325,16 @@ class PhaseSpace:
 
         axs.set_xlabel(self._columns['Ek'], fontsize=_FigureSpecs.LabelFontSize)
         axs.set_ylabel('N counts', fontsize=_FigureSpecs.LabelFontSize)
-        if title:
-            axs.set_title(title, fontsize=_FigureSpecs.TitleFontSize)
         axs.tick_params(axis="y", labelsize=_FigureSpecs.TickFontSize)
         axs.tick_params(axis="x", labelsize=_FigureSpecs.TickFontSize)
+        if grid:
+            axs.grid()
         axs.legend(legend)
+
         plt.tight_layout()
         plt.show()  # pragma: no cover
 
-    def plot_position_hist_1D(self, n_bins=100, alpha=0.5):  # pragma: no cover
+    def plot_position_hist_1D(self, n_bins=100, alpha=0.5, grid=False):  # pragma: no cover
         """
         plot a histogram of particle positions in x, y, z.
         a new histogram is generated for each particle species.
@@ -339,6 +342,8 @@ class PhaseSpace:
 
         :param n_bins:  number of bins in histogram
         :param alpha: controls transparency of each histogram.
+        :param grid: turns grid on/off
+        :type grid: bool, optional
         :return:
         """
         fig, axs = plt.subplots(1, 3)
@@ -367,11 +372,16 @@ class PhaseSpace:
         axs[2].set_ylabel('counts')
         axs[2].set_title(self._columns['z'])
 
+        if grid:
+            axs[0].grid()
+            axs[1].grid()
+            axs[2].grid()
+
         plt.tight_layout()
         plt.show()
 
     def plot_particle_positions_scatter_2D(self, beam_direction='z', weight_position_plot=False,
-                                xlim=None, ylim=None):  # pragma: no cover
+                                xlim=None, ylim=None, grid=False):  # pragma: no cover
         """
         produce a scatter plot of particle positions.
         one plot is produced for each unique species.
@@ -382,14 +392,14 @@ class PhaseSpace:
             positions. This can produce very informative and useful plots, but also be very slow.
             If it is slow, you could try downsampling the phase space first using get_downsampled_phase_space
         :type weight_position_plot: bool
+        :param grid: turns grid on/off
+        :type grid: bool, optional
         :param xlim: set the xlim for all plots, e.g. [-2,2]
         :type xlim: list or None, optional
         :param ylim: set the ylim for all plots, e.g. [-2,2]
         :type ylim: list or None, optional
         :return: None
         """
-
-
         fig, axs = plt.subplots(1, len(self._unique_particles), squeeze=False)
         fig.set_size_inches(5*len(self._unique_particles), 5)
         n_axs = 0
@@ -437,6 +447,8 @@ class PhaseSpace:
             axs[0, n_axs].set_title(axs_title, fontsize=_FigureSpecs.TitleFontSize)
             axs[0, n_axs].set_xlabel(x_label, fontsize=_FigureSpecs.LabelFontSize)
             axs[0, n_axs].set_ylabel(y_label, fontsize=_FigureSpecs.LabelFontSize)
+            if grid:
+                axs[0, n_axs].grid()
             if xlim:
                 axs[0, n_axs].set_xlim(xlim)
             if ylim:
@@ -447,7 +459,7 @@ class PhaseSpace:
         plt.show()
 
     def plot_beam_particle_positions_hist_2D(self, beam_direction='z', xlim=None, ylim=None, quantity='intensity',
-                            grid=True, normalize=True, bins=100, vmin=None, vmax=None):  # pragma: no cover
+                            grid=False, log_scale=False, bins=100, vmin=None, vmax=None):  # pragma: no cover
         """
         This is alternative to plot_particle_positions(weight_position_plot=True); rather than a scatter plot of every particle, an
         image is formed by assigning particles to bins over a 2D grid. This is faster than generating a gaussian kde of intensity.
@@ -465,16 +477,20 @@ class PhaseSpace:
         :type quantity: str
         :param grid: turns grid on/off
         :type grid: bool, optional
-        :param normalize: if True, data is displayed in range 0-100
-        :type normalize: bool, optional
         :param bins: number of bins in X/Y direction. n_pixels = bins ** 2
         :type bins: int, optional
         :param vmin: minimum color range
         :type vmin: float, optional
         :param vmax: maximum color range
         :type vmax: float, optional
+        :param log_scale: if True, log scale is used
+        :type log_scale: bool, optional
         :return: None
         """
+        if log_scale:
+            _scale = 'log'
+        else:
+            _scale = None
         fig, axs = plt.subplots(1, len(self._unique_particles), squeeze=False)
         fig.set_size_inches(5*len(self._unique_particles), 5)
         n_axs = 0
@@ -514,13 +530,13 @@ class PhaseSpace:
             Y = np.linspace(ylim[0], ylim[1], bins)
             # create an empty array:
             extent = [xlim[0], xlim[1], ylim[0], ylim[1]]
-            _histnp = np.histogram2d(ps_data[self._columns['x']], ps_data[self._columns['y']],
-                                     weights=_weight, bins=[X, Y])[0]
+            _im1 = axs[0, n_axs].hist2d(ps_data[self._columns['x']], ps_data[self._columns['y']],
+                                      bins=[X,Y],
+                                      weights=_weight, norm=_scale,
+                                      cmap='inferno',
+                                      vmin=vmin, vmax=vmax)[3]
 
-            if normalize:
-                _histnp = _histnp * 100 / _histnp.max()
-            __im = axs[0, n_axs].imshow(_histnp.T, cmap='inferno', extent=extent, vmin=vmin, vmax=vmax)
-            fig.colorbar(__im, ax=axs[0, n_axs])
+            fig.colorbar(_im1, ax=axs[0, n_axs])
 
             axs[0, n_axs].set_title(_title)
             axs[0, n_axs].set_xlabel(_xlabel, fontsize=_FigureSpecs.LabelFontSize)
@@ -532,7 +548,7 @@ class PhaseSpace:
         plt.show()
 
     def plot_transverse_trace_space_scatter_2D(self, beam_direction='z', plot_twiss_ellipse=True,
-                                            xlim=None, ylim=None):  # pragma: no cover
+                                            xlim=None, ylim=None, grid=False):  # pragma: no cover
         """
         Generate a scatter plot of x versus x'=px/pz and y versus y'=py/pz (these definitions are for
         beam_direction='z')
@@ -545,7 +561,8 @@ class PhaseSpace:
         :type xlim: list, optional
         :param ylim: set ylim, e.g. [-2,2]
         :type ylim: list, optional
-        :return: None
+        :param grid: turns grid on/off
+        :type grid: bool, optional
         """
 
         self.calculate_twiss_parameters(beam_direction=beam_direction)
@@ -570,7 +587,7 @@ class PhaseSpace:
                 axs[row, 0].scatter(twiss_X, twiss_Y, c='r', s=2)
                 # axs[row, 0].set_xlim([3*np.min(twiss_X), 3*np.max(twiss_X)])
                 # axs[row, 0].set_ylim([3 * np.min(twiss_Y), 3 * np.max(twiss_Y)])
-            axs[row, 0].grid()
+
             if xlim:
                 axs[row, 0].set_xlim(xlim)
             if ylim:
@@ -583,19 +600,21 @@ class PhaseSpace:
             axs[row, 1].set_xlabel(x_label_2)
             axs[row, 1].set_ylabel(y_label_2)
             axs[row, 1].set_title(title_2)
-            axs[row, 1].grid()
             if xlim:
                 axs[row, 1].set_xlim(xlim)
             if ylim:
                 axs[row, 1].set_ylim(ylim)
+            if grid:
+                axs[row, 0].grid()
+                axs[row, 1].grid()
             row = row + 1
 
         plt.tight_layout()
         plt.show()
 
     def plot_transverse_trace_space_hist_2D(self, beam_direction='z', plot_twiss_ellipse=True,
-                                             xlim=None, ylim=None, grid=True, normalize=True,
-                                              bins=100, vmin=None, vmax=None):  # pragma: no cover
+                                             xlim=None, ylim=None, grid=True,
+                                              bins=100, vmin=None, vmax=None, log_scale=True):  # pragma: no cover
         """
         plot the intensity of the beam in trace space
 
@@ -609,8 +628,6 @@ class PhaseSpace:
         :type plot_twiss_ellipse: bool, optional
         :param grid: turns grid on/off
         :type grid: bool, optional
-        :param normalize: if True, data is displayed in range 0-100
-        :type normalize: bool, optional
         :param bins: number of bins in X/Y direction. n_pixels = bins ** 2
         :type bins: int, optional
         :param vmin: minimum color range
@@ -618,6 +635,10 @@ class PhaseSpace:
         :param vmax: maximum color range
         :type vmax: float, optional
         """
+        if log_scale:
+            _scale = 'log'
+        else:
+            _scale = None
         self.calculate_twiss_parameters(beam_direction=beam_direction)
         fig, axs = plt.subplots(nrows=len(self._unique_particles), ncols=2, squeeze=False)
         row = 0
@@ -636,21 +657,16 @@ class PhaseSpace:
 
             X = np.linspace(xlim[0], xlim[1], bins)
             Y = np.linspace(ylim[0], ylim[1], bins)
-            # create an empty array:
-            _histnp1 = np.histogram2d(x_data_1, div_data_1,
-                                     weights=ps_data['weight'], bins=[X, Y])[0]
-            _histnp2 = np.histogram2d(x_data_2, div_data_2,
-                                     weights=ps_data['weight'], bins=[X, Y])[0]
-
-            if normalize:
-                _histnp1 = _histnp1 * 100 / _histnp1.max()
-                _histnp2 = _histnp2 * 100 / _histnp2.max()
             # plot data:
             _extent = [xlim[0], xlim[1], ylim[0], ylim[1]]
             # _extent = None
-            _im1 = axs[row, 0].imshow(_histnp1.T, extent=_extent, origin='lower',
-                                      cmap='inferno', vmin=vmin, vmax=vmax)
-            fig.colorbar(_im1, ax=axs[row,0])
+            _im1 = axs[row, 0].hist2d(x_data_1,
+                                      div_data_1,
+                                      bins=[X,Y],
+                                      weights=ps_data['weight'], norm=_scale,
+                                      cmap='inferno',
+                                      vmin=vmin, vmax=vmax)[3]
+            fig.colorbar(_im1, ax=axs[row, 0])
             axs[row, 0].set_xlabel(x_label_1)
             axs[row, 0].set_ylabel(y_label_1)
             axs[row, 0].set_title(title_1)
@@ -658,20 +674,23 @@ class PhaseSpace:
                 twiss_X, twiss_Y = self._get_ellipse_xy_points(elipse_parameters_1, x_data_1.min(), x_data_1.max(),
                                                                div_data_1.min(), div_data_1.max())
                 axs[row, 0].scatter(twiss_X, twiss_Y, c='r', s=2)
-            if grid:
-                axs[row, 0].grid()
             axs[row, 0].set_xlim(xlim)
             axs[row, 0].set_ylim(ylim)
             axs[row, 0].set_aspect('auto')
 
-            _im2 = axs[row, 1].imshow(_histnp2.T, extent=_extent, origin='lower',
-                                      cmap='inferno', vmin=vmin, vmax=vmax)
+            _im2 = axs[row, 0].hist2d(x_data_2,
+                                      div_data_2,
+                                      bins=[X,Y],
+                                      weights=ps_data['weight'], norm=_scale,
+                                      cmap='inferno',
+                                      vmin=vmin, vmax=vmax)[3]
             fig.colorbar(_im2, ax=axs[row, 1])
             if plot_twiss_ellipse:
                 twiss_X, twiss_Y = self._get_ellipse_xy_points(elipse_parameters_2, x_data_2.min(), x_data_2.max(),
                                                                div_data_2.min(), div_data_2.max())
                 axs[row, 1].scatter(twiss_X, twiss_Y, c='r', s=2)
             if grid:
+                axs[row, 0].grid()
                 axs[row, 1].grid()
             axs[row, 1].set_xlabel(x_label_2)
             axs[row, 1].set_ylabel(y_label_2)
@@ -684,18 +703,22 @@ class PhaseSpace:
         plt.tight_layout()
         plt.show()
 
-    def plot_n_particles_v_time(self, n_bins: int=100):  # pragma: no cover
+    def plot_n_particles_v_time(self, n_bins: int=100, grid: bool=False):  # pragma: no cover
         """
         basic plot of number of particles versus time; useful for quickly seperating out different bunches
         of electrons such that you can apply the 'filter_by_time' method
 
         :param n_bins: number of bins for histogram
         :type n_bins: int
+        :param grid: turns grid on/off
+        :type grid: bool, optional
         """
         plt.figure()
         plt.hist(self._ps_data[self._columns['time']], n_bins)
         plt.xlabel(f'time {self._units.time.label}')
         plt.ylabel('N particles')
+        if grid:
+            plt.grid()
         plt.tight_layout()
 
     def print_energy_stats(self, file_name=None):  # pragma: no cover
