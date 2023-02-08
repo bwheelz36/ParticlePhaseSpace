@@ -399,7 +399,7 @@ class PhaseSpace:
         plt.show()
 
     def plot_particle_positions_scatter_2D(self, beam_direction: str='z', weight_position_plot: str=False,
-                                           grid: bool=False, xlim=None, ylim=None):  # pragma: no cover
+                                           grid: bool=True, xlim=None, ylim=None):  # pragma: no cover
         """
         produce a scatter plot of particle positions.
         one plot is produced for each unique species.
@@ -477,7 +477,7 @@ class PhaseSpace:
         plt.show()
 
     def plot_beam_particle_positions_hist_2D(self, beam_direction: str='z', quantity: str='intensity',
-                                             grid: bool=False, log_scale: bool=False, bins: int=100,
+                                             grid: bool=True, log_scale: bool=False, bins: int=100,
                                              normalize: bool=True, xlim=None, ylim=None, vmin=None, vmax=None,):  # pragma: no cover
         """
         This is alternative to plot_particle_positions(weight_position_plot=True); rather than a scatter plot of every particle, an
@@ -550,7 +550,6 @@ class PhaseSpace:
                 _weight = np.multiply(ps_data['weight'], ps_data[self._columns['Ek']])
             X = np.linspace(xlim[0], xlim[1], bins)
             Y = np.linspace(ylim[0], ylim[1], bins)
-            # create an empty array:
             h, xedges, yedges = np.histogram2d(ps_data[self._columns['x']],
                                                ps_data[self._columns['y']],
                                                bins=[X, Y], weights=_weight, )
@@ -577,7 +576,7 @@ class PhaseSpace:
         plt.show()
 
     def plot_transverse_trace_space_scatter_2D(self, beam_direction: str='z', plot_twiss_ellipse: bool=True,
-                                               grid: bool=False, xlim=None, ylim=None, ):  # pragma: no cover
+                                               grid: bool=True, xlim=None, ylim=None, ):  # pragma: no cover
         """
         Generate a scatter plot of x versus x'=px/pz and y versus y'=py/pz (these definitions are for
         beam_direction='z')
@@ -641,7 +640,7 @@ class PhaseSpace:
         plt.show()
 
     def plot_transverse_trace_space_hist_2D(self, beam_direction: str='z', plot_twiss_ellipse: bool=True,
-                                            grid: bool=True, bins: int=100,  log_scale: bool=True,
+                                            grid: bool=True, bins: int=100,  log_scale: bool=True, normalize: bool=True,
                                             xlim=None, ylim=None, vmin=None, vmax=None,):  # pragma: no cover
         """
         plot the intensity of the beam in trace space
@@ -687,15 +686,12 @@ class PhaseSpace:
 
             X = np.linspace(xlim[0], xlim[1], bins)
             Y = np.linspace(ylim[0], ylim[1], bins)
-            # plot data:
             _extent = [xlim[0], xlim[1], ylim[0], ylim[1]]
-            # _extent = None
-            _im1 = axs[row, 0].hist2d(x_data_1,
-                                      div_data_1,
-                                      bins=[X, Y],
-                                      weights=ps_data['weight'], norm=_scale,
-                                      cmap='inferno',
-                                      vmin=vmin, vmax=vmax)[3]
+            h, xedges, yedges = np.histogram2d(x_data_1, div_data_1, bins=[X, Y], weights=ps_data[self._columns['weight']])
+            if normalize:
+                h = h * 100 / h.max()
+            _im1 = axs[row, 0].pcolormesh(xedges, yedges, h.T, cmap='inferno',
+                                            norm=_scale, rasterized=False, vmin=vmin, vmax=vmax)
             fig.colorbar(_im1, ax=axs[row, 0])
             axs[row, 0].set_xlabel(x_label_1)
             axs[row, 0].set_ylabel(y_label_1)
@@ -707,13 +703,11 @@ class PhaseSpace:
             axs[row, 0].set_xlim(xlim)
             axs[row, 0].set_ylim(ylim)
             axs[row, 0].set_aspect('auto')
-
-            _im2 = axs[row, 1].hist2d(x_data_2,
-                                      div_data_2,
-                                      bins=[X, Y],
-                                      weights=ps_data['weight'], norm=_scale,
-                                      cmap='inferno',
-                                      vmin=vmin, vmax=vmax)[3]
+            h, xedges, yedges = np.histogram2d(x_data_2, div_data_2, bins=[X, Y], weights=ps_data[self._columns['weight']])
+            if normalize:
+                h = h * 100 / h.max()
+            _im2 = axs[row, 1].pcolormesh(xedges, yedges, h.T, cmap='inferno',
+                                          norm=_scale, rasterized=False, vmin=vmin, vmax=vmax)
             fig.colorbar(_im2, ax=axs[row, 1])
             if plot_twiss_ellipse:
                 twiss_X, twiss_Y = self._get_ellipse_xy_points(elipse_parameters_2, x_data_2.min(), x_data_2.max(),
@@ -733,7 +727,7 @@ class PhaseSpace:
         plt.tight_layout()
         plt.show()
 
-    def plot_n_particles_v_time(self, n_bins: int = 100, grid: bool = False):  # pragma: no cover
+    def plot_n_particles_v_time(self, n_bins: int = 100, grid: bool=False):  # pragma: no cover
         """
         basic plot of number of particles versus time; useful for quickly seperating out different bunches
         of electrons such that you can apply the 'filter_by_time' method
