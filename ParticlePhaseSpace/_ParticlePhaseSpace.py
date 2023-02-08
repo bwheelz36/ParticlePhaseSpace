@@ -302,7 +302,7 @@ class PhaseSpace:
 
     # public methods
 
-    def plot_energy_histogram(self, n_bins=100, title=None):  # pragma: no cover
+    def plot_energy_hist_1D(self, n_bins=100, title=None):  # pragma: no cover
         """
         generate a histogram plot of paritcle energies.
         Each particle spcies present in the phase space is overlaid  on the same plot.
@@ -331,7 +331,7 @@ class PhaseSpace:
         plt.tight_layout()
         plt.show()  # pragma: no cover
 
-    def plot_position_histogram(self, n_bins=100, alpha=0.5):  # pragma: no cover
+    def plot_position_hist_1D(self, n_bins=100, alpha=0.5):  # pragma: no cover
         """
         plot a histogram of particle positions in x, y, z.
         a new histogram is generated for each particle species.
@@ -370,7 +370,7 @@ class PhaseSpace:
         plt.tight_layout()
         plt.show()
 
-    def plot_particle_positions(self, beam_direction='z', weight_position_plot=False,
+    def plot_particle_positions_scatter_2D(self, beam_direction='z', weight_position_plot=False,
                                 xlim=None, ylim=None):  # pragma: no cover
         """
         produce a scatter plot of particle positions.
@@ -446,7 +446,7 @@ class PhaseSpace:
         plt.tight_layout()
         plt.show()
 
-    def plot_beam_intensity(self, beam_direction='z', xlim=None, ylim=None, quantity='intensity',
+    def plot_beam_particle_positions_hist_2D(self, beam_direction='z', xlim=None, ylim=None, quantity='intensity',
                             grid=True, normalize=True, bins=100, vmin=None, vmax=None):  # pragma: no cover
         """
         This is alternative to plot_particle_positions(weight_position_plot=True); rather than a scatter plot of every particle, an
@@ -531,7 +531,7 @@ class PhaseSpace:
         plt.tight_layout()
         plt.show()
 
-    def plot_transverse_trace_space_scatter(self, beam_direction='z', plot_twiss_ellipse=True,
+    def plot_transverse_trace_space_scatter_2D(self, beam_direction='z', plot_twiss_ellipse=True,
                                             xlim=None, ylim=None):  # pragma: no cover
         """
         Generate a scatter plot of x versus x'=px/pz and y versus y'=py/pz (these definitions are for
@@ -593,7 +593,7 @@ class PhaseSpace:
         plt.tight_layout()
         plt.show()
 
-    def plot_transverse_trace_space_intensity(self, beam_direction='z', plot_twiss_ellipse=True,
+    def plot_transverse_trace_space_hist_2D(self, beam_direction='z', plot_twiss_ellipse=True,
                                              xlim=None, ylim=None, grid=True, normalize=True,
                                               bins=100, vmin=None, vmax=None):  # pragma: no cover
         """
