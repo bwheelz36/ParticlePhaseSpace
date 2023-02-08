@@ -398,7 +398,7 @@ class PhaseSpace:
         plt.tight_layout()
         plt.show()
 
-    def plot_particle_positions_scatter_2D(self, beam_direction: str='z', weight_position_plot: str=False,
+    def plot_particle_positions_scatter_2D(self, beam_direction: str='z', weight_position_plot: bool=False,
                                            grid: bool=True, xlim=None, ylim=None):  # pragma: no cover
         """
         produce a scatter plot of particle positions.
@@ -476,7 +476,7 @@ class PhaseSpace:
         plt.tight_layout()
         plt.show()
 
-    def plot_beam_particle_positions_hist_2D(self, beam_direction: str='z', quantity: str='intensity',
+    def plot_particle_positions_hist_2D(self, beam_direction: str='z', quantity: str='intensity',
                                              grid: bool=True, log_scale: bool=False, bins: int=100,
                                              normalize: bool=True, xlim=None, ylim=None, vmin=None, vmax=None,):  # pragma: no cover
         """
