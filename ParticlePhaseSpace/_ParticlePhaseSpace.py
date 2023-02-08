@@ -458,9 +458,9 @@ class PhaseSpace:
                 z = k(xy)
                 z = z / max(z)
                 axs[0, n_axs].scatter(xy[0], xy[1], c=z, s=1)
-
             else:
                 axs[0, n_axs].scatter(x_data, y_data, s=1, c=self._ps_data['weight'][ind])
+            axs[0, n_axs].set_aspect('equal')
             axs[0, n_axs].set_aspect(1)
             axs[0, n_axs].set_title(axs_title, fontsize=_FigureSpecs.TitleFontSize)
             axs[0, n_axs].set_xlabel(x_label, fontsize=_FigureSpecs.LabelFontSize)
