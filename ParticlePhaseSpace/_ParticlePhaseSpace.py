@@ -459,7 +459,8 @@ class PhaseSpace:
         plt.show()
 
     def plot_beam_particle_positions_hist_2D(self, beam_direction='z', xlim=None, ylim=None, quantity='intensity',
-                            grid=False, log_scale=False, bins=100, vmin=None, vmax=None):  # pragma: no cover
+                            grid=False, log_scale=False, bins=100, vmin=None, vmax=None,
+                                             normalize=True):  # pragma: no cover
         """
         This is alternative to plot_particle_positions(weight_position_plot=True); rather than a scatter plot of every particle, an
         image is formed by assigning particles to bins over a 2D grid. This is faster than generating a gaussian kde of intensity.
@@ -485,6 +486,8 @@ class PhaseSpace:
         :type vmax: float, optional
         :param log_scale: if True, log scale is used
         :type log_scale: bool, optional
+        :param normalize: if True, data is normalized to 0-100 - otherwise raw values are used
+        :type normalize: bool, optional
         :return: None
         """
         if log_scale:
@@ -529,18 +532,25 @@ class PhaseSpace:
             X = np.linspace(xlim[0], xlim[1], bins)
             Y = np.linspace(ylim[0], ylim[1], bins)
             # create an empty array:
-            extent = [xlim[0], xlim[1], ylim[0], ylim[1]]
-            _im1 = axs[0, n_axs].hist2d(ps_data[self._columns['x']], ps_data[self._columns['y']],
-                                      bins=[X,Y],
-                                      weights=_weight, norm=_scale,
-                                      cmap='inferno',
-                                      vmin=vmin, vmax=vmax)[3]
+            h, xedges, yedges = np.histogram2d(ps_data[self._columns['x']],
+                                               ps_data[self._columns['y']],
+                                               bins=[X, Y], weights=_weight,)
+            if normalize:
+                h= h*100/h.max()
+            # _im1 = axs[0, n_axs].hist2d(ps_data[self._columns['x']], ps_data[self._columns['y']],
+            #                           bins=[X,Y],
+            #                           weights=_weight, norm=LogNorm(vmin=1, vmax=100),
+            #                           cmap='inferno',
+            #                           vmin=vmin, vmax=vmax)[3]
+            _im1 = axs[0, n_axs].pcolormesh(xedges, yedges, h.T, cmap='inferno',
+                                     norm=_scale, rasterized=False, vmin=vmin, vmax=vmax)
 
             fig.colorbar(_im1, ax=axs[0, n_axs])
 
             axs[0, n_axs].set_title(_title)
             axs[0, n_axs].set_xlabel(_xlabel, fontsize=_FigureSpecs.LabelFontSize)
             axs[0, n_axs].set_ylabel(_ylabel, fontsize=_FigureSpecs.LabelFontSize)
+            axs[0, n_axs].set_aspect('equal')
             if grid:
                 axs[0, n_axs].grid()
             n_axs = n_axs + 1
@@ -678,7 +688,7 @@ class PhaseSpace:
             axs[row, 0].set_ylim(ylim)
             axs[row, 0].set_aspect('auto')
 
-            _im2 = axs[row, 0].hist2d(x_data_2,
+            _im2 = axs[row, 1].hist2d(x_data_2,
                                       div_data_2,
                                       bins=[X,Y],
                                       weights=ps_data['weight'], norm=_scale,
