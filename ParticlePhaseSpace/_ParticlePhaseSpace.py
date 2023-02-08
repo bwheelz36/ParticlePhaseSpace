@@ -101,7 +101,12 @@ class PhaseSpace:
         """
         add two phase spaces together. requires that each phase space has
         unique particle IDs
+
+        :param other: the other phase space to add
+        :type other: PhaseSpace
         """
+        if not isinstance(other, PhaseSpace):
+            raise TypeError('can only add together phase space objects')
         new_data = pd.concat([self._ps_data, other.ps_data])
 
         for col_name in new_data.columns:
@@ -114,7 +119,12 @@ class PhaseSpace:
     def __sub__(self, other):
         """
         subtract phase space (remove every particle in other from self)
+
+        :param other: the other phase space to add
+        :type other: PhaseSpace
         """
+        if not isinstance(other, PhaseSpace):
+            raise TypeError('can only add together phase space objects')
         new_data = pd.merge(self._ps_data, other.ps_data, how='outer', indicator=True)\
             .query("_merge != 'both'")\
             .drop('_merge', axis=1)\
@@ -141,8 +151,8 @@ class PhaseSpace:
         https://stackoverflow.com/questions/75205824/pandas-dataframe-as-a-property-of-a-class-setter-not-called-when-columns-change
         So it is always advised to manually call reset_phase_space
 
-        :param new_data_frame:
-        :return:
+        :param new_data_frame: the updated phase space data
+        :type new_data_frame: pandas.DataFrame
         """
         self._ps_data = new_data_frame
         self.reset_phase_space()
@@ -226,6 +236,12 @@ class PhaseSpace:
                                x_search_max, xpq_search_min, xpq_search_max):  # pragma: no cover
         """
         given the parameters of an ellipse, return a set of points in XY which meet those parameters
+
+        :param ellipse_parameters:
+        :param x_search_min:
+        :param x_search_max:
+        :param xpq_search_min:
+        :param xpq_search_max:
         :return:
         """
         gamma = ellipse_parameters[self._columns['gamma']]
@@ -460,7 +476,7 @@ class PhaseSpace:
 
     def plot_beam_particle_positions_hist_2D(self, beam_direction='z', xlim=None, ylim=None, quantity='intensity',
                             grid=False, log_scale=False, bins=100, vmin=None, vmax=None,
-                                             normalize=True):  # pragma: no cover
+                            normalize=True):  # pragma: no cover
         """
         This is alternative to plot_particle_positions(weight_position_plot=True); rather than a scatter plot of every particle, an
         image is formed by assigning particles to bins over a 2D grid. This is faster than generating a gaussian kde of intensity.
@@ -472,8 +488,6 @@ class PhaseSpace:
         :type xlim: list, optional
         :param ylim: set the ylim for all plots, e.g. [-2,2]
         :type ylim: list, optional
-        :param plot_twiss_ellipse: if True, RMS ellipse from twiss parameters is overlaid.
-        :type plot_twiss_ellipse: bool, optional
         :param quantity: quantity to accumulate; either 'intensity' or 'energy
         :type quantity: str
         :param grid: turns grid on/off
@@ -638,6 +652,8 @@ class PhaseSpace:
         :type plot_twiss_ellipse: bool, optional
         :param grid: turns grid on/off
         :type grid: bool, optional
+        :param log_scale: if True, log scale is used
+        :type log_scale: bool, optional
         :param bins: number of bins in X/Y direction. n_pixels = bins ** 2
         :type bins: int, optional
         :param vmin: minimum color range
@@ -768,9 +784,10 @@ class PhaseSpace:
         they are always printed to the screen.
         if filename is specified, they are also saved to file as json
 
-        :param file_name: filename to write twiss data to. should be absolute
-            path to an existing directory
-        :return: None
+        :param file_name: optional filename to write twiss data to. should be absolute path to an existing directory
+        :type file_name: str or Path, optional
+        :param beam_direction: the direction the beam is travelling in. "x", "y", or "z" (default)
+        :type beam_direction: str, optional
         """
         if not self.twiss_parameters:
             self.calculate_twiss_parameters(beam_direction=beam_direction)
@@ -821,7 +838,6 @@ class PhaseSpace:
     def fill_relativistic_mass(self):
         """
         add relativistic mass to ps_data
-        :return:
         """
         if not self._columns['gamma'] in self._ps_data.columns:
             self.fill_beta_and_gamma()
@@ -879,7 +895,6 @@ class PhaseSpace:
         Calculate direction cosines, which are required for topas import:
         U (direction cosine of momentum with respect to X)
         V (direction cosine of momentum with respect to Y)
-        :return:
         """
 
         V = np.sqrt(self._ps_data[self._columns['px']] ** 2 + self._ps_data[self._columns['py']] ** 2 + self._ps_data[self._columns['pz']] ** 2)
@@ -972,10 +987,13 @@ class PhaseSpace:
         This serves as a crude approximation to more advanced particle transport codes
         and represents where the particles would end up in the absence of any forces or interactions.
 
-        :param direction: the direction to project in. 'x', 'y', or 'z'
+        :param beam_direction: the direction to project in. 'x', 'y', or 'z'
+        :type beam_direction: str, optional
         :param distance: how far to project in mm
+        :type distance: float, optional
         :param in_place: if True, the existing PhaseSpace object has its data updated. if False,
             a new PhaseSpace object is returned
+        :type in_place: bool, optional
         :return: new_instance: if in_place = False, a new PhaseSpace object is returned
         """
         if beam_direction == 'x':
