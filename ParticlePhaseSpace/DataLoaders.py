@@ -104,7 +104,7 @@ class _DataLoadersBase(ABC):
         of _import data to check that the momentums in self.data give rise to the same kinetic
         energy as specified in the input data
 
-        :param Ek:
+        :param Ek: existing value to check against
         :return:
         """
         if not hasattr(self,'_rest_masses'):
