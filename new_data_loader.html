@@ -1,37 +1,16 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>Writing a new data loader &mdash; Particle Phase Space  documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
@@ -41,58 +20,32 @@
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
         <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
         <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Writing a new data exporter" href="new_data_exporter.html" />
     <link rel="prev" title="Basic Example" href="basic_example.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="index.html" class="icon icon-home"> Particle Phase Space
           
-
-          
+          <a href="index.html" class="icon icon-home">
+            Particle Phase Space
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="examples.html">Examples</a><ul class="current">
@@ -107,73 +60,31 @@
 <li class="toctree-l1"><a class="reference internal" href="code_docs.html">Code Documentation</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">Particle Phase Space</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
-          <li><a href="examples.html">Examples</a> &raquo;</li>
-        
-      <li>Writing a new data loader</li>
-    
-    
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="examples.html">Examples</a></li>
+      <li class="breadcrumb-item active">Writing a new data loader</li>
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="_sources/new_data_loader.ipynb.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   
 <style>
 /* CSS for nbsphinx extension */
@@ -454,7 +365,7 @@ div.rendered_html tbody tr:hover {
 }
 </style>
 <section id="Writing-a-new-data-loader">
-<h1>Writing a new data loader<a class="headerlink" href="#Writing-a-new-data-loader" title="Permalink to this heading">¶</a></h1>
+<h1>Writing a new data loader<a class="headerlink" href="#Writing-a-new-data-loader" title="Permalink to this heading"></a></h1>
 <p>One of the goals of this library is to make it easy to import/export data to and from different simulation codes. This example demonstrates how you would write a new data loader to read in data. DataLoaders must inhereit from the <code class="docutils literal notranslate"><span class="pre">ParticlePhaseSpace.DataLoaders._DataImportersBase</span></code> class. They must in addition provide two methods:</p>
 <ol class="arabic simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">_check_input_data</span></code>: In this method you should check that whatever data the user has supplied is what your DataLoader is expecting. For example: is it a file? Is the extension correct? etc. Basically this is a pre-check for some basic error handling.</p></li>
@@ -466,7 +377,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <p>Note that this data already contains all the columns we need, and with the correct units, so reading it in should be pretty straight forward. Note also that this format does not include the type of particle. This means that users will have to specify particle type using the <code class="docutils literal notranslate"><span class="pre">particle_type=</span></code> input. The basic format of any new data loader looks like this:</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
@@ -488,26 +399,26 @@ div.rendered_html tbody tr:hover {
 </div>
 <p>Now, our job is to fill in these two methods. Note that both of these will be called automatically; in addition the data entered by the user will be available at <code class="docutils literal notranslate"><span class="pre">self._input_data</span></code>. Below is an example of the complete data loader:</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">NewDataLoader</span><span class="p">(</span><span class="n">_DataLoadersBase</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">_import_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">Data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_input_data</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;x [mm]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;y [mm]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;z [mm]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Data</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;px [MeV/c]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Data</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;py [MeV/c]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Data</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;pz [MeV/c]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Data</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;particle type [pdg_code]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">particle_cfg</span><span class="o">.</span><span class="n">particle_properties</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_particle_type</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]]</span>  <span class="o">=</span> <span class="n">Data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]]</span>  <span class="o">=</span> <span class="n">Data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">]]</span>  <span class="o">=</span> <span class="n">Data</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns</span><span class="p">[</span><span class="s1">&#39;px&#39;</span><span class="p">]]</span>  <span class="o">=</span> <span class="n">Data</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns</span><span class="p">[</span><span class="s1">&#39;py&#39;</span><span class="p">]]</span>  <span class="o">=</span> <span class="n">Data</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns</span><span class="p">[</span><span class="s1">&#39;pz&#39;</span><span class="p">]]</span>  <span class="o">=</span> <span class="n">Data</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns</span><span class="p">[</span><span class="s1">&#39;particle type&#39;</span><span class="p">]]</span><span class="o">=</span> <span class="n">particle_cfg</span><span class="o">.</span><span class="n">particle_properties</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_particle_type</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
         <span class="c1"># we also need to fill in weight, particle id, and time; since none of these are specified we just use all</span>
         <span class="c1"># ones for weight, 1,2,3... for particle id, and all zeros for time:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">Data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;particle id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">Data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns</span><span class="p">[</span><span class="s1">&#39;particle id&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;time [ps]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># may want to replace with time feature if available?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]]</span>  <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># may want to replace with time feature if available?</span>
 
         <span class="c1"># because we have momentum and energy, we can double check that our momentum to energy conversion is</span>
         <span class="c1"># consisten with the values in the phase space:</span>
@@ -542,7 +453,7 @@ div.rendered_html tbody tr:hover {
 <span class="n">data</span> <span class="o">=</span> <span class="n">NewDataLoader</span><span class="p">(</span><span class="n">data_loc</span><span class="p">,</span> <span class="n">particle_type</span><span class="o">=</span><span class="s1">&#39;electrons&#39;</span><span class="p">)</span>
 
 <span class="n">PS</span> <span class="o">=</span> <span class="n">PhaseSpace</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-<span class="n">PS</span><span class="o">.</span><span class="n">plot_particle_positions</span><span class="p">(</span><span class="n">weight_position_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">beam_direction</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">)</span>
+<span class="n">PS</span><span class="o">.</span><span class="n">plot_particle_positions_scatter_2D</span><span class="p">(</span><span class="n">weight_position_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">beam_direction</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -565,50 +476,33 @@ generating weighted scatter plot...can be slow...
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="new_data_exporter.html" class="btn btn-neutral float-right" title="Writing a new data exporter" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="basic_example.html" class="btn btn-neutral float-left" title="Basic Example" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="new_data_exporter.html" class="btn btn-neutral float-right" title="Writing a new data exporter" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2022, Brendan Whelan.
-
-    </p>
+    <p>&#169; Copyright 2022, Brendan Whelan.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

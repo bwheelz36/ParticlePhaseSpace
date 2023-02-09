@@ -1,37 +1,16 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>Code Documentation &mdash; Particle Phase Space  documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
@@ -39,57 +18,31 @@
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="prev" title="Supported particles" href="supported_particles.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="index.html" class="icon icon-home"> Particle Phase Space
           
-
-          
+          <a href="index.html" class="icon icon-home">
+            Particle Phase Space
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
@@ -114,13 +67,13 @@
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_velocity"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.fill_velocity()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.filter_by_time"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.filter_by_time()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.get_downsampled_phase_space"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.get_downsampled_phase_space()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_beam_intensity"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.plot_beam_intensity()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_energy_histogram"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.plot_energy_histogram()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_energy_hist_1D"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.plot_energy_hist_1D()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_n_particles_v_time"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.plot_n_particles_v_time()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_particle_positions"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.plot_particle_positions()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_position_histogram"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.plot_position_histogram()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_transverse_trace_space_intensity"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.plot_transverse_trace_space_intensity()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_transverse_trace_space_scatter"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.plot_transverse_trace_space_scatter()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_particle_positions_hist_2D"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.plot_particle_positions_hist_2D()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_particle_positions_scatter_2D"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.plot_particle_positions_scatter_2D()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_position_hist_1D"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.plot_position_hist_1D()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_transverse_trace_space_hist_2D"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.plot_transverse_trace_space_hist_2D()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_transverse_trace_space_scatter_2D"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.plot_transverse_trace_space_scatter_2D()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.print_energy_stats"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.print_energy_stats()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.print_twiss_parameters"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.print_twiss_parameters()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.project_particles"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.project_particles()</span></code></a></li>
@@ -138,71 +91,30 @@
 </li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">Particle Phase Space</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
-      <li>Code Documentation</li>
-    
-    
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Code Documentation</li>
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="_sources/code_docs.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   
 <style>
 /* CSS overrides for sphinx_rtd_theme */
@@ -228,13 +140,13 @@
 }
 </style>
 <section id="code-documentation">
-<h1>Code Documentation<a class="headerlink" href="#code-documentation" title="Permalink to this heading">¶</a></h1>
+<h1>Code Documentation<a class="headerlink" href="#code-documentation" title="Permalink to this heading"></a></h1>
 <p>This page shows the documentation generated by sphinx automatically scanning our source code</p>
 <section id="module-ParticlePhaseSpace.DataLoaders">
-<span id="data-loaders"></span><h2>Data Loaders<a class="headerlink" href="#module-ParticlePhaseSpace.DataLoaders" title="Permalink to this heading">¶</a></h2>
+<span id="data-loaders"></span><h2>Data Loaders<a class="headerlink" href="#module-ParticlePhaseSpace.DataLoaders" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="ParticlePhaseSpace.DataLoaders.Load_PandasData">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ParticlePhaseSpace.DataLoaders.</span></span><span class="sig-name descname"><span class="pre">Load_PandasData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units=&lt;ParticlePhaseSpace.__unit_config__.UnitSet</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace.DataLoaders.Load_PandasData" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ParticlePhaseSpace.DataLoaders.</span></span><span class="sig-name descname"><span class="pre">Load_PandasData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units=&lt;ParticlePhaseSpace.__unit_config__.UnitSet</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace.DataLoaders.Load_PandasData" title="Permalink to this definition"></a></dt>
 <dd><p>loads in pandas data of the format. This is used internally by ParticlePhaseSpace, and can also be used
 externally in cases where it is not desired to write a dedicated new data loader:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ParticlePhaseSpace</span> <span class="kn">import</span> <span class="n">DataLoaders</span>
@@ -259,7 +171,7 @@ externally in cases where it is not desired to write a dedicated new data loader
 
 <dl class="py class">
 <dt class="sig sig-object py" id="ParticlePhaseSpace.DataLoaders.Load_TibarayData">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ParticlePhaseSpace.DataLoaders.</span></span><span class="sig-name descname"><span class="pre">Load_TibarayData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units=&lt;ParticlePhaseSpace.__unit_config__.UnitSet</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace.DataLoaders.Load_TibarayData" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ParticlePhaseSpace.DataLoaders.</span></span><span class="sig-name descname"><span class="pre">Load_TibarayData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units=&lt;ParticlePhaseSpace.__unit_config__.UnitSet</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace.DataLoaders.Load_TibarayData" title="Permalink to this definition"></a></dt>
 <dd><p>Load ASCII data from tibaray of format
 <cite>x y z rxy Bx By Bz G t m q nmacro rmacro ID</cite>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data_loc</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;../tests/test_data/tibaray_test.dat&#39;</span><span class="p">)</span>
@@ -271,7 +183,7 @@ externally in cases where it is not desired to write a dedicated new data loader
 
 <dl class="py class">
 <dt class="sig sig-object py" id="ParticlePhaseSpace.DataLoaders.Load_TopasData">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ParticlePhaseSpace.DataLoaders.</span></span><span class="sig-name descname"><span class="pre">Load_TopasData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units=&lt;ParticlePhaseSpace.__unit_config__.UnitSet</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace.DataLoaders.Load_TopasData" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ParticlePhaseSpace.DataLoaders.</span></span><span class="sig-name descname"><span class="pre">Load_TopasData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units=&lt;ParticlePhaseSpace.__unit_config__.UnitSet</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace.DataLoaders.Load_TopasData" title="Permalink to this definition"></a></dt>
 <dd><p>DataLoader for <a class="reference external" href="https://topas.readthedocs.io/en/latest/">Topas</a> data.
 This data loader will read in both ascii and binary topas phase space (phsp) files.
 At present, we do not handle time or particle-id fields which may or may not be present in topas data.
@@ -290,10 +202,10 @@ Behind the scenes, it relies on <a class="reference external" href="https://gith
 
 </section>
 <section id="module-ParticlePhaseSpace._ParticlePhaseSpace">
-<span id="particle-phase-space"></span><h2>Particle Phase Space<a class="headerlink" href="#module-ParticlePhaseSpace._ParticlePhaseSpace" title="Permalink to this heading">¶</a></h2>
+<span id="particle-phase-space"></span><h2>Particle Phase Space<a class="headerlink" href="#module-ParticlePhaseSpace._ParticlePhaseSpace" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ParticlePhaseSpace._ParticlePhaseSpace.</span></span><span class="sig-name descname"><span class="pre">PhaseSpace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_loader</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ParticlePhaseSpace._ParticlePhaseSpace.</span></span><span class="sig-name descname"><span class="pre">PhaseSpace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_loader</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace" title="Permalink to this definition"></a></dt>
 <dd><p>This class holds phase space data in  a pandas dataframe, and allowed users to utilise common libraries for
 plotting and analysis. It accepts data from any <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/code_docs.html#module-ParticlePhaseSpace.DataLoaders">DataLoader</a>
 Basic use is documented <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/basic_example.html">here</a>.</p>
@@ -304,7 +216,7 @@ Basic use is documented <a class="reference external" href="https://bwheelz36.gi
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.assess_density_versus_r">
-<span class="sig-name descname"><span class="pre">assess_density_versus_r</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Rvals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam_direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'z'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.assess_density_versus_r" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">assess_density_versus_r</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Rvals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam_direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'z'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.assess_density_versus_r" title="Permalink to this definition"></a></dt>
 <dd><p>Assess how many particles are in a given radius</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -322,7 +234,7 @@ Basic use is documented <a class="reference external" href="https://bwheelz36.gi
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.calculate_twiss_parameters">
-<span class="sig-name descname"><span class="pre">calculate_twiss_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beam_direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'z'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.calculate_twiss_parameters" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">calculate_twiss_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beam_direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'z'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.calculate_twiss_parameters" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate the RMS <a class="reference external" href="https://en.wikipedia.org/wiki/Courant%E2%80%93Snyder_parameters">twiss parameters</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -336,22 +248,21 @@ Basic use is documented <a class="reference external" href="https://bwheelz36.gi
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_beta_and_gamma">
-<span class="sig-name descname"><span class="pre">fill_beta_and_gamma</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_beta_and_gamma" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">fill_beta_and_gamma</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_beta_and_gamma" title="Permalink to this definition"></a></dt>
 <dd><p>add the relatavistic beta and gamma factors into self._ps_data</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_direction_cosines">
-<span class="sig-name descname"><span class="pre">fill_direction_cosines</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_direction_cosines" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">fill_direction_cosines</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_direction_cosines" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate direction cosines, which are required for topas import:
 U (direction cosine of momentum with respect to X)
-V (direction cosine of momentum with respect to Y)
-:return:</p>
+V (direction cosine of momentum with respect to Y)</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_kinetic_E">
-<span class="sig-name descname"><span class="pre">fill_kinetic_E</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_kinetic_E" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">fill_kinetic_E</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_kinetic_E" title="Permalink to this definition"></a></dt>
 <dd><dl class="simple">
 <dt>Uses <a class="reference external" href="https://en.wikipedia.org/wiki/Energy%E2%80%93momentum_relation">energy-momementum relation</a> to add</dt><dd><p>kinetic energy into self._ps_data</p>
 </dd>
@@ -360,27 +271,26 @@ V (direction cosine of momentum with respect to Y)
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_relativistic_mass">
-<span class="sig-name descname"><span class="pre">fill_relativistic_mass</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_relativistic_mass" title="Permalink to this definition">¶</a></dt>
-<dd><p>add relativistic mass to ps_data
-:return:</p>
+<span class="sig-name descname"><span class="pre">fill_relativistic_mass</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_relativistic_mass" title="Permalink to this definition"></a></dt>
+<dd><p>add relativistic mass to ps_data</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_rest_mass">
-<span class="sig-name descname"><span class="pre">fill_rest_mass</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_rest_mass" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">fill_rest_mass</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_rest_mass" title="Permalink to this definition"></a></dt>
 <dd><p>add rest mass to self._ps_data
 :return:</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_velocity">
-<span class="sig-name descname"><span class="pre">fill_velocity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_velocity" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">fill_velocity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.fill_velocity" title="Permalink to this definition"></a></dt>
 <dd><p>add velocities in m/s into self._ps_data</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.filter_by_time">
-<span class="sig-name descname"><span class="pre">filter_by_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_finish</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.filter_by_time" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">filter_by_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_finish</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.filter_by_time" title="Permalink to this definition"></a></dt>
 <dd><p>Generates a new PhaseSpace which only contains particles inside t_start and t_finish (inclusive).
 t_start and t_finish should be specfied in ps.</p>
 <dl class="field-list simple">
@@ -398,7 +308,7 @@ t_start and t_finish should be specfied in ps.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.get_downsampled_phase_space">
-<span class="sig-name descname"><span class="pre">get_downsampled_phase_space</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">downsample_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.get_downsampled_phase_space" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_downsampled_phase_space</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">downsample_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.get_downsampled_phase_space" title="Permalink to this definition"></a></dt>
 <dd><p>return a new phase space object which randomlt samples from the larger phase space.
 the new phase space has size ‘original data/downsample_factor’. the data is shuffled
 before being randomly sampled.</p>
@@ -410,42 +320,15 @@ before being randomly sampled.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_beam_intensity">
-<span class="sig-name descname"><span class="pre">plot_beam_intensity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beam_direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'z'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'intensity'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_beam_intensity" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is alternative to plot_particle_positions(weight_position_plot=True); rather than a scatter plot of every particle, an
-image is formed by assigning particles to bins over a 2D grid. This is faster than generating a gaussian kde of intensity.
-In addition, this also allows to accumulate over energy as well as intensity.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>beam_direction</strong> (<em>str</em><em>, </em><em>optional</em>) – the direction the beam is travelling in. “x”, “y”, or “z” (default)</p></li>
-<li><p><strong>xlim</strong> (<em>list</em><em>, </em><em>optional</em>) – set the xlim for all plots, e.g. [-2,2]</p></li>
-<li><p><strong>ylim</strong> (<em>list</em><em>, </em><em>optional</em>) – set the ylim for all plots, e.g. [-2,2]</p></li>
-<li><p><strong>plot_twiss_ellipse</strong> (<em>bool</em><em>, </em><em>optional</em>) – if True, RMS ellipse from twiss parameters is overlaid.</p></li>
-<li><p><strong>quantity</strong> (<em>str</em>) – quantity to accumulate; either ‘intensity’ or ‘energy</p></li>
-<li><p><strong>grid</strong> (<em>bool</em><em>, </em><em>optional</em>) – turns grid on/off</p></li>
-<li><p><strong>normalize</strong> (<em>bool</em><em>, </em><em>optional</em>) – if True, data is displayed in range 0-100</p></li>
-<li><p><strong>bins</strong> (<em>int</em><em>, </em><em>optional</em>) – number of bins in X/Y direction. n_pixels = bins ** 2</p></li>
-<li><p><strong>vmin</strong> (<em>float</em><em>, </em><em>optional</em>) – minimum color range</p></li>
-<li><p><strong>vmax</strong> (<em>float</em><em>, </em><em>optional</em>) – maximum color range</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_energy_histogram">
-<span class="sig-name descname"><span class="pre">plot_energy_histogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_energy_histogram" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_energy_hist_1D">
+<span class="sig-name descname"><span class="pre">plot_energy_hist_1D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_bins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_energy_hist_1D" title="Permalink to this definition"></a></dt>
 <dd><p>generate a histogram plot of paritcle energies.
 Each particle spcies present in the phase space is overlaid  on the same plot.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>n_bins</strong> – number of bins in histogram</p></li>
-<li><p><strong>title</strong> – title of histogram</p></li>
+<li><p><strong>n_bins</strong> (<em>int</em><em>, </em><em>optional</em>) – number of bins in histogram</p></li>
+<li><p><strong>grid</strong> (<em>bool</em><em>, </em><em>optional</em>) – turns grid on/off</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -456,19 +339,49 @@ Each particle spcies present in the phase space is overlaid  on the same plot.</
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_n_particles_v_time">
-<span class="sig-name descname"><span class="pre">plot_n_particles_v_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_bins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_n_particles_v_time" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">plot_n_particles_v_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_bins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_n_particles_v_time" title="Permalink to this definition"></a></dt>
 <dd><p>basic plot of number of particles versus time; useful for quickly seperating out different bunches
 of electrons such that you can apply the ‘filter_by_time’ method</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>n_bins</strong> (<em>int</em>) – number of bins for histogram</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_bins</strong> (<em>int</em>) – number of bins for histogram</p></li>
+<li><p><strong>grid</strong> (<em>bool</em><em>, </em><em>optional</em>) – turns grid on/off</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_particle_positions">
-<span class="sig-name descname"><span class="pre">plot_particle_positions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beam_direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'z'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_position_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_particle_positions" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_particle_positions_hist_2D">
+<span class="sig-name descname"><span class="pre">plot_particle_positions_hist_2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beam_direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'z'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'intensity'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_particle_positions_hist_2D" title="Permalink to this definition"></a></dt>
+<dd><p>This is alternative to plot_particle_positions(weight_position_plot=True); rather than a scatter plot of every particle, an
+image is formed by assigning particles to bins over a 2D grid. This is faster than generating a gaussian kde of intensity.
+In addition, this also allows to accumulate over energy as well as intensity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>beam_direction</strong> (<em>str</em><em>, </em><em>optional</em>) – the direction the beam is travelling in. “x”, “y”, or “z” (default)</p></li>
+<li><p><strong>xlim</strong> (<em>list</em><em>, </em><em>optional</em>) – set the xlim for all plots, e.g. [-2,2]</p></li>
+<li><p><strong>ylim</strong> (<em>list</em><em>, </em><em>optional</em>) – set the ylim for all plots, e.g. [-2,2]</p></li>
+<li><p><strong>quantity</strong> (<em>str</em>) – quantity to accumulate; either ‘intensity’ or ‘energy</p></li>
+<li><p><strong>grid</strong> (<em>bool</em><em>, </em><em>optional</em>) – turns grid on/off</p></li>
+<li><p><strong>bins</strong> (<em>int</em><em>, </em><em>optional</em>) – number of bins in X/Y direction. n_pixels = bins ** 2</p></li>
+<li><p><strong>vmin</strong> (<em>float</em><em>, </em><em>optional</em>) – minimum color range</p></li>
+<li><p><strong>vmax</strong> (<em>float</em><em>, </em><em>optional</em>) – maximum color range</p></li>
+<li><p><strong>log_scale</strong> (<em>bool</em><em>, </em><em>optional</em>) – if True, log scale is used</p></li>
+<li><p><strong>normalize</strong> (<em>bool</em><em>, </em><em>optional</em>) – if True, data is normalized to 0-100 - otherwise raw values are used</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_particle_positions_scatter_2D">
+<span class="sig-name descname"><span class="pre">plot_particle_positions_scatter_2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beam_direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'z'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_position_plot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_particle_positions_scatter_2D" title="Permalink to this definition"></a></dt>
 <dd><p>produce a scatter plot of particle positions.
 one plot is produced for each unique species.</p>
 <dl class="field-list simple">
@@ -478,6 +391,7 @@ one plot is produced for each unique species.</p>
 <li><p><strong>weight_position_plot</strong> (<em>bool</em>) – if True, a gaussian kde is used to weight the particle
 positions. This can produce very informative and useful plots, but also be very slow.
 If it is slow, you could try downsampling the phase space first using get_downsampled_phase_space</p></li>
+<li><p><strong>grid</strong> (<em>bool</em><em>, </em><em>optional</em>) – turns grid on/off</p></li>
 <li><p><strong>xlim</strong> (<em>list</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – set the xlim for all plots, e.g. [-2,2]</p></li>
 <li><p><strong>ylim</strong> (<em>list</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – set the ylim for all plots, e.g. [-2,2]</p></li>
 </ul>
@@ -489,8 +403,8 @@ If it is slow, you could try downsampling the phase space first using get_downsa
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_position_histogram">
-<span class="sig-name descname"><span class="pre">plot_position_histogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_position_histogram" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_position_hist_1D">
+<span class="sig-name descname"><span class="pre">plot_position_hist_1D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_bins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_position_hist_1D" title="Permalink to this definition"></a></dt>
 <dd><p>plot a histogram of particle positions in x, y, z.
 a new histogram is generated for each particle species.
 histograms are overlaid.</p>
@@ -499,6 +413,7 @@ histograms are overlaid.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n_bins</strong> – number of bins in histogram</p></li>
 <li><p><strong>alpha</strong> – controls transparency of each histogram.</p></li>
+<li><p><strong>grid</strong> (<em>bool</em><em>, </em><em>optional</em>) – turns grid on/off</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -508,8 +423,8 @@ histograms are overlaid.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_transverse_trace_space_intensity">
-<span class="sig-name descname"><span class="pre">plot_transverse_trace_space_intensity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beam_direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'z'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_twiss_ellipse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_transverse_trace_space_intensity" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_transverse_trace_space_hist_2D">
+<span class="sig-name descname"><span class="pre">plot_transverse_trace_space_hist_2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beam_direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'z'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_twiss_ellipse</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_transverse_trace_space_hist_2D" title="Permalink to this definition"></a></dt>
 <dd><p>plot the intensity of the beam in trace space</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -519,7 +434,7 @@ histograms are overlaid.</p>
 <li><p><strong>ylim</strong> (<em>list</em><em>, </em><em>optional</em>) – set the ylim for all plots, e.g. [-2,2]</p></li>
 <li><p><strong>plot_twiss_ellipse</strong> (<em>bool</em><em>, </em><em>optional</em>) – if True, RMS ellipse from twiss parameters is overlaid.</p></li>
 <li><p><strong>grid</strong> (<em>bool</em><em>, </em><em>optional</em>) – turns grid on/off</p></li>
-<li><p><strong>normalize</strong> (<em>bool</em><em>, </em><em>optional</em>) – if True, data is displayed in range 0-100</p></li>
+<li><p><strong>log_scale</strong> (<em>bool</em><em>, </em><em>optional</em>) – if True, log scale is used</p></li>
 <li><p><strong>bins</strong> (<em>int</em><em>, </em><em>optional</em>) – number of bins in X/Y direction. n_pixels = bins ** 2</p></li>
 <li><p><strong>vmin</strong> (<em>float</em><em>, </em><em>optional</em>) – minimum color range</p></li>
 <li><p><strong>vmax</strong> (<em>float</em><em>, </em><em>optional</em>) – maximum color range</p></li>
@@ -529,8 +444,8 @@ histograms are overlaid.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_transverse_trace_space_scatter">
-<span class="sig-name descname"><span class="pre">plot_transverse_trace_space_scatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beam_direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'z'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_twiss_ellipse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_transverse_trace_space_scatter" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_transverse_trace_space_scatter_2D">
+<span class="sig-name descname"><span class="pre">plot_transverse_trace_space_scatter_2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beam_direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'z'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_twiss_ellipse</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_transverse_trace_space_scatter_2D" title="Permalink to this definition"></a></dt>
 <dd><p>Generate a scatter plot of x versus x’=px/pz and y versus y’=py/pz (these definitions are for
 beam_direction=’z’)</p>
 <dl class="field-list simple">
@@ -540,17 +455,15 @@ beam_direction=’z’)</p>
 <li><p><strong>plot_twiss_ellipse</strong> (<em>bool</em><em>, </em><em>optional</em>) – if True, will overlay the RMS twiss ellipse onto the trace space</p></li>
 <li><p><strong>xlim</strong> (<em>list</em><em>, </em><em>optional</em>) – set xlim, e.g. [-2,2]</p></li>
 <li><p><strong>ylim</strong> (<em>list</em><em>, </em><em>optional</em>) – set ylim, e.g. [-2,2]</p></li>
+<li><p><strong>grid</strong> (<em>bool</em><em>, </em><em>optional</em>) – turns grid on/off</p></li>
 </ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.print_energy_stats">
-<span class="sig-name descname"><span class="pre">print_energy_stats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.print_energy_stats" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">print_energy_stats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.print_energy_stats" title="Permalink to this definition"></a></dt>
 <dd><p>Prints a summary of energy stats to the screen, which can optionally be saved to json</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -561,33 +474,32 @@ beam_direction=’z’)</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.print_twiss_parameters">
-<span class="sig-name descname"><span class="pre">print_twiss_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam_direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'z'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.print_twiss_parameters" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">print_twiss_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam_direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'z'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.print_twiss_parameters" title="Permalink to this definition"></a></dt>
 <dd><p>prints the twiss parameters if they exist
 they are always printed to the screen.
 if filename is specified, they are also saved to file as json</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>file_name</strong> – filename to write twiss data to. should be absolute
-path to an existing directory</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_name</strong> (<em>str</em><em> or </em><em>Path</em><em>, </em><em>optional</em>) – optional filename to write twiss data to. should be absolute path to an existing directory</p></li>
+<li><p><strong>beam_direction</strong> (<em>str</em><em>, </em><em>optional</em>) – the direction the beam is travelling in. “x”, “y”, or “z” (default)</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.project_particles">
-<span class="sig-name descname"><span class="pre">project_particles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beam_direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'z'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_place</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.project_particles" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">project_particles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beam_direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'z'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_place</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.project_particles" title="Permalink to this definition"></a></dt>
 <dd><p>Update the positions of each particle by projecting it forward/back by distance.</p>
 <p>This serves as a crude approximation to more advanced particle transport codes
 and represents where the particles would end up in the absence of any forces or interactions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>direction</strong> – the direction to project in. ‘x’, ‘y’, or ‘z’</p></li>
-<li><p><strong>distance</strong> – how far to project in mm</p></li>
-<li><p><strong>in_place</strong> – if True, the existing PhaseSpace object has its data updated. if False,
+<li><p><strong>beam_direction</strong> (<em>str</em><em>, </em><em>optional</em>) – the direction to project in. ‘x’, ‘y’, or ‘z’</p></li>
+<li><p><strong>distance</strong> (<em>float</em><em>, </em><em>optional</em>) – how far to project in mm</p></li>
+<li><p><strong>in_place</strong> (<em>bool</em><em>, </em><em>optional</em>) – if True, the existing PhaseSpace object has its data updated. if False,
 a new PhaseSpace object is returned</p></li>
 </ul>
 </dd>
@@ -599,7 +511,7 @@ a new PhaseSpace object is returned</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.reset_phase_space">
-<span class="sig-name descname"><span class="pre">reset_phase_space</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.reset_phase_space" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">reset_phase_space</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.reset_phase_space" title="Permalink to this definition"></a></dt>
 <dd><p>reduce self._ps_data to only the required columns
 delete any other derived quantities such as twiss parameters
 this can be called whenever you want to reduce the memory footprint</p>
@@ -607,7 +519,7 @@ this can be called whenever you want to reduce the memory footprint</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.set_units">
-<span class="sig-name descname"><span class="pre">set_units</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_units</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">UnitSet</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.set_units" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">set_units</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_units</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">UnitSet</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.set_units" title="Permalink to this definition"></a></dt>
 <dd><p>converts ps_data to a new unit set.
 This will also reset the phase space to just the required columns</p>
 <dl class="field-list simple">
@@ -621,10 +533,10 @@ This will also reset the phase space to just the required columns</p>
 
 </section>
 <section id="module-ParticlePhaseSpace.DataExporters">
-<span id="data-exporters"></span><h2>Data Exporters<a class="headerlink" href="#module-ParticlePhaseSpace.DataExporters" title="Permalink to this heading">¶</a></h2>
+<span id="data-exporters"></span><h2>Data Exporters<a class="headerlink" href="#module-ParticlePhaseSpace.DataExporters" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="ParticlePhaseSpace.DataExporters.Topas_Exporter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ParticlePhaseSpace.DataExporters.</span></span><span class="sig-name descname"><span class="pre">Topas_Exporter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">PhaseSpaceInstance:</span> <span class="pre">~ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_location:</span> <span class="pre">(&lt;class</span> <span class="pre">'str'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">&lt;class</span> <span class="pre">'pathlib.Path'&gt;)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_name:</span> <span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace.DataExporters.Topas_Exporter" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ParticlePhaseSpace.DataExporters.</span></span><span class="sig-name descname"><span class="pre">Topas_Exporter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">PhaseSpaceInstance:</span> <span class="pre">~ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_location:</span> <span class="pre">(&lt;class</span> <span class="pre">'str'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">&lt;class</span> <span class="pre">'pathlib.Path'&gt;)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_name:</span> <span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace.DataExporters.Topas_Exporter" title="Permalink to this definition"></a></dt>
 <dd><p>output the phase space to <a class="reference external" href="https://topas.readthedocs.io/en/latest/parameters/source/phasespace.html">topas ascii format</a>.</p>
 <dl class="simple">
 <dt>Note:</dt><dd><ul class="simple">
@@ -640,49 +552,32 @@ This will also reset the phase space to just the required columns</p>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="supported_particles.html" class="btn btn-neutral float-left" title="Supported particles" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2022, Brendan Whelan.
-
-    </p>
+    <p>&#169; Copyright 2022, Brendan Whelan.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
