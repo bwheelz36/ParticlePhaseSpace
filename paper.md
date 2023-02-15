@@ -7,11 +7,17 @@ tags:
   - phase space
 authors:
   - name: Brendan Whelan
-    orcid: 0000-0000-0000-0000
+    orcid: 0000-0002-2326-0927
     affiliation: 1
+  - name: Leo Esnault
+    orcid: 0000-0002-0795-9957
+    affiliation: 2
+  
 affiliations:
  - name: Image-X Institute, School of Health Sciences, University of Sydney
    index: 1
+ - name: Univ. Bordeaux-CNRS-CEA, Centre Lasers Intenses et Applications, UMR 5107, 33405 Talence, France 
+   index: 2
 date: 22 January 2023
 bibliography: paper.bib
 ---
