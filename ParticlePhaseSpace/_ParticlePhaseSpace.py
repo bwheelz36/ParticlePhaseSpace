@@ -109,6 +109,7 @@ class PhaseSpace:
         """
         subtract phase space (remove every particle in other from self)
         """
+
         new_data = pd.merge(self._ps_data, other.ps_data, how='outer', indicator=True)\
             .query("_merge != 'both'")\
             .drop('_merge', axis=1)\
