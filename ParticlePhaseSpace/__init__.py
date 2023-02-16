@@ -1,8 +1,8 @@
 """
-This library allows a user to plot a sine wave. It's fully sick.
+init for ParticlePhaseSpace module
 """
 __version__ = '0.4.0'
 
-# from ParticlePhaseSpace._ParticlePhaseSpace import PhaseSpace
+
 from ParticlePhaseSpace.__unit_config__ import ParticlePhaseSpaceUnits, UnitSet
 from ParticlePhaseSpace._ParticlePhaseSpace import PhaseSpace
