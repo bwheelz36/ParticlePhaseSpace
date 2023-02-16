@@ -910,24 +910,6 @@ class PhaseSpace:
         self._ps_data[self._columns['Direction Cosine Z']] = self._ps_data[self._columns['pz']] / V
         self._check_ps_data_format()
 
-    def get_downsampled_phase_space(self, downsample_factor: int=10):
-        """
-        return a new phase space object which randomlt samples from the larger phase space.
-        the new phase space has size 'original data/downsample_factor'. the data is shuffled
-        before being randomly sampled.
-
-        :param downsample_factor: the factor to downsample the phase space by
-        :type downsample_factor: int
-        """
-        new_data = self._ps_data.sample(frac=1).reset_index(drop=True)  # this shuffles the data
-        new_data = new_data.sample(frac=1 / downsample_factor, ignore_index=True)
-        for col_name in new_data.columns:
-            if not col_name in ps_cfg.get_required_column_names(self._units):
-                new_data.drop(columns=col_name, inplace=True)
-        new_data_loader = DataLoaders.Load_PandasData(new_data, units=self._units)
-        new_instance = PhaseSpace(new_data_loader)
-        return new_instance
-
     def calculate_twiss_parameters(self, beam_direction='z'):
         """
         Calculate the RMS `twiss parameters <https://en.wikipedia.org/wiki/Courant%E2%80%93Snyder_parameters>`_
@@ -995,6 +977,8 @@ class PhaseSpace:
 
         This serves as a crude approximation to more advanced particle transport codes
         and represents where the particles would end up in the absence of any forces or interactions.
+
+        - **Note** this does not currently update the time variable of the particles
 
         :param beam_direction: the direction to project in. 'x', 'y', or 'z'
         :type beam_direction: str, optional
@@ -1155,3 +1139,67 @@ class PhaseSpace:
 
     def get_units(self):
         return self._units
+
+    def get_downsampled_phase_space(self, downsample_factor: int=10):
+        """
+        return a new phase space object which randomlt samples from the larger phase space.
+        the new phase space has size 'original data/downsample_factor'. the data is shuffled
+        before being randomly sampled.
+
+        :param downsample_factor: the factor to downsample the phase space by
+        :type downsample_factor: int
+        """
+        new_data = self._ps_data.sample(frac=1).reset_index(drop=True)  # this shuffles the data
+        new_data = new_data.sample(frac=1 / downsample_factor, ignore_index=True)
+        for col_name in new_data.columns:
+            if not col_name in ps_cfg.get_required_column_names(self._units):
+                new_data.drop(columns=col_name, inplace=True)
+        new_data_loader = DataLoaders.Load_PandasData(new_data, units=self._units)
+        new_instance = PhaseSpace(new_data_loader)
+        return new_instance
+
+    def plot_euclidean_dist_1d(self):
+        pass
+
+    def compress(self, distance_factor=.1):
+
+        self.reset_phase_space()
+        if not hasattr(self, 'energy_stats'):
+            self.calculate_energy_statistics()
+        original_energy_stats = self.energy_stats
+        from scipy.spatial.distance import cdist
+        iterations = 0
+        # this defines the dimensions we will calculate distance over
+        data_string = [self._columns['x'], self._columns['y'], self._columns['z'], self._columns['px'],
+                       self._columns['py'], self._columns['pz'], self._columns['time'], self._columns['particle type']]
+        max_iterations = self._ps_data.shape[0]
+        compressed_data = self._ps_data.copy().to_numpy()
+        while True:
+            iterations = iterations+1
+            if iterations > max_iterations:
+                break
+            # continue this process until no more points close together are found
+            for data_point in compressed_data:
+                data_point = data_point[1][data_string]
+                # first, get euclidean distances of points in the 8D space:
+                dist = cdist(compressed_data[data_string].to_numpy(), np.atleast_2d(data_point))
+                compress_ind = dist < distance_factor
+                if np.count_nonzero(compress_ind) > 1:
+                    # then combine these data points, and start the whole process again!
+                    data_to_compress = compressed_data[compress_ind]
+                    new_weight = data_to_compress[self._columns['weight']].sum()
+                    try:
+                        new_id = data_to_compress[self._columns['particle id']][0]
+                    except:
+                        print('elo')
+                    mean_values = data_to_compress.mean()
+                    mean_values[self._columns['weight']] = new_weight
+                    mean_values[self._columns['particle id']] = new_id
+                    # now drop these values from the data:
+                    compressed_data = compressed_data[np.logical_not(compress_ind)]
+                    # compressed_data = compressed_data.append(mean_values, ignore_index=True)
+                    compressed_data.loc[len(compressed_data) + 1] = mean_values
+                    break  # restarts the while loop
+                break
+        new_PS = PhaseSpace(DataLoaders.Load_PandasData(compressed_data, units=self._units))
+        return new_PS
