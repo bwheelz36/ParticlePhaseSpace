@@ -28,7 +28,7 @@ In accelerator particle physics, a description of the positions and directions o
 
 # Statement of need
 
-Although the use of phase space data is well established, there is no consistent implementation of phase space data between different programs @tessier_proposal_2021. To appreciate why this is an issue, one must understand that in a typical accelerator workflow, it is common to utilise several different programs to simulate different phases of particle transport, and for any given simulation task, there are many different simulation programs one can use @noauthor_accelerator_2022.  Each of these programs will typically utilise their own unique format for saving and loading phase space data. This means that getting these programs to 'speak' to each other is generally a substantial amount of work - in some cases, the bulk of the work! 
+Although the use of phase space data is well established, there is no consistent implementation of phase space data between different programs @tessier_proposal_2021. To appreciate why this is an issue, one must understand that in a typical accelerator workflow, it is common to utilise several different programs to simulate different phases of particle transport, and for any given simulation task, there are many different simulation programs one can use @noauthor_accelerator_2022.  Each of these programs will typically utilise their own unique format for saving and loading phase space data. This means that getting these programs to 'speak' to each other is generally a substantial amount of work - in some cases, the bulk of the work! Examples of publications using code like this can be found in @st_aubin_integrated_2010, 
 
 `ParticlePhaseSpace` aims to solve these issues by providing well documented and extensible mechanisms for the import and export of data in different formats, as well as a library of methods for visualising, manipulating, characterising and analysing phase space data. The underlying data is stored in a pandas data frame with clearly defined allowed columns and units. Both the supported particles and data format have been designed to be extensible, with documentation demonstrating how to do this. A `PhaseSpace` object is provided with a large library of methods for visualising, manipulating, characterising and analysing phase space data. 
 
@@ -44,7 +44,7 @@ Although the use of phase space data is well established, there is no consistent
 - Ability to generate new PhaseSpace objects by adding, subtracting, or filtering existing PhaseSpace objects
 - Multiple unit sets, and extension mechanisms for building more unit sets
 
-Another code providing similar functionality is the p2sat code by @lesnat_particle_2021; ParticlePhaseSpace builds off this code by enabling multi-particle support in the same PhaseSpace object, extension mechanisms, a testing framework, continuous integration, and automatic code documentation.
+Other codes providing similar functionality include the p2sat code @lesnat_particle_2021 and postpic @skuschel_postpic_nodate. ParticlePhaseSpace builds off these codes by enabling multi-particle support in the same PhaseSpace object, extension mechanisms, a testing framework, continuous integration, and automatic code documentation.
 
 # Acknowledgements
 
