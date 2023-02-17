@@ -206,10 +206,18 @@ Behind the scenes, it relies on <a class="reference external" href="https://gith
 <dt class="sig sig-object py" id="ParticlePhaseSpace.DataLoaders.Load_p2sat_txt">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ParticlePhaseSpace.DataLoaders.</span></span><span class="sig-name descname"><span class="pre">Load_p2sat_txt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units=&lt;ParticlePhaseSpace.__unit_config__.UnitSet</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace.DataLoaders.Load_p2sat_txt" title="Permalink to this definition"></a></dt>
 <dd><p>Adapted from the <a class="reference external" href="https://github.com/lesnat/p2sat/blob/master/p2sat/datasets/_LoadPhaseSpace.py">p2sat</a>
-‘txt’ loader.</p>
-<ul class="simple">
-<li><p>Note: One difference is that this implementation has a hard coded seperation value “,”</p></li>
-</ul>
+‘txt’ loader; loads csv data of format
+<cite># weight          x (um)          y (um)          z (um)          px (MeV/c)      py (MeV/c)      pz (MeV/c)      t (fs)</cite>
+Note that we use a hard coded seperator value “,”.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">available_units</span> <span class="o">=</span> <span class="n">ParticlePhaseSpaceUnits</span><span class="p">()</span>
+<span class="n">data_url</span> <span class="o">=</span> <span class="s1">&#39;https://raw.githubusercontent.com/lesnat/p2sat/master/examples/ExamplePhaseSpace.csv&#39;</span>
+<span class="n">file_name</span> <span class="o">=</span> <span class="s1">&#39;p2sat_txt_test.csv&#39;</span>
+<span class="n">request</span><span class="o">.</span><span class="n">urlretrieve</span><span class="p">(</span><span class="n">data_url</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+<span class="c1"># read in</span>
+<span class="n">ps_data</span> <span class="o">=</span> <span class="n">DataLoaders</span><span class="o">.</span><span class="n">Load_p2sat_txt</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">particle_type</span><span class="o">=</span><span class="s1">&#39;electrons&#39;</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">available_units</span><span class="p">(</span><span class="s1">&#39;p2_sat_UHI&#39;</span><span class="p">))</span>
+<span class="n">PS</span> <span class="o">=</span> <span class="n">PhaseSpace</span><span class="p">(</span><span class="n">ps_data</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>
