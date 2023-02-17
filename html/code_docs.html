@@ -53,6 +53,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#ParticlePhaseSpace.DataLoaders.Load_PandasData"><code class="docutils literal notranslate"><span class="pre">Load_PandasData</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ParticlePhaseSpace.DataLoaders.Load_TibarayData"><code class="docutils literal notranslate"><span class="pre">Load_TibarayData</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ParticlePhaseSpace.DataLoaders.Load_TopasData"><code class="docutils literal notranslate"><span class="pre">Load_TopasData</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ParticlePhaseSpace.DataLoaders.Load_p2sat_txt"><code class="docutils literal notranslate"><span class="pre">Load_p2sat_txt</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-ParticlePhaseSpace._ParticlePhaseSpace">Particle Phase Space</a><ul>
@@ -84,6 +85,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-ParticlePhaseSpace.DataExporters">Data Exporters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ParticlePhaseSpace.DataExporters.CSV_Exporter"><code class="docutils literal notranslate"><span class="pre">CSV_Exporter</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ParticlePhaseSpace.DataExporters.Topas_Exporter"><code class="docutils literal notranslate"><span class="pre">Topas_Exporter</span></code></a></li>
 </ul>
 </li>
@@ -198,6 +200,16 @@ Behind the scenes, it relies on <a class="reference external" href="https://gith
 <span class="n">PS</span> <span class="o">=</span> <span class="n">PhaseSpace</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ParticlePhaseSpace.DataLoaders.Load_p2sat_txt">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ParticlePhaseSpace.DataLoaders.</span></span><span class="sig-name descname"><span class="pre">Load_p2sat_txt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units=&lt;ParticlePhaseSpace.__unit_config__.UnitSet</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace.DataLoaders.Load_p2sat_txt" title="Permalink to this definition"></a></dt>
+<dd><p>Adapted from the <a class="reference external" href="https://github.com/lesnat/p2sat/blob/master/p2sat/datasets/_LoadPhaseSpace.py">p2sat</a>
+‘txt’ loader.</p>
+<ul class="simple">
+<li><p>Note: One difference is that this implementation has a hard coded seperation value “,”</p></li>
+</ul>
 </dd></dl>
 
 </section>
@@ -355,9 +367,7 @@ of electrons such that you can apply the ‘filter_by_time’ method</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_particle_positions_hist_2D">
 <span class="sig-name descname"><span class="pre">plot_particle_positions_hist_2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beam_direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'z'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'intensity'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_particle_positions_hist_2D" title="Permalink to this definition"></a></dt>
-<dd><p>This is alternative to plot_particle_positions(weight_position_plot=True); rather than a scatter plot of every particle, an
-image is formed by assigning particles to bins over a 2D grid. This is faster than generating a gaussian kde of intensity.
-In addition, this also allows to accumulate over energy as well as intensity.</p>
+<dd><p>plot a 2D histogram of data, either of accumulated number of particules or accumulated energy</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -534,6 +544,13 @@ This will also reset the phase space to just the required columns</p>
 </section>
 <section id="module-ParticlePhaseSpace.DataExporters">
 <span id="data-exporters"></span><h2>Data Exporters<a class="headerlink" href="#module-ParticlePhaseSpace.DataExporters" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ParticlePhaseSpace.DataExporters.CSV_Exporter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ParticlePhaseSpace.DataExporters.</span></span><span class="sig-name descname"><span class="pre">CSV_Exporter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">PhaseSpaceInstance:</span> <span class="pre">~ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_location:</span> <span class="pre">(&lt;class</span> <span class="pre">'str'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">&lt;class</span> <span class="pre">'pathlib.Path'&gt;)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_name:</span> <span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace.DataExporters.CSV_Exporter" title="Permalink to this definition"></a></dt>
+<dd><p>Export data to a csv format, in particular one which can be read by p2sat read text
+# weight          x (um)          y (um)          z (um)          px (MeV/c)      py (MeV/c)      pz (MeV/c)      t (fs)</p>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="ParticlePhaseSpace.DataExporters.Topas_Exporter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ParticlePhaseSpace.DataExporters.</span></span><span class="sig-name descname"><span class="pre">Topas_Exporter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">PhaseSpaceInstance:</span> <span class="pre">~ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_location:</span> <span class="pre">(&lt;class</span> <span class="pre">'str'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">&lt;class</span> <span class="pre">'pathlib.Path'&gt;)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_name:</span> <span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace.DataExporters.Topas_Exporter" title="Permalink to this definition"></a></dt>
