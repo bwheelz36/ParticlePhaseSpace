@@ -63,3 +63,28 @@ def test_export_with_different_units():
     PS = PhaseSpace(data)
     # ok: can we export this data:
     DataExporters.Topas_Exporter(PS, output_location='.', output_name='test.phsp')
+
+def test_csv_export():
+    units = ParticlePhaseSpaceUnits()('mm_MeV')
+    all_allowed_columns = ps_cfg.get_all_column_names(units)
+    demo_data = pd.DataFrame(
+                    {all_allowed_columns['x']: [0, 1, 2],
+                     all_allowed_columns['y']: [0, 1, 2],
+                     all_allowed_columns['z']: [0, 1, 2],
+                     all_allowed_columns['px']: [1, 1, 2],
+                     all_allowed_columns['py']: [1, 1, 2],
+                     all_allowed_columns['pz']: [1, 1, 2],
+                     all_allowed_columns['particle type']: [11, 11, 11],
+                     all_allowed_columns['weight']: [0, 1, 2],
+                     all_allowed_columns['particle id']: [0, 1, 2],
+                     all_allowed_columns['time']: [0, 0, 0]})
+
+    data = DataLoaders.Load_PandasData(demo_data)
+    PS = PhaseSpace(data)
+    DataExporters.CSV_Exporter(PS, output_location='.', output_name='test.csv')
+    # now check we can read it back in:
+    data = DataLoaders.Load_p2sat_txt('test.csv', particle_type='electrons', units=ParticlePhaseSpaceUnits()('p2_sat_UHI'))
+    PS2 = PhaseSpace(data)
+    PS.reset_phase_space()
+    gah = PS.ps_data - PS2.ps_data
+    assert all(gah.max() < 1e-5)

@@ -275,3 +275,53 @@ class Load_TibarayData(_DataLoadersBase):
         self.data[self._columns['py']] = np.multiply(By, Gamma) * particle_cfg.particle_properties[self._particle_type]['rest_mass']
         self.data[self._columns['pz']] = np.multiply(Bz, Gamma) * particle_cfg.particle_properties[self._particle_type]['rest_mass']
 
+
+class Load_p2sat_txt(_DataLoadersBase):
+    """
+    Adapted from the `p2sat <https://github.com/lesnat/p2sat/blob/master/p2sat/datasets/_LoadPhaseSpace.py>`_
+    'txt' loader.
+
+    - Note: One difference is that this implementation has a hard coded seperation value ","
+    """
+    def _check_input_data(self):
+        if not Path(self._input_data).is_file():
+            raise FileNotFoundError(f'input data file {self._import_data()} does not exist')
+        if not self._particle_type:
+            raise Exception('particle_type must be specified when readin p2sat_txt data')
+
+    def _import_data(self):
+        # Initialize data lists
+        w = []
+        x, y, z = [], [], []
+        px, py, pz = [], [], []
+        t = []
+
+        # Open file
+        with open(self._input_data, 'r') as f:
+            # Loop over lines
+            for line in f.readlines():
+                # If current line is not a comment, save data
+                if line[0] != "#":
+                    data = line.split(",")
+                    w.append(float(data[0]))
+                    x.append(float(data[1]))
+                    y.append(float(data[2]))
+                    z.append(float(data[3]))
+                    px.append(float(data[4]))
+                    py.append(float(data[5]))
+                    pz.append(float(data[6]))
+                    t.append(float(data[7]))
+
+
+        self.data[self._columns['x']] = x
+        self.data[self._columns['y']] = y
+        self.data[self._columns['z']] = z
+        self.data[self._columns['time']] = t
+        self.data[self._columns['weight']] = w
+
+        self.data[self._columns['particle id']] = np.arange(self.data.shape[0])
+        self.data[self._columns['particle type']] = particle_cfg.particle_properties[self._particle_type]['pdg_code']
+
+        self.data[self._columns['px']] = px
+        self.data[self._columns['py']] = py
+        self.data[self._columns['pz']] = pz

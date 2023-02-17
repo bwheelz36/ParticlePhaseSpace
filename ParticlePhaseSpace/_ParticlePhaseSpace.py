@@ -90,7 +90,7 @@ class PhaseSpace:
                 if not col_name in ps_cfg.get_required_column_names(self._units):
                     particle_data.drop(columns=col_name, inplace=True)
             # create a new instance of _DataImportersBase based on particle_data
-            particle_data_loader = DataLoaders.Load_PandasData(particle_data)
+            particle_data_loader = DataLoaders.Load_PandasData(particle_data, units=self._units)
             particle_instance = PhaseSpace(particle_data_loader)
             particle_data_sets.append(particle_instance)
 
@@ -114,7 +114,7 @@ class PhaseSpace:
         for col_name in new_data.columns:
             if not col_name in ps_cfg.get_required_column_names(self._units):
                 new_data.drop(columns=col_name, inplace=True)
-        new_data_loader = DataLoaders.Load_PandasData(new_data)
+        new_data_loader = DataLoaders.Load_PandasData(new_data, units=self._units)
         new_instance = PhaseSpace(new_data_loader)
         return new_instance
 
@@ -134,7 +134,7 @@ class PhaseSpace:
         for col_name in new_data.columns:
             if not col_name in ps_cfg.get_required_column_names(self._units):
                 new_data.drop(columns=col_name, inplace=True)
-        new_data_loader = DataLoaders.Load_PandasData(new_data)
+        new_data_loader = DataLoaders.Load_PandasData(new_data, units=self._units)
         new_instance = PhaseSpace(new_data_loader)
         return new_instance
 
@@ -480,9 +480,7 @@ class PhaseSpace:
                                              grid: bool=True, log_scale: bool=False, bins: int=100,
                                              normalize: bool=True, xlim=None, ylim=None, vmin=None, vmax=None,):  # pragma: no cover
         """
-        This is alternative to plot_particle_positions(weight_position_plot=True); rather than a scatter plot of every particle, an
-        image is formed by assigning particles to bins over a 2D grid. This is faster than generating a gaussian kde of intensity.
-        In addition, this also allows to accumulate over energy as well as intensity.
+        plot a 2D histogram of data, either of accumulated number of particules or accumulated energy
 
         :param beam_direction: the direction the beam is travelling in. "x", "y", or "z" (default)
         :type beam_direction: str, optional
@@ -1039,7 +1037,7 @@ class PhaseSpace:
             ps_data[self._columns['x']] = new_x
             ps_data[self._columns['y']] = new_y
             ps_data[self._columns['z']] = new_z
-            new_data = DataLoaders.Load_PandasData(ps_data)
+            new_data = DataLoaders.Load_PandasData(ps_data, units=self._units)
             new_instance = PhaseSpace(new_data)
             return new_instance
 
@@ -1116,7 +1114,7 @@ class PhaseSpace:
             if not col_name in ps_cfg.get_required_column_names(self._units):
                 ps_data.drop(columns=col_name, inplace=True)
         # create a new instance of _DataImportersBase based on particle_data
-        ps_data_loader = DataLoaders.Load_PandasData(ps_data)
+        ps_data_loader = DataLoaders.Load_PandasData(ps_data, units=self._units)
         new_instance = PhaseSpace(ps_data_loader)
         print(f'Original data contains {len(self): d} particles')
         print(f'Filtered data contains {len(new_instance): d} particles')

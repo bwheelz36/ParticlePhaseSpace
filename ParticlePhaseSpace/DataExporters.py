@@ -235,3 +235,21 @@ class Topas_Exporter(_DataExportersBase):
 
     def _set_expected_units(self):
         self._expected_units = ParticlePhaseSpaceUnits()('mm_MeV')
+
+
+class CSV_Exporter(_DataExportersBase):
+    '''
+    Export data to a csv format, in particular one which can be read by p2sat read text
+    # weight          x (um)          y (um)          z (um)          px (MeV/c)      py (MeV/c)      pz (MeV/c)      t (fs)
+    '''
+
+    def _define_required_columns(self):
+        self._required_columns = ['x', 'y', 'z', 'px', 'py', 'pz', 'time', 'weight']
+
+    def _export_data(self):
+
+        data_string = ['weight', 'x [um]', 'y [um]', 'z [um]', 'px [MeV/c]', 'py [MeV/c]', 'pz [MeV/c]', 'time [fs]']
+        self._PS.ps_data[data_string].to_csv(self._output_location / self._output_name, index=False, header=False)
+
+    def _set_expected_units(self):
+        self._expected_units = ParticlePhaseSpaceUnits()('p2_sat_UHI')

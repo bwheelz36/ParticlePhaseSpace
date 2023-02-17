@@ -115,6 +115,15 @@ class ParticlePhaseSpaceUnits:
                               mass_units=_unit('eV/c^2', 1e6),
                               velocity_units=_unit('m/s', 1))
 
+        self.p2_sat_UHI = UnitSet(label='p2_sat_UHI',
+                              length_units=_unit('um', 1e3),
+                              energy_units=_unit('MeV', 1),
+                              momentum_units=_unit('MeV/c', 1),
+                              time_units=_unit('fs', 1e3),
+                              mass_units=_unit('MeV/c^2', 1),
+                              velocity_units=_unit('m/s', 1))
+
+
         self._get_unit_attributes()
         self._check_attributes()
 
