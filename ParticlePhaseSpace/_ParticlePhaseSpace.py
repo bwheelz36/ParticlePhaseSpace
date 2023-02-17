@@ -1158,8 +1158,40 @@ class PhaseSpace:
         new_instance = PhaseSpace(new_data_loader)
         return new_instance
 
-    def plot_euclidean_dist_1d(self):
-        pass
+    def histogram_compression(self, spatial_bins=20, momentum_bins=20, temporal_bins=1):
+        if  len(self._unique_particles) > 1:
+            raise NotImplementedError('cluster compression is only available for single species PhaseSpaces')
+        data_string = [self._columns['x'], self._columns['y'], self._columns['z'], self._columns['px'],
+                       self._columns['py'], self._columns['pz'], self._columns['time']]
+
+        H, edges = np.histogramdd(self._ps_data[data_string].to_numpy(), weights=self._ps_data['weight'].to_numpy())
+
+    def compress_cluster(self, reduction_factor=2):
+        from sklearn import cluster
+        from time import perf_counter
+
+        if  len(self._unique_particles) > 1:
+            raise NotImplementedError('cluster compression is only available for single species PhaseSpaces')
+
+        data_string = [self._columns['x'], self._columns['y'], self._columns['z'], self._columns['px'],
+                       self._columns['py'], self._columns['pz'], self._columns['time'], self._columns['particle type']]
+        data = self._ps_data[data_string].to_numpy()
+        n_desired_particles = int(self._ps_data.shape[0]/ reduction_factor)
+        t_start = perf_counter()
+        clusterer = cluster.KMeans(n_desired_particles, n_init='auto').fit(data, sample_weight=self._ps_data['weight'])
+        print(f'clustering time = {perf_counter() - t_start} s')
+        '''
+        if all input weights were 1, we would just need to know how many particles are in each cluster
+        however, since all input weights are different, we need to add up the weights of all the particles in each cluster
+        '''
+
+        # ok: now we need to find the weight of each of these clusters. but for now let's ignore that:
+        new_data = pd.DataFrame(clusterer.cluster_centers_, columns=data_string)
+        new_data['weight'] = 1
+        new_data['particle id'] = np.arange(new_data.shape[0])
+        new_data = DataLoaders.Load_PandasData(new_data, units=self._units)
+        new_PS = PhaseSpace(new_data)
+        return new_PS
 
     def compress(self, distance_factor=.1):
 
@@ -1173,13 +1205,14 @@ class PhaseSpace:
         data_string = [self._columns['x'], self._columns['y'], self._columns['z'], self._columns['px'],
                        self._columns['py'], self._columns['pz'], self._columns['time'], self._columns['particle type']]
         max_iterations = self._ps_data.shape[0]
-        compressed_data = self._ps_data.copy().to_numpy()
+        compressed_data = self._ps_data.copy()
         while True:
             iterations = iterations+1
+            print(f'{iterations} / {max_iterations}')
             if iterations > max_iterations:
                 break
             # continue this process until no more points close together are found
-            for data_point in compressed_data:
+            for data_point in compressed_data.iterrows():
                 data_point = data_point[1][data_string]
                 # first, get euclidean distances of points in the 8D space:
                 dist = cdist(compressed_data[data_string].to_numpy(), np.atleast_2d(data_point))
@@ -1189,7 +1222,7 @@ class PhaseSpace:
                     data_to_compress = compressed_data[compress_ind]
                     new_weight = data_to_compress[self._columns['weight']].sum()
                     try:
-                        new_id = data_to_compress[self._columns['particle id']][0]
+                        new_id = data_to_compress[self._columns['particle id']].iloc[0]
                     except:
                         print('elo')
                     mean_values = data_to_compress.mean()
