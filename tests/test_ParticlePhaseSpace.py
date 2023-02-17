@@ -10,7 +10,9 @@ from ParticlePhaseSpace import PhaseSpace
 import ParticlePhaseSpace.__phase_space_config__ as ps_cfg
 import pytest
 import ParticlePhaseSpace.__particle_config__ as particle_cfg
+from ParticlePhaseSpace import ParticlePhaseSpaceUnits
 
+available_units = ParticlePhaseSpaceUnits()
 test_data_loc = this_file_loc / 'test_data'
 data = DataLoaders.Load_TopasData(test_data_loc / 'coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp')
 PS = PhaseSpace(data)
@@ -103,6 +105,27 @@ def test_project_particles():
     PS_projected = PS.project_particles(beam_direction='y', distance=project_dist)
     # compare:
     assert np.allclose([x2, y2, z2], [PS_projected.ps_data['x [mm]'][0], PS_projected.ps_data['y [mm]'][0], PS_projected.ps_data['z [mm]'][0]])
+
+def test_projection_time_with_different_units():
+    initial_units = available_units.mm_MeV
+    different_units = available_units.um_keV
+    data = DataLoaders.Load_TopasData(test_data_loc / 'coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp',
+                                      units=initial_units)
+    PS = PhaseSpace(data)
+    t0 = PS.ps_data['time [ps]']
+    PS.project_particles(beam_direction='z', distance=100, in_place=True)
+    t1 = PS.ps_data['time [ps]']
+    PS.project_particles(beam_direction='z', distance=-100, in_place=True)
+    t2 = PS.ps_data['time [ps]']
+    assert np.allclose(t0, t2)
+    PS.set_units(different_units)
+    PS.project_particles(beam_direction='z', distance=100, in_place=True)
+    t3 = PS.ps_data['time [ps]']
+    assert np.allclose(t1, t3)  # note both unit sets have same time unit
+    PS.set_units(initial_units)
+    t4 = PS.ps_data['time [ps]']
+    assert np.allclose(t1, t4)
+
 
 def test_reset_phase_space():
     PS.reset_phase_space()

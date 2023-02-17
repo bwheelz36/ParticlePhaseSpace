@@ -1003,24 +1003,33 @@ class PhaseSpace:
         :type in_place: bool, optional
         :return: new_instance: if in_place = False, a new PhaseSpace object is returned
         """
+
+        if not self._columns['vx'] in self._ps_data.columns:
+            self.fill_velocity()
         if beam_direction == 'x':
             new_x = self._ps_data[self._columns['x']] + distance
             new_y = self._ps_data[self._columns['y']] + np.divide(self._ps_data[self._columns['py']],
                                                                   self._ps_data[self._columns['px']]) * distance
             new_z = self._ps_data[self._columns['z']] + np.divide(self._ps_data[self._columns['pz']],
                                                                   self._ps_data[self._columns['px']]) * distance
+            delta_t = (distance / (self._units.length.conversion*1e3))  / (self._ps_data[self._columns['vx']] * self._units.velocity.conversion)
         elif beam_direction == 'y':
             new_x = self._ps_data[self._columns['x']] + np.divide(self._ps_data[self._columns['px']],
                                                                   self._ps_data[self._columns['py']]) * distance
             new_y = self._ps_data[self._columns['y']] + distance
             new_z = self._ps_data[self._columns['z']] + np.divide(self._ps_data[self._columns['pz']],
                                                                   self._ps_data[self._columns['py']]) * distance
+            delta_t = (distance / (self._units.length.conversion*1e3))  / (
+                        self._ps_data[self._columns['vy']] * self._units.velocity.conversion)
         elif beam_direction == 'z':
             new_x = self._ps_data[self._columns['x']] + np.divide(self._ps_data[self._columns['px']],
                                                                   self._ps_data[self._columns['pz']]) * distance
             new_y = self._ps_data[self._columns['y']] + np.divide(self._ps_data[self._columns['py']],
                                                                   self._ps_data[self._columns['pz']]) * distance
             new_z = self._ps_data[self._columns['z']] + distance
+            # goal is to convert distance into m
+            delta_t = (distance / (self._units.length.conversion*1e3)) / (
+                        self._ps_data[self._columns['vz']] / self._units.velocity.conversion)
         else:
             raise NotImplementedError('beam_direction must be "x", "y", or "z"')
 
@@ -1028,6 +1037,7 @@ class PhaseSpace:
             self._ps_data[self._columns['x']] = new_x
             self._ps_data[self._columns['y']] = new_y
             self._ps_data[self._columns['z']] = new_z
+            self._ps_data[self._columns['time']] = self._ps_data[self._columns['time']] + delta_t
             self.reset_phase_space()
         else:
             ps_data = self._ps_data.copy(deep=True)
@@ -1037,6 +1047,7 @@ class PhaseSpace:
             ps_data[self._columns['x']] = new_x
             ps_data[self._columns['y']] = new_y
             ps_data[self._columns['z']] = new_z
+            ps_data[self._columns['time']] = ps_data[self._columns['time']] + delta_t
             new_data = DataLoaders.Load_PandasData(ps_data, units=self._units)
             new_instance = PhaseSpace(new_data)
             return new_instance
