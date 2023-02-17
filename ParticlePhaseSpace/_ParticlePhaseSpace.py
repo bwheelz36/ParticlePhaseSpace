@@ -480,9 +480,7 @@ class PhaseSpace:
                                              grid: bool=True, log_scale: bool=False, bins: int=100,
                                              normalize: bool=True, xlim=None, ylim=None, vmin=None, vmax=None,):  # pragma: no cover
         """
-        This is alternative to plot_particle_positions(weight_position_plot=True); rather than a scatter plot of every particle, an
-        image is formed by assigning particles to bins over a 2D grid. This is faster than generating a gaussian kde of intensity.
-        In addition, this also allows to accumulate over energy as well as intensity.
+        plot a 2D histogram of data, either of accumulated number of particules or accumulated energy
 
         :param beam_direction: the direction the beam is travelling in. "x", "y", or "z" (default)
         :type beam_direction: str, optional
