@@ -279,9 +279,18 @@ class Load_TibarayData(_DataLoadersBase):
 class Load_p2sat_txt(_DataLoadersBase):
     """
     Adapted from the `p2sat <https://github.com/lesnat/p2sat/blob/master/p2sat/datasets/_LoadPhaseSpace.py>`_
-    'txt' loader.
+    'txt' loader; loads csv data of format
+    `# weight          x (um)          y (um)          z (um)          px (MeV/c)      py (MeV/c)      pz (MeV/c)      t (fs)`
+    Note that we use a hard coded seperator value ",".
+    ::
 
-    - Note: One difference is that this implementation has a hard coded seperation value ","
+        available_units = ParticlePhaseSpaceUnits()
+        data_url = 'https://raw.githubusercontent.com/lesnat/p2sat/master/examples/ExamplePhaseSpace.csv'
+        file_name = 'p2sat_txt_test.csv'
+        request.urlretrieve(data_url, file_name)
+        # read in
+        ps_data = DataLoaders.Load_p2sat_txt(file_name, particle_type='electrons', units=available_units('p2_sat_UHI'))
+        PS = PhaseSpace(ps_data)
     """
     def _check_input_data(self):
         if not Path(self._input_data).is_file():
