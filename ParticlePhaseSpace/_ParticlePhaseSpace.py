@@ -350,7 +350,7 @@ class PhaseSpace:
         axs.legend(legend)
 
         plt.tight_layout()
-        plt.show()  # pragma: no cover
+        plt.show()
 
     def plot_position_hist_1D(self, n_bins: int=100, alpha: float=0.5, grid: bool=False):  # pragma: no cover
         """
@@ -1153,3 +1153,34 @@ class PhaseSpace:
 
     def get_units(self):
         return self._units
+
+    def expand(self, n_new_particles_factor: (int, None)=None):
+
+        # first, fit a function to the existing spatial coordinates
+        '''
+        so, a INTERPOLATION would tell me the likely value of something at some point
+        what I want is not interpolation; I want to generate new points.
+        '''
+        from time import perf_counter
+
+        if n_new_particles_factor is None:
+            n_new_particles_factor = 1
+        n_new_particles = len(self)*n_new_particles_factor
+        print(f'fitting kernel density estimate to spatial data...can be slow...')
+        xyz = np.vstack([self.ps_data[self._columns['x']],
+                        self.ps_data[self._columns['y']],
+                        self.ps_data[self._columns['z']]])
+        start_fit = perf_counter()
+        k = gaussian_kde(xyz, weights=self._ps_data['weight'])
+        end_fit = perf_counter()
+        print(f'fitting gaussian kde took {end_fit - start_fit: 1.1f} s')
+        new_points = k.resample(n_new_particles)
+        end_resample = perf_counter()
+        print(f'generating new data took {end_resample - end_fit: 1.1f} s')
+        print('hello')
+        '''
+        OK, we now need to predict the momentum values at each of these new points
+        
+        If each momentum quantity was independant, this would be a simple regression problem;
+        
+        '''
