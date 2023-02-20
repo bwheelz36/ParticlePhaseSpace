@@ -1,7 +1,7 @@
 ParticlePhaseSpace
 ==================
 
-This code aims to serve as a general purpose python library for importing, analysing, manipulating particle phase space data.
+[This code](https://github.com/bwheelz36/ParticlePhaseSpace) aims to serve as a general purpose python library for importing, analysing, manipulating particle phase space data.
 
 .. toctree::
    :maxdepth: 2

@@ -9,3 +9,4 @@ Examples
    /new_data_loader
    /new_data_exporter
    /units
+   /resampling_via_gaussian_kde

@@ -63,6 +63,7 @@
 <li class="toctree-l2"><a class="reference internal" href="new_data_loader.html">Writing a new data loader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="new_data_exporter.html">Writing a new data exporter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="units.html">Working with different units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="resampling_via_gaussian_kde.html">Up/Down sampling phase space data using gaussian KDE</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="phase_space_format.html">Phase Space Format</a></li>
@@ -1044,26 +1045,16 @@ reducing it to just the <a class="reference external" href="https://bwheelz36.gi
 </section>
 <section id="Exporting-the-data">
 <h2>Exporting the data<a class="headerlink" href="#Exporting-the-data" title="Permalink to this heading"></a></h2>
-<p>Similarly to the data import stage we use an instance of <code class="docutils literal notranslate"><span class="pre">ParticlePhaseSpace.DataLoaders</span></code> to export the data. You can see the currently available data exporters <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/code_docs.html#module-ParticlePhaseSpace.DataExporters">here</a>, and you see a demonstration of writing a new data exporter <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/new_data_exporter.html">here</a>. At the time of writing, I had only written the topas exporter, so again this is
-what I will use in this example:</p>
+<p>Similarly to the data import stage we use an instance of <code class="docutils literal notranslate"><span class="pre">ParticlePhaseSpace.DataLoaders</span></code> to export the data. You can see the currently available data exporters <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/code_docs.html#module-ParticlePhaseSpace.DataExporters">here</a>, and you see a demonstration of writing a new data exporter <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/new_data_exporter.html">here</a>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ParticlePhaseSpace</span> <span class="kn">import</span> <span class="n">DataExporters</span>
 
-<span class="n">DataExporters</span><span class="o">.</span><span class="n">Topas_Exporter</span><span class="p">(</span><span class="n">PS</span><span class="p">,</span> <span class="n">output_location</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">),</span> <span class="n">output_name</span><span class="o">=</span><span class="s1">&#39;test_export&#39;</span><span class="p">)</span>
+<span class="n">DataExporters</span><span class="o">.</span><span class="n">CSV_Exporter</span><span class="p">(</span><span class="n">PS</span><span class="p">,</span> <span class="n">output_location</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">),</span> <span class="n">output_name</span><span class="o">=</span><span class="s1">&#39;test_export&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-generating topas data file
-success
-</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
@@ -1071,8 +1062,16 @@ success
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;ParticlePhaseSpace.DataExporters.Topas_Exporter at 0x7f38006a02b0&gt;
+&lt;ParticlePhaseSpace.DataExporters.CSV_Exporter at 0x1a946cd59d0&gt;
 </pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
 </div>
 </section>
 </section>

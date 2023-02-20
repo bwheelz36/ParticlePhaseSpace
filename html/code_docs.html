@@ -69,6 +69,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.filter_by_time"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.filter_by_time()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.get_downsampled_phase_space"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.get_downsampled_phase_space()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_energy_hist_1D"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.plot_energy_hist_1D()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_momentum_hist_1D"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.plot_momentum_hist_1D()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_n_particles_v_time"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.plot_n_particles_v_time()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_particle_positions_hist_2D"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.plot_particle_positions_hist_2D()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_particle_positions_scatter_2D"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.plot_particle_positions_scatter_2D()</span></code></a></li>
@@ -78,6 +79,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.print_energy_stats"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.print_energy_stats()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.print_twiss_parameters"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.print_twiss_parameters()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.project_particles"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.project_particles()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.resample_via_gaussian_kde"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.resample_via_gaussian_kde()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.reset_phase_space"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.reset_phase_space()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.set_units"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.set_units()</span></code></a></li>
 </ul>
@@ -358,6 +360,23 @@ Each particle spcies present in the phase space is overlaid  on the same plot.</
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_momentum_hist_1D">
+<span class="sig-name descname"><span class="pre">plot_momentum_hist_1D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_bins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_momentum_hist_1D" title="Permalink to this definition"></a></dt>
+<dd><p>plot a histogram of particle momentum in x, y, z.
+a new histogram is generated for each particle species.
+histograms are overlaid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_bins</strong> – number of bins in histogram</p></li>
+<li><p><strong>alpha</strong> – controls transparency of each histogram.</p></li>
+<li><p><strong>grid</strong> (<em>bool</em><em>, </em><em>optional</em>) – turns grid on/off</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_n_particles_v_time">
 <span class="sig-name descname"><span class="pre">plot_n_particles_v_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_bins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_n_particles_v_time" title="Permalink to this definition"></a></dt>
 <dd><p>basic plot of number of particles versus time; useful for quickly seperating out different bunches
@@ -433,9 +452,6 @@ histograms are overlaid.</p>
 <li><p><strong>alpha</strong> – controls transparency of each histogram.</p></li>
 <li><p><strong>grid</strong> (<em>bool</em><em>, </em><em>optional</em>) – turns grid on/off</p></li>
 </ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p></p>
 </dd>
 </dl>
 </dd></dl>
@@ -523,6 +539,26 @@ a new PhaseSpace object is returned</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>new_instance: if in_place = False, a new PhaseSpace object is returned</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.resample_via_gaussian_kde">
+<span class="sig-name descname"><span class="pre">resample_via_gaussian_kde</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_new_particles_factor:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolate_weights:</span> <span class="pre">(&lt;class</span> <span class="pre">'bool'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">None)</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.resample_via_gaussian_kde" title="Permalink to this definition"></a></dt>
+<dd><p>Generate a new phase space based on the existing data, by fitting a gaussian kernel density
+estimate to the 6-D space:
+<cite>x y z px py pz</cite>
+If <cite>interpolate_weights</cite> is set to True, we instead attempt to interpolate within a 7D space:
+<cite>x y z px py pz weight</cite>
+This method is fairly experimental and should be used with extreme caution!</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>n_new_particles_factor</strong> – the returned Phase space will have size len(self)*n_new_particles_factor.
+In other words, when n_new_particles_factor=1, the new PhaseSpace will be the same size as the original.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>new_PS: a new PhaseSpace object</p>
 </dd>
 </dl>
 </dd></dl>

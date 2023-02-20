@@ -23,7 +23,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Phase Space Format" href="phase_space_format.html" />
+    <link rel="next" title="Up/Down sampling phase space data using gaussian KDE" href="resampling_via_gaussian_kde.html" />
     <link rel="prev" title="Writing a new data exporter" href="new_data_exporter.html" /> 
 </head>
 
@@ -59,6 +59,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#Defining-new-unit-sets">Defining new unit sets</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="resampling_via_gaussian_kde.html">Up/Down sampling phase space data using gaussian KDE</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="phase_space_format.html">Phase Space Format</a></li>
@@ -421,6 +422,15 @@ Mass: eV/c^2
 mm_MeV:
 =================
 Length: mm,
+Energy: MeV,
+Momentum: MeV/c
+Velocity: m/s
+Mass: MeV/c^2
+
+=================
+p2_sat_UHI:
+=================
+Length: um,
 Energy: MeV,
 Momentum: MeV/c
 Velocity: m/s
@@ -947,8 +957,16 @@ Mass: keV/c^2
 </div>
 </div>
 <blockquote>
-<div><p>⚠️ be very careful about defining unit sets that don’t match the conventions of the existing unit sets. The units will defintely work as long as you are changing the <strong>value</strong> of a given unit type, but not if you completely change the type of unit. E.g., defining mass in kg instead of some form of eV/c^2 will not work without substantialy edits to the code.</p>
+<div><p>Be very careful about defining unit sets that don’t match the conventions of the existing unit sets. The units will defintely work as long as you are changing the <strong>value</strong> of a given unit type, but not if you completely change the type of unit. E.g., defining mass in kg instead of some form of eV/c^2 will not work without substantialy edits to the code.</p>
 </div></blockquote>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
 </section>
 </section>
 
@@ -957,7 +975,7 @@ Mass: keV/c^2
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="new_data_exporter.html" class="btn btn-neutral float-left" title="Writing a new data exporter" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="phase_space_format.html" class="btn btn-neutral float-right" title="Phase Space Format" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="resampling_via_gaussian_kde.html" class="btn btn-neutral float-right" title="Up/Down sampling phase space data using gaussian KDE" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
