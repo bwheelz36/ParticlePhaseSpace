@@ -19,6 +19,7 @@ from ParticlePhaseSpace import DataLoaders
 from ParticlePhaseSpace import UnitSet, ParticlePhaseSpaceUnits
 
 
+
 class _FigureSpecs:
     """
     Thought this might be the easiest way to ensure universal parameters accross all figures
@@ -1164,6 +1165,41 @@ class PhaseSpace:
         print(f'Filtered data contains {len(new_instance): d} particles')
         return new_instance
 
+    def filter_by_boolean_index(self, boolean_index, in_place:bool=False, split: bool=False):
+        """
+        filter data by input boolean index, keeping 'True' and discarding 'False'
+
+        :param boolean_index: an 1D array like structure of True and False values
+        :param in_place: if True, existing object is modified; if False a new object is returned
+        :param split: if True, will return two phase space objects: one where boolan_index=True and one where it equals
+            False
+        """
+        self.reset_phase_space()
+        if split:
+            if in_place:
+                warnings.warn('cannot split the phase space while operating in place; ignoring in place and returning '
+                              'two objects')
+            ps_data = self.ps_data[boolean_index].reset_index().drop('index', axis=1)
+            ps_data = DataLoaders.Load_PandasData(ps_data, units=self._units)
+            boolean_index_true_PS = PhaseSpace(ps_data)
+
+            ps_data = self.ps_data[np.logical_not(boolean_index)].reset_index().drop('index', axis=1)
+            ps_data = DataLoaders.Load_PandasData(ps_data, units=self._units)
+            boolean_index_false_PS = PhaseSpace(ps_data)
+            print(f'data where boolean_index=True accounts for'
+                  f' {(np.count_nonzero(boolean_index) * 100 / len(boolean_index)): 1.1f} %'
+                  f'of the original data')
+            return boolean_index_true_PS, boolean_index_false_PS
+        if in_place:
+            self.ps_data = self.ps_data[boolean_index].reset_index().drop('index', axis=1)
+            print(f'removed {100 - (np.count_nonzero(boolean_index) * 100 / len(boolean_index)): 1.1f} % of particles')
+        else:
+            ps_data = self.ps_data[boolean_index].reset_index().drop('index', axis=1)
+            ps_data = DataLoaders.Load_PandasData(ps_data, units=self._units)
+            new_PS = PhaseSpace(ps_data)
+            print(f'removed {100 - (np.count_nonzero(boolean_index) * 100 / len(boolean_index)): 1.1f} % of particles')
+            return new_PS
+
     def set_units(self, new_units: UnitSet):
         """
         converts ps_data to a new unit set.
@@ -1277,3 +1313,5 @@ class PhaseSpace:
         new_data = DataLoaders.Load_PandasData(new_data, units=self._units)
         new_PS = PhaseSpace(new_data)
         return new_PS
+
+

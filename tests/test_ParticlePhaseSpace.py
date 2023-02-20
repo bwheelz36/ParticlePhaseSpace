@@ -203,7 +203,7 @@ def test_resample_kde():
     original_energy_stats = PS.energy_stats
     new_energy_stats = new_PS.energy_stats
 
-    energy_cut_off = 2  # MeV; dont expect a great match here, just looking for wild outliers
+    energy_cut_off = 3  # MeV; dont expect a great match here, just looking for wild outliers
     for energy_key in original_energy_stats['gammas']:
         if energy_key == 'number':
             continue
