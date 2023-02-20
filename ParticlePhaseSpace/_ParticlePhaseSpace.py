@@ -19,6 +19,7 @@ from ParticlePhaseSpace import DataLoaders
 from ParticlePhaseSpace import UnitSet, ParticlePhaseSpaceUnits
 
 
+
 class _FigureSpecs:
     """
     Thought this might be the easiest way to ensure universal parameters accross all figures
@@ -1277,3 +1278,14 @@ class PhaseSpace:
         new_data = DataLoaders.Load_PandasData(new_data, units=self._units)
         new_PS = PhaseSpace(new_data)
         return new_PS
+
+    def filter_by_boolean_index(self, boolean_index, in_place=False):
+
+        if in_place:
+            self.reset_phase_space()
+            self.ps_data = self.ps_data[boolean_index].reset_index().drop('index', axis=1)
+        else:
+            ps_data = self.ps_data[boolean_index].reset_index().drop('index', axis=1)
+            ps_data = DataLoaders.Load_PandasData(ps_data, units=self._units)
+            new_PS = PhaseSpace(ps_data)
+            return new_PS
