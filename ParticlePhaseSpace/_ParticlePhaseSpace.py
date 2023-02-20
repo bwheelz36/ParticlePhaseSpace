@@ -1187,7 +1187,7 @@ class PhaseSpace:
             ps_data = DataLoaders.Load_PandasData(ps_data, units=self._units)
             boolean_index_false_PS = PhaseSpace(ps_data)
             print(f'data where boolean_index=True accounts for'
-                  f' {100 - (np.count_nonzero(boolean_index) * 100 / len(boolean_index)): 1.1f}'
+                  f' {(np.count_nonzero(boolean_index) * 100 / len(boolean_index)): 1.1f} %'
                   f'of the original data')
             return boolean_index_true_PS, boolean_index_false_PS
         if in_place:
