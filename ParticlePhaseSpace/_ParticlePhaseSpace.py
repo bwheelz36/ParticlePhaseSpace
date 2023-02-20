@@ -398,6 +398,41 @@ class PhaseSpace:
         plt.tight_layout()
         plt.show()
 
+    def plot_momentum_hist_1D(self, n_bins: int=100, alpha: float=0.5, grid: bool=False):
+        fig, axs = plt.subplots(1, 3)
+        fig.set_size_inches(15, 5)
+        legend = []
+        for particle in self._unique_particles:
+            legend.append(particle_cfg.particle_properties[particle]['name'])
+            ind = self._ps_data['particle type [pdg_code]'] == particle
+            x_plot = self._ps_data[self._columns['px']][ind]
+            y_plot = self._ps_data[self._columns['py']][ind]
+            z_plot = self._ps_data[self._columns['pz']][ind]
+            axs[0].hist(x_plot, bins=n_bins, weights=self._ps_data['weight'][ind], alpha=alpha)
+            axs[1].hist(y_plot, bins=n_bins, weights=self._ps_data['weight'][ind], alpha=alpha)
+            axs[2].hist(z_plot, bins=n_bins, weights=self._ps_data['weight'][ind], alpha=alpha)
+
+        axs[0].set_xlabel(self._columns['px'])
+        axs[0].set_ylabel('counts')
+        axs[0].set_title(self._columns['px'])
+        axs[0].legend(legend)
+
+        axs[1].set_xlabel(self._columns['py'])
+        axs[1].set_ylabel('counts')
+        axs[1].set_title(self._columns['py'])
+
+        axs[2].set_xlabel(self._columns['pz'])
+        axs[2].set_ylabel('counts')
+        axs[2].set_title(self._columns['pz'])
+
+        if grid:
+            axs[0].grid()
+            axs[1].grid()
+            axs[2].grid()
+
+        plt.tight_layout()
+        plt.show()
+
     def plot_particle_positions_scatter_2D(self, beam_direction: str='z', weight_position_plot: bool=False,
                                            grid: bool=True, xlim=None, ylim=None):  # pragma: no cover
         """
@@ -1154,33 +1189,46 @@ class PhaseSpace:
     def get_units(self):
         return self._units
 
-    def expand(self, n_new_particles_factor: (int, None)=None):
+    def expand(self, n_new_particles_factor: (int)=1):
 
         # first, fit a function to the existing spatial coordinates
         '''
         so, a INTERPOLATION would tell me the likely value of something at some point
         what I want is not interpolation; I want to generate new points.
         '''
-        from time import perf_counter
 
-        if n_new_particles_factor is None:
-            n_new_particles_factor = 1
+        if len(self._unique_particles) > 1:
+            raise Exception('This method can only be performed on single species phase spaces')
+        warnings.warn('This method is quite experimental and should be used with extreme caution;'
+                      'always manually compare the new PhaseSpace data to the old PhaseSpace data to ensure it is '
+                      'close enough for your requirements')
+
+        if len(np.unique(self._ps_data[self._columns['time']])) > 1:
+            warnings.warn('your data has multiple time values in it: the new data, all time values will be the mean'
+                          'of the input data')
+
         n_new_particles = len(self)*n_new_particles_factor
-        print(f'fitting kernel density estimate to spatial data...can be slow...')
-        xyz = np.vstack([self.ps_data[self._columns['x']],
-                        self.ps_data[self._columns['y']],
-                        self.ps_data[self._columns['z']]])
-        start_fit = perf_counter()
-        k = gaussian_kde(xyz, weights=self._ps_data['weight'])
-        end_fit = perf_counter()
-        print(f'fitting gaussian kde took {end_fit - start_fit: 1.1f} s')
+        xyz_pxpypz_w = np.vstack([self.ps_data[self._columns['x']],
+                                  self.ps_data[self._columns['y']],
+                                  self.ps_data[self._columns['z']],
+                                  self.ps_data[self._columns['px']],
+                                  self.ps_data[self._columns['py']],
+                                  self.ps_data[self._columns['pz']],
+                                  self.ps_data[self._columns['weight']]])
+        k = gaussian_kde(xyz_pxpypz_w)
         new_points = k.resample(n_new_particles)
-        end_resample = perf_counter()
-        print(f'generating new data took {end_resample - end_fit: 1.1f} s')
-        print('hello')
-        '''
-        OK, we now need to predict the momentum values at each of these new points
-        
-        If each momentum quantity was independant, this would be a simple regression problem;
-        
-        '''
+
+        new_data = pd.DataFrame(
+            {self._columns['x']: new_points[0, :],
+             self._columns['y']: new_points[1, :],
+             self._columns['z']: new_points[2, :],
+             self._columns['px']: new_points[3, :],
+             self._columns['py']: new_points[4, :],
+             self._columns['pz']: new_points[5, :],
+             self._columns['particle type']: self._ps_data[self._columns['particle type']][0],
+             self._columns['weight']: new_points[6, :],
+             self._columns['particle id']: np.arange(n_new_particles),
+             self._columns['time']: self.ps_data[self._columns['time']].mean()})
+        new_data = DataLoaders.Load_PandasData(new_data, units=self._units)
+        new_PS = PhaseSpace(new_data)
+        return new_PS
