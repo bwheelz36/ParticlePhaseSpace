@@ -350,7 +350,7 @@ class PhaseSpace:
         axs.legend(legend)
 
         plt.tight_layout()
-        plt.show()  # pragma: no cover
+        plt.show()
 
     def plot_position_hist_1D(self, n_bins: int=100, alpha: float=0.5, grid: bool=False):  # pragma: no cover
         """
@@ -362,7 +362,6 @@ class PhaseSpace:
         :param alpha: controls transparency of each histogram.
         :param grid: turns grid on/off
         :type grid: bool, optional
-        :return:
         """
         fig, axs = plt.subplots(1, 3)
         fig.set_size_inches(15, 5)
@@ -389,6 +388,51 @@ class PhaseSpace:
         axs[2].set_xlabel(self._columns['z'])
         axs[2].set_ylabel('counts')
         axs[2].set_title(self._columns['z'])
+
+        if grid:
+            axs[0].grid()
+            axs[1].grid()
+            axs[2].grid()
+
+        plt.tight_layout()
+        plt.show()
+
+    def plot_momentum_hist_1D(self, n_bins: int=100, alpha: float=0.5, grid: bool=False):
+        """
+        plot a histogram of particle momentum in x, y, z.
+        a new histogram is generated for each particle species.
+        histograms are overlaid.
+
+        :param n_bins:  number of bins in histogram
+        :param alpha: controls transparency of each histogram.
+        :param grid: turns grid on/off
+        :type grid: bool, optional
+        """
+        fig, axs = plt.subplots(1, 3)
+        fig.set_size_inches(15, 5)
+        legend = []
+        for particle in self._unique_particles:
+            legend.append(particle_cfg.particle_properties[particle]['name'])
+            ind = self._ps_data['particle type [pdg_code]'] == particle
+            x_plot = self._ps_data[self._columns['px']][ind]
+            y_plot = self._ps_data[self._columns['py']][ind]
+            z_plot = self._ps_data[self._columns['pz']][ind]
+            axs[0].hist(x_plot, bins=n_bins, weights=self._ps_data['weight'][ind], alpha=alpha)
+            axs[1].hist(y_plot, bins=n_bins, weights=self._ps_data['weight'][ind], alpha=alpha)
+            axs[2].hist(z_plot, bins=n_bins, weights=self._ps_data['weight'][ind], alpha=alpha)
+
+        axs[0].set_xlabel(self._columns['px'])
+        axs[0].set_ylabel('counts')
+        axs[0].set_title(self._columns['px'])
+        axs[0].legend(legend)
+
+        axs[1].set_xlabel(self._columns['py'])
+        axs[1].set_ylabel('counts')
+        axs[1].set_title(self._columns['py'])
+
+        axs[2].set_xlabel(self._columns['pz'])
+        axs[2].set_ylabel('counts')
+        axs[2].set_title(self._columns['pz'])
 
         if grid:
             axs[0].grid()
@@ -1153,3 +1197,83 @@ class PhaseSpace:
 
     def get_units(self):
         return self._units
+
+    def resample_via_gaussian_kde(self, n_new_particles_factor: int=1, interpolate_weights: (bool, None)=None):
+        """
+        Generate a new phase space based on the existing data, by fitting a gaussian kernel density
+        estimate to the 6-D space:
+        `x y z px py pz`
+        If `interpolate_weights` is set to True, we instead attempt to interpolate within a 7D space:
+        `x y z px py pz weight`
+        This method is fairly experimental and should be used with extreme caution!
+
+        :param n_new_particles_factor: the returned Phase space will have size len(self)*n_new_particles_factor.
+            In other words, when n_new_particles_factor=1, the new PhaseSpace will be the same size as the original.
+        :return: new_PS: a new PhaseSpace object
+        """
+
+        if len(self._unique_particles) > 1:
+            raise Exception('This method can only be performed on single species phase spaces')
+        warnings.warn('This method is quite experimental and should be used with extreme caution;'
+                      'always manually compare the new PhaseSpace data to the old PhaseSpace data to ensure it is '
+                      'close enough for your requirements')
+        if len(np.unique(self._ps_data[self._columns['time']])) > 1:
+            warnings.warn('your data has multiple time values in it: the new data, all time values will be the mean'
+                          'of the input data')
+
+        if interpolate_weights is None:
+            # decide based on wheter there are multiple values of weight or not
+            if len(np.unique(self._ps_data[self._columns['weight']])) > 1:
+                interpolate_weights = True
+            else:
+                interpolate_weights = False
+
+        if interpolate_weights:
+            n_new_particles = int(len(self)*n_new_particles_factor)
+            xyz_pxpypz_w = np.vstack([self.ps_data[self._columns['x']],
+                                      self.ps_data[self._columns['y']],
+                                      self.ps_data[self._columns['z']],
+                                      self.ps_data[self._columns['px']],
+                                      self.ps_data[self._columns['py']],
+                                      self.ps_data[self._columns['pz']],
+                                      self.ps_data[self._columns['weight']]])
+            k = gaussian_kde(xyz_pxpypz_w)
+            new_points = k.resample(n_new_particles)
+        else:
+            n_new_particles = int(len(self)*n_new_particles_factor)
+            xyz_pxpypz = np.vstack([self.ps_data[self._columns['x']],
+                                      self.ps_data[self._columns['y']],
+                                      self.ps_data[self._columns['z']],
+                                      self.ps_data[self._columns['px']],
+                                      self.ps_data[self._columns['py']],
+                                      self.ps_data[self._columns['pz']]])
+            k = gaussian_kde(xyz_pxpypz, weights=self._ps_data[self._columns['weight']])
+            new_points = k.resample(n_new_particles)
+            _new_weights = np.ones(new_points.shape[1]) * np.mean(self._ps_data[self._columns['weight']])
+            new_points = np.append(new_points, np.atleast_2d(_new_weights), axis=0)
+
+        # If any inputs are single valued, replace the interpolation by this single value
+        _cols_to_check = [self._columns['x'], self._columns['y'], self._columns['z'],
+                          self._columns['px'], self._columns['py'], self._columns['pz'],
+                          self._columns['weight']]
+        _column = 0
+        for col in _cols_to_check:
+            if len(self._ps_data[col].unique()) == 1:
+                new_points[_column, :] = self._ps_data[col][0]
+            _column = _column + 1
+
+        new_data = pd.DataFrame(
+            {self._columns['x']: new_points[0, :],
+             self._columns['y']: new_points[1, :],
+             self._columns['z']: new_points[2, :],
+             self._columns['px']: new_points[3, :],
+             self._columns['py']: new_points[4, :],
+             self._columns['pz']: new_points[5, :],
+             self._columns['particle type']: self._ps_data[self._columns['particle type']][0],
+             self._columns['weight']: new_points[6, :],
+             self._columns['particle id']: np.arange(n_new_particles),
+             self._columns['time']: self.ps_data[self._columns['time']].mean()})
+
+        new_data = DataLoaders.Load_PandasData(new_data, units=self._units)
+        new_PS = PhaseSpace(new_data)
+        return new_PS

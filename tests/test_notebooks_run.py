@@ -1,40 +1,28 @@
+"""
+collect all notebooks in examples, and check that they run without error
+"""
+
 import nbformat
 from nbconvert.preprocessors import ExecutePreprocessor
 from pathlib import Path
+from glob import glob
 this_file_loc = Path(__file__).parent
 
-def test_basic_example_runs():
+def check_notebook_runs(notebook_loc):
 
-    location_path = (this_file_loc.parent / 'examples').absolute()
-    notebook_loc = location_path / 'basic_example.ipynb'
+    try:
+        with open(notebook_loc) as f:
+            nb = nbformat.read(f, as_version=4)
+        ep = ExecutePreprocessor(timeout=600, kernel_name='python3')
+        ep.preprocess(nb, {'metadata': {'path': Path(notebook_loc).parent}})
+        with open(notebook_loc, 'w', encoding='utf-8') as f:
+            nbformat.write(nb, f)
+    except Exception as e:
+        print(f'failed to run notebook {notebook_loc}: rethrowing exception:')
+        raise e
 
-    with open(notebook_loc) as f:
-        nb = nbformat.read(f, as_version=4)
-    ep = ExecutePreprocessor(timeout=600, kernel_name='python3')
-    ep.preprocess(nb, {'metadata': {'path': location_path}})
-    with open('executed_notebook.ipynb', 'w', encoding='utf-8') as f:
-        nbformat.write(nb, f)
-
-def test_new_loader_runs():
-
-    location_path = (this_file_loc.parent / 'examples').absolute()
-    notebook_loc = location_path / 'new_data_loader.ipynb'
-
-    with open(notebook_loc) as f:
-        nb = nbformat.read(f, as_version=4)
-    ep = ExecutePreprocessor(timeout=600, kernel_name='python3')
-    ep.preprocess(nb, {'metadata': {'path': location_path}})
-    with open('executed_notebook.ipynb', 'w', encoding='utf-8') as f:
-        nbformat.write(nb, f)
-
-def test_new_exporter_runs():
-
-    location_path = (this_file_loc.parent / 'examples').absolute()
-    notebook_loc = location_path / 'new_data_exporter.ipynb'
-
-    with open(notebook_loc) as f:
-        nb = nbformat.read(f, as_version=4)
-    ep = ExecutePreprocessor(timeout=600, kernel_name='python3')
-    ep.preprocess(nb, {'metadata': {'path': location_path}})
-    with open('executed_notebook.ipynb', 'w', encoding='utf-8') as f:
-        nbformat.write(nb, f)
+def test_all_notebooks_run():
+    # get all notebooks:
+    notebooks = glob(str(this_file_loc.parent / 'examples' / '*.ipynb'))
+    for notebook in notebooks:
+        check_notebook_runs(notebook)

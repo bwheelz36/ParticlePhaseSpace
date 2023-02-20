@@ -187,3 +187,26 @@ def test_beta_gamma_momentum_relation():
     assert np.allclose(py, PS_electrons.ps_data['py [MeV/c]'])
     pz = np.multiply(np.multiply(PS_electrons.ps_data['beta_z'], PS_electrons.ps_data['gamma']), PS_electrons.ps_data['rest mass [MeV/c^2]'])
     assert np.allclose(pz, PS_electrons.ps_data['pz [MeV/c]'])
+
+def test_resample_kde():
+
+    data = DataLoaders.Load_TopasData(test_data_loc / 'coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp')
+    PS = PhaseSpace(data)
+    PS = PS('gammas')  # take only the gammas for this example
+
+    resample_factor = 0.5
+    new_PS = PS.resample_via_gaussian_kde(n_new_particles_factor=resample_factor, interpolate_weights=False)
+
+    assert np.allclose(resample_factor, len(new_PS)/len(PS))
+    PS.calculate_energy_statistics()
+    new_PS.calculate_energy_statistics()
+    original_energy_stats = PS.energy_stats
+    new_energy_stats = new_PS.energy_stats
+
+    energy_cut_off = 2  # MeV; dont expect a great match here, just looking for wild outliers
+    for energy_key in original_energy_stats['gammas']:
+        if energy_key == 'number':
+            continue
+        assert abs(original_energy_stats['gammas'][energy_key] - new_energy_stats['gammas'][energy_key]) \
+               < energy_cut_off
+

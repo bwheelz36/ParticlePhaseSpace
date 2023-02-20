@@ -23,6 +23,7 @@ shutil.copy(this_file_loc.parent / 'examples' / 'basic_example.ipynb', this_file
 shutil.copy(this_file_loc.parent / 'examples' / 'new_data_loader.ipynb', this_file_loc)
 shutil.copy(this_file_loc.parent / 'examples' / 'new_data_exporter.ipynb', this_file_loc)
 shutil.copy(this_file_loc.parent / 'examples' / 'units.ipynb', this_file_loc)
+shutil.copy(this_file_loc.parent / 'examples' / 'resampling_via_gaussian_kde.ipynb', this_file_loc)
 
 # -- Project information -----------------------------------------------------
 
