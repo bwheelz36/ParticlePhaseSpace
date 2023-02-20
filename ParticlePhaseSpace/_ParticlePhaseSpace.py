@@ -1179,6 +1179,17 @@ class PhaseSpace:
             if in_place:
                 warnings.warn('cannot split the phase space while operating in place; ignoring in place and returning '
                               'two objects')
+            ps_data = self.ps_data[boolean_index].reset_index().drop('index', axis=1)
+            ps_data = DataLoaders.Load_PandasData(ps_data, units=self._units)
+            boolean_index_true_PS = PhaseSpace(ps_data)
+
+            ps_data = self.ps_data[np.logical_not(boolean_index)].reset_index().drop('index', axis=1)
+            ps_data = DataLoaders.Load_PandasData(ps_data, units=self._units)
+            boolean_index_false_PS = PhaseSpace(ps_data)
+            print(f'data where boolean_index=True accounts for'
+                  f' {100 - (np.count_nonzero(boolean_index) * 100 / len(boolean_index)): 1.1f}'
+                  f'of the original data')
+            return boolean_index_true_PS, boolean_index_false_PS
         if in_place:
             self.ps_data = self.ps_data[boolean_index].reset_index().drop('index', axis=1)
             print(f'removed {100 - (np.count_nonzero(boolean_index) * 100 / len(boolean_index)): 1.1f} % of particles')
