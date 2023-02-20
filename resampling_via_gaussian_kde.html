@@ -54,7 +54,10 @@
 <li class="toctree-l2"><a class="reference internal" href="new_data_exporter.html">Writing a new data exporter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="units.html">Working with different units</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Up/Down sampling phase space data using gaussian KDE</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Example:-Downsampling-a-large-phase-space">Example: Downsampling a large phase space</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Example:-Downsampling-a-large-phase-space">Example: Downsampling a large phase space</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Clean-input-data">Clean input data</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#Ad-hoc-data-cleaning-steps">Ad-hoc data cleaning steps</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#Reflect-Pz">Reflect Pz</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Remove-high-divergence-particles">Remove high divergence particles</a></li>
@@ -62,8 +65,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#Compare-original-to-downsampled:">Compare original to downsampled:</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#Energy">Energy</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#Momentum">Momentum</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#Particle-Positions">Particle Positions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Emittance">Emittance</a></li>
 </ul>
 </li>
 </ul>
@@ -421,9 +426,34 @@ data has 308280 particles
 <p>Of course, we could just downsample this phase space using the <code class="docutils literal notranslate"><span class="pre">get_downsampled_phase_space</span></code> method; this would generate a new phase space by randomly sampling the current one. However, there is no guarantee that such an approach will preserve the distributions of your input data. A more sophisticated approach is fit some function to the phase space, and then sample from this function to generate new data. This is a challening problem, because we have seven dimensions we care about (we do not
 handle time in this approach):</p>
 <p><code class="docutils literal notranslate"><span class="pre">x,</span> <span class="pre">y,</span> <span class="pre">z,</span> <span class="pre">px,</span> <span class="pre">py,</span> <span class="pre">pz,</span> <span class="pre">weight</span></code></p>
-<p>We cannot assume that any of these quantities are independant: we have to assume correlations exist between all 7. A popular choice for such problems is <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.gaussian_kde.html">gaussian kernel density estimates</a>. We have a kde built into the code, which works like this:</p>
+<p>We cannot assume that any of these quantities are independant: we have to assume correlations exist between all 7. A popular choice for such problems is <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.gaussian_kde.html">gaussian kernel density estimates</a>.</p>
+<section id="Clean-input-data">
+<h3>Clean input data<a class="headerlink" href="#Clean-input-data" title="Permalink to this heading"></a></h3>
+<p>In general, the KDE fit appears to be quite sensitive to ‘tails’ in data. Since phase space data is often prone to having long tails in e.g. energy or position, and since we often don’t actually care about those tails anyway, it can be a good idea to manually remove them. Since I know from <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/basic_example.html#Basic-analytics">previous analysis</a> that nearly all data lies between -2&lt;=x,y&lt;=2, I am going to remove the particles outside this range:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">filter_input_data</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">if</span> <span class="n">filter_input_data</span><span class="p">:</span>
+    <span class="n">spatial_cutoff</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">keep_ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">PS</span><span class="o">.</span><span class="n">ps_data</span><span class="p">[</span><span class="s1">&#39;x [mm]&#39;</span><span class="p">])</span><span class="o">&lt;</span><span class="n">spatial_cutoff</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">PS</span><span class="o">.</span><span class="n">ps_data</span><span class="p">[</span><span class="s1">&#39;y [mm]&#39;</span><span class="p">])</span><span class="o">&lt;</span><span class="n">spatial_cutoff</span><span class="p">)</span>
+    <span class="n">PS</span><span class="p">,</span> <span class="n">PS_discard</span> <span class="o">=</span> <span class="n">PS</span><span class="o">.</span><span class="n">filter_by_boolean_index</span><span class="p">(</span><span class="n">keep_ind</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+data where boolean_index=True accounts for  86.0 %of the original data
+</pre></div></div>
+</div>
+<p>Note that we use <code class="docutils literal notranslate"><span class="pre">filter_by_boolean_index(split=True)</span></code> to split this PhaseSpace into two objects. In principle, we could model the <code class="docutils literal notranslate"><span class="pre">PS_discard</span></code> object with it’s own KDE, but as the name implies: I am just going to discard it!</p>
+<p>Now we have cleaned the input a little, we can generate the KDE based phase space:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_PS</span> <span class="o">=</span> <span class="n">PS</span><span class="o">.</span><span class="n">resample_via_gaussian_kde</span><span class="p">(</span><span class="n">n_new_particles_factor</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">interpolate_weights</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -436,7 +466,7 @@ handle time in this approach):</p>
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-C:\Users\Brendan\Documents\python\ParticlePhaseSpace\ParticlePhaseSpace\_ParticlePhaseSpace.py:1217: UserWarning: This method is quite experimental and should be used with extreme caution;always manually compare the new PhaseSpace data to the old PhaseSpace data to ensure it is close enough for your requirements
+C:\Users\Brendan\Documents\python\ParticlePhaseSpace\examples\..\ParticlePhaseSpace\_ParticlePhaseSpace.py:1253: UserWarning: This method is quite experimental and should be used with extreme caution;always manually compare the new PhaseSpace data to the old PhaseSpace data to ensure it is close enough for your requirements
   warnings.warn(&#39;This method is quite experimental and should be used with extreme caution;&#39;
 </pre></div></div>
 </div>
@@ -445,10 +475,10 @@ C:\Users\Brendan\Documents\python\ParticlePhaseSpace\ParticlePhaseSpace\_Particl
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-original data has 308280 entries, new data has 154140 entries
+original data has 265149 entries, new data has 132574 entries
 </pre></div></div>
 </div>
-<p>We have now generated a new PhaseSpace, which has half the entries of the original data (controlled by <code class="docutils literal notranslate"><span class="pre">n_new_particles_factor</span></code>). If this new data is equivalent for our purposes (and of course this is a unique test that will depend on what our purposes are!) then we can export it, and in the future walk with a much more lightweight dataset.</p>
+</section>
 </section>
 <section id="Ad-hoc-data-cleaning-steps">
 <h2>Ad-hoc data cleaning steps<a class="headerlink" href="#Ad-hoc-data-cleaning-steps" title="Permalink to this heading"></a></h2>
@@ -457,7 +487,7 @@ original data has 308280 entries, new data has 154140 entries
 <h3>Reflect Pz<a class="headerlink" href="#Reflect-Pz" title="Permalink to this heading"></a></h3>
 <p>First, let’s compare the momentums:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">plot_momentum_hist_1D</span><span class="p">()</span>
@@ -469,14 +499,14 @@ original data has 308280 entries, new data has 154140 entries
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/resampling_via_gaussian_kde_5_0.png" src="_images/resampling_via_gaussian_kde_5_0.png" />
+<img alt="_images/resampling_via_gaussian_kde_8_0.png" src="_images/resampling_via_gaussian_kde_8_0.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/resampling_via_gaussian_kde_5_1.png" src="_images/resampling_via_gaussian_kde_5_1.png" />
+<img alt="_images/resampling_via_gaussian_kde_8_1.png" src="_images/resampling_via_gaussian_kde_8_1.png" />
 </div>
 </div>
 <p>You can see that in the original data, all values of pz are negative, but in the KDE generated data, the momentums are positive. This is a <a class="reference external" href="https://medium.com/mlearning-ai/density-estimation-for-bounded-variables-7d68f633e772">general problem with KDE</a>; to solve it, we have two options:</p>
@@ -486,7 +516,7 @@ original data has 308280 entries, new data has 154140 entries
 </ol>
 <p>I am going to take the second approach:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">reflect_pz</span> <span class="o">=</span><span class="kc">True</span>
@@ -501,7 +531,7 @@ original data has 308280 entries, new data has 154140 entries
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/resampling_via_gaussian_kde_7_0.png" src="_images/resampling_via_gaussian_kde_7_0.png" />
+<img alt="_images/resampling_via_gaussian_kde_10_0.png" src="_images/resampling_via_gaussian_kde_10_0.png" />
 </div>
 </div>
 <p>Ok, momentum looks much closer now! Note that I used the <code class="docutils literal notranslate"><span class="pre">reset_phase_space</span></code> method, <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/basic_example.html#Manipulating-data-in-the-phase-space">as is recomended</a> whenever we interact directly with the phase space data like this.</p>
@@ -510,7 +540,7 @@ original data has 308280 entries, new data has 154140 entries
 <h3>Remove high divergence particles<a class="headerlink" href="#Remove-high-divergence-particles" title="Permalink to this heading"></a></h3>
 <p>Let’s take a look at the beam divergences:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">plot_transverse_trace_space_hist_2D</span><span class="p">()</span>
@@ -522,19 +552,19 @@ original data has 308280 entries, new data has 154140 entries
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/resampling_via_gaussian_kde_9_0.png" src="_images/resampling_via_gaussian_kde_9_0.png" />
+<img alt="_images/resampling_via_gaussian_kde_12_0.png" src="_images/resampling_via_gaussian_kde_12_0.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/resampling_via_gaussian_kde_9_1.png" src="_images/resampling_via_gaussian_kde_9_1.png" />
+<img alt="_images/resampling_via_gaussian_kde_12_1.png" src="_images/resampling_via_gaussian_kde_12_1.png" />
 </div>
 </div>
 <p>This is a bit of a disaster; these plots look completely different. However, it actually appears that there are only a few outlier particles causing the second plot to look so different. We could just try removing these particles:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># remove particles that have higher divergence than the maximum divergence in the original data:</span>
@@ -545,9 +575,8 @@ original data has 308280 entries, new data has 154140 entries
     <span class="n">max_div_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">PS</span><span class="o">.</span><span class="n">ps_data</span><span class="p">[</span><span class="s1">&#39;px [MeV/c]&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">PS</span><span class="o">.</span><span class="n">ps_data</span><span class="p">[</span><span class="s1">&#39;pz [MeV/c]&#39;</span><span class="p">]))</span>
     <span class="n">max_div_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">PS</span><span class="o">.</span><span class="n">ps_data</span><span class="p">[</span><span class="s1">&#39;py [MeV/c]&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">PS</span><span class="o">.</span><span class="n">ps_data</span><span class="p">[</span><span class="s1">&#39;pz [MeV/c]&#39;</span><span class="p">]))</span>
     <span class="n">rem_ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span><span class="n">div_x</span> <span class="o">&gt;</span> <span class="n">max_div_x</span><span class="p">,</span> <span class="n">div_y</span> <span class="o">&gt;</span> <span class="n">max_div_y</span><span class="p">)</span>
-    <span class="n">new_PS</span><span class="o">.</span><span class="n">ps_data</span> <span class="o">=</span> <span class="n">new_PS</span><span class="o">.</span><span class="n">ps_data</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">rem_ind</span><span class="p">)]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;index&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">new_PS</span><span class="o">.</span><span class="n">filter_by_boolean_index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">rem_ind</span><span class="p">),</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">new_PS</span><span class="o">.</span><span class="n">reset_phase_space</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;removed </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">rem_ind</span><span class="p">)</span><span class="si">}</span><span class="s1"> high divergence particles&#39;</span><span class="p">)</span>
 <span class="n">new_PS</span><span class="o">.</span><span class="n">plot_transverse_trace_space_hist_2D</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -557,39 +586,8 @@ original data has 308280 entries, new data has 154140 entries
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-removed 638 high divergence particles
+removed  0.8 % of particles
 </pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="_images/resampling_via_gaussian_kde_11_1.png" src="_images/resampling_via_gaussian_kde_11_1.png" />
-</div>
-</div>
-<p>This worked pretty well; by removing just a few outlier particles, we manged to get a phase space which looks much closer to the original!</p>
-<p>Now that we have cleaned up the data, let’s compare the original data to the downsampled data:</p>
-</section>
-</section>
-<section id="Compare-original-to-downsampled:">
-<h2>Compare original to downsampled:<a class="headerlink" href="#Compare-original-to-downsampled:" title="Permalink to this heading"></a></h2>
-<section id="Energy">
-<h3>Energy<a class="headerlink" href="#Energy" title="Permalink to this heading"></a></h3>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">plot_energy_hist_1D</span><span class="p">()</span>
-<span class="n">new_PS</span><span class="o">.</span><span class="n">plot_energy_hist_1D</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="_images/resampling_via_gaussian_kde_14_0.png" src="_images/resampling_via_gaussian_kde_14_0.png" />
-</div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -600,100 +598,6 @@ removed 638 high divergence particles
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">print_energy_stats</span><span class="p">()</span>
-<span class="n">new_PS</span><span class="o">.</span><span class="n">print_energy_stats</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-===================================================
-                 ENERGY STATS
-===================================================
-total number of particles in phase space:  308280
-number of unique particle species:  1
-     308280 gammas
-        mean energy:  1.91 MeV
-        median energy:  1.20 MeV
-        Energy spread IQR:  2.03 MeV
-        min energy  0.01 MeV
-        max energy  10.35 MeV
-===================================================
-                 ENERGY STATS
-===================================================
-total number of particles in phase space:  153502
-number of unique particle species:  1
-     153502 gammas
-        mean energy:  2.03 MeV
-        median energy:  1.38 MeV
-        Energy spread IQR:  2.05 MeV
-        min energy  0.01 MeV
-        max energy  12.04 MeV
-</pre></div></div>
-</div>
-<p>Looking pretty good!</p>
-</section>
-<section id="Particle-Positions">
-<h3>Particle Positions<a class="headerlink" href="#Particle-Positions" title="Permalink to this heading"></a></h3>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">plot_position_hist_1D</span><span class="p">()</span>
-<span class="n">new_PS</span><span class="o">.</span><span class="n">plot_position_hist_1D</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="_images/resampling_via_gaussian_kde_17_0.png" src="_images/resampling_via_gaussian_kde_17_0.png" />
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="_images/resampling_via_gaussian_kde_17_1.png" src="_images/resampling_via_gaussian_kde_17_1.png" />
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">plot_particle_positions_hist_2D</span><span class="p">(</span><span class="n">xlim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span> <span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">])</span>
-<span class="n">new_PS</span><span class="o">.</span><span class="n">plot_particle_positions_hist_2D</span><span class="p">(</span><span class="n">xlim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span> <span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">])</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="_images/resampling_via_gaussian_kde_18_0.png" src="_images/resampling_via_gaussian_kde_18_0.png" />
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="_images/resampling_via_gaussian_kde_18_1.png" src="_images/resampling_via_gaussian_kde_18_1.png" />
-</div>
-</div>
-<p>OK, this is quite interesting: <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/basic_example.html">as explained previously</a> this data is scored below an X-ray collimator, which explains the extremely sharp distribution of x-rays. In the KDW estimate, this is not really being respected at all. We could try and address this with some more heuristic data cleaning steps as above, but for my applications, this artefact would probably rule out the use of this data.</p>
-<p>Also interesting (and a good reminder!) is that this isn’t really apparently at all from looking at the 1D histograms…</p>
-</section>
-<section id="Emittance">
-<h3>Emittance<a class="headerlink" href="#Emittance" title="Permalink to this heading"></a></h3>
-<p>Apart from the plots (which we’ve already seen look pretty close) let’s compare the twiss parameters</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">print_twiss_parameters</span><span class="p">()</span>
@@ -712,23 +616,174 @@ number of unique particle species:  1
 
 gammas:
                 x         y
-epsilon  2.525901  2.673361
-alpha    0.619585  0.525727
-beta     8.976938  9.488084
-gamma    0.154160  0.134526
+epsilon  0.089075  0.089526
+alpha    0.568640  0.563796
+beta     6.168591  6.133908
+gamma    0.214531  0.214849
 ===================================================
                  TWISS PARAMETERS
 ===================================================
 
 gammas:
                 x         y
-epsilon  4.497027  4.814717
-alpha    0.277484  0.264453
-beta     5.629677  5.974881
-gamma    0.191307  0.179072
+epsilon  0.202381  0.181137
+alpha    0.269578  0.285238
+beta     2.993573  3.336923
+gamma    0.358325  0.324059
 </pre></div></div>
 </div>
-<p>Also a reasonably good match in trace space…</p>
+<p>The emittance still doesn’t match perfectly, but it’s not terrible anymore either… by removing just a few outlier particles, we manged to get a phase space which looks much closer to the original!</p>
+<p>Now that we have cleaned up the data, let’s compare the original data to the downsampled data:</p>
+</section>
+</section>
+<section id="Compare-original-to-downsampled:">
+<h2>Compare original to downsampled:<a class="headerlink" href="#Compare-original-to-downsampled:" title="Permalink to this heading"></a></h2>
+<section id="Energy">
+<h3>Energy<a class="headerlink" href="#Energy" title="Permalink to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">plot_energy_hist_1D</span><span class="p">()</span>
+<span class="n">new_PS</span><span class="o">.</span><span class="n">plot_energy_hist_1D</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/resampling_via_gaussian_kde_18_0.png" src="_images/resampling_via_gaussian_kde_18_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/resampling_via_gaussian_kde_18_1.png" src="_images/resampling_via_gaussian_kde_18_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">print_energy_stats</span><span class="p">()</span>
+<span class="n">new_PS</span><span class="o">.</span><span class="n">print_energy_stats</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+===================================================
+                 ENERGY STATS
+===================================================
+total number of particles in phase space:  265149
+number of unique particle species:  1
+     265149 gammas
+        mean energy:  2.00 MeV
+        median energy:  1.23 MeV
+        Energy spread IQR:  2.18 MeV
+        min energy  0.01 MeV
+        max energy  10.35 MeV
+===================================================
+                 ENERGY STATS
+===================================================
+total number of particles in phase space:  131537
+number of unique particle species:  1
+     131537 gammas
+        mean energy:  2.10 MeV
+        median energy:  1.40 MeV
+        Energy spread IQR:  2.21 MeV
+        min energy  0.01 MeV
+        max energy  11.82 MeV
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="Momentum">
+<h2>Momentum<a class="headerlink" href="#Momentum" title="Permalink to this heading"></a></h2>
+<p>although we already compared momentum, this may have changed since we filtered out high divergence particles. let’s check:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">plot_momentum_hist_1D</span><span class="p">()</span>
+<span class="n">new_PS</span><span class="o">.</span><span class="n">plot_momentum_hist_1D</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/resampling_via_gaussian_kde_21_0.png" src="_images/resampling_via_gaussian_kde_21_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/resampling_via_gaussian_kde_21_1.png" src="_images/resampling_via_gaussian_kde_21_1.png" />
+</div>
+</div>
+<p>Looking pretty good!</p>
+<section id="Particle-Positions">
+<h3>Particle Positions<a class="headerlink" href="#Particle-Positions" title="Permalink to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">plot_position_hist_1D</span><span class="p">()</span>
+<span class="n">new_PS</span><span class="o">.</span><span class="n">plot_position_hist_1D</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/resampling_via_gaussian_kde_23_0.png" src="_images/resampling_via_gaussian_kde_23_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/resampling_via_gaussian_kde_23_1.png" src="_images/resampling_via_gaussian_kde_23_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">plot_particle_positions_hist_2D</span><span class="p">(</span><span class="n">xlim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span> <span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">])</span>
+<span class="n">new_PS</span><span class="o">.</span><span class="n">plot_particle_positions_hist_2D</span><span class="p">(</span><span class="n">xlim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span> <span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/resampling_via_gaussian_kde_24_0.png" src="_images/resampling_via_gaussian_kde_24_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/resampling_via_gaussian_kde_24_1.png" src="_images/resampling_via_gaussian_kde_24_1.png" />
+</div>
+</div>
+<p>Again, this is a reasonable looking guess - although as an excercise, see what happens if you set <code class="docutils literal notranslate"><span class="pre">filter_input_data=False</span></code> above! This will cause this estimate to fail quite badly.</p>
+<p>As you can see, it is possible using this approach to get a reasonable match to your input data This allows you to both upsample and downsample a phase space. Of course, as I mentioned above:</p>
+<ol class="arabic simple">
+<li><p>be careful!</p></li>
+<li><p>consider what the accuracy requirements are for your specfic application!</p></li>
+</ol>
 </section>
 </section>
 </section>
