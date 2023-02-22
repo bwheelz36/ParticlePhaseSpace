@@ -1,16 +1,14 @@
-from timeit import timeit
-
 import numpy as np
 from matplotlib import pyplot as plt
 import logging
 import pandas as pd
-
 logging.basicConfig(level=logging.WARNING)
 import warnings
 from scipy.stats import gaussian_kde
 from scipy import constants
 import json
 from pathlib import Path
+from time import perf_counter
 import ParticlePhaseSpace.__phase_space_config__ as ps_cfg
 import ParticlePhaseSpace.__particle_config__ as particle_cfg
 from ParticlePhaseSpace.DataLoaders import _DataLoadersBase
@@ -1446,11 +1444,13 @@ class PhaseSpace:
         quantities_to_merge = self._get_quantities(['x', 'y', 'z', 'px', 'py', 'pz', 'time', 'particle type'])
         # self.sort(quantities_to_sort=quantities_to_merge)
         column_names_merge = self._quantities_to_column_names(quantities_to_merge)
+        start_time = perf_counter()
         new_data = self._ps_data.groupby(column_names_merge).apply(add_weights)
         new_data.index = np.arange(new_data.shape[0])
         # if this worked, the sum of weight should be the same:
         assert np.isclose(new_data['weight'].sum(), self._ps_data['weight'].sum())
-        print(f'merge operation removed {len(self) - new_data.shape[0]: d} particles')
+        print(f'merge operation removed {len(self) - new_data.shape[0]: d} particles. Original data had {len(self): d}')
+        print(f'merge operation took {perf_counter() - start_time: 1.1f} s')
         if in_place:
             self.ps_data = new_data
             self.reset_phase_space()
