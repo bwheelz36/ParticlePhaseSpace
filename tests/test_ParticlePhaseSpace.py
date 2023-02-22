@@ -210,3 +210,61 @@ def test_resample_kde():
         assert abs(original_energy_stats['gammas'][energy_key] - new_energy_stats['gammas'][energy_key]) \
                < energy_cut_off
 
+def test_regrid():
+    data = DataLoaders.Load_TopasData(test_data_loc / 'coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp')
+    PS = PhaseSpace(data)
+    # regrid 100 bins
+    quantities = ['x', 'y', 'px', 'py', 'pz']
+    new_PS = PS.regrid(n_bins=100, quantities=quantities)
+
+    columns = new_PS._quantities_to_column_names(quantities)
+    for col in columns:
+        assert len(np.unique(new_PS.ps_data[col])) <= 100
+
+    # regrid x into 10 bins
+    new_PS = PS.regrid(quantities='x', n_bins=10)
+    assert len(np.unique(new_PS.ps_data['y [mm]'])) ==len(np.unique(PS.ps_data['y [mm]']))
+    assert len(np.unique(new_PS.ps_data['x [mm]'])) == 10
+    # compare in Place to Note in Place
+    new_PS = PS.regrid()
+    PS.regrid(in_place=True)
+    assert np.allclose(new_PS.ps_data, PS.ps_data)
+
+
+def test_merge():
+    data = DataLoaders.Load_TopasData(test_data_loc / 'coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp')
+    PS = PhaseSpace(data)
+
+    new_PS = PS.regrid(n_bins=10, in_place=False)
+    new_PS.merge(in_place=True)
+
+    # test merge didn't effect energy stats:
+    PS.calculate_energy_statistics()
+    new_PS.calculate_energy_statistics()
+    original_energy_stats = PS.energy_stats
+    for particle_key in original_energy_stats:
+        for energy_key in original_energy_stats[particle_key]:
+            np.allclose(original_energy_stats[particle_key][energy_key],
+                        new_PS.energy_stats[particle_key][energy_key])
+    # test weight preservation
+    assert PS.ps_data['weight'].sum() == new_PS.ps_data['weight'].sum()
+
+    # test size of merge
+    assert len(new_PS) == 2043  # stability check
+
+
+
+
+def test_sort():
+    data = DataLoaders.Load_TopasData(test_data_loc / 'coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp')
+    PS = PhaseSpace(data)
+    x_temp = PS.ps_data['x [mm]']
+    PS.sort('x')
+    assert np.allclose(np.sort(x_temp), PS.ps_data['x [mm]'])
+    # test default
+    PS.sort()
+    # test quantities
+    quantities = ['x', 'y', 'px', 'py', 'pz']
+    PS.sort(quantities_to_sort=quantities)
+
+

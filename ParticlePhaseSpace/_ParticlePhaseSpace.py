@@ -1223,7 +1223,7 @@ class PhaseSpace:
             boolean_index_false_PS = PhaseSpace(ps_data)
             print(f'data where boolean_index=True accounts for'
                   f' {(np.count_nonzero(boolean_index) * 100 / len(boolean_index)): 1.1f} %'
-                  f'of the original data')
+                  f' of the original data')
             return boolean_index_true_PS, boolean_index_false_PS
         if in_place:
             self.ps_data = self.ps_data[boolean_index].reset_index().drop('index', axis=1)
@@ -1363,7 +1363,7 @@ class PhaseSpace:
                                   kind='quicksort', na_position='last',
                                   ignore_index=True, key=None)
 
-    def regrid(self, quantities: (list, None) = None, n_bins: (int, list) = 10):
+    def regrid(self, quantities: (list, None) = None, n_bins: (int, list) = 10, in_place=False):
         """
         this re-grids each quantity in quantities onto a new grid. The new grid is defined by
         np.linspace(min(quantity, max(quantity), n_bins).
@@ -1404,10 +1404,23 @@ class PhaseSpace:
             bin_min = self._ps_data[self._columns[quantity]].min()
             bin_max = self._ps_data[self._columns[quantity]].max()
             bin_array[quantity] = np.linspace(bin_min, bin_max, bin_length)
+        new_data = self._ps_data.copy(True)
         for quantity in quantities:
             q_bins = bin_array[quantity]
-            self._ps_data[self._columns[quantity]] = list(rounder(q_bins)(self._ps_data[self._columns[quantity]]))
+            if len(np.unique(q_bins)) == 1:
+                print(f'not regriding {quantity} as it is already single valued')
+                # skip quantities that are already single valued
+                continue
+            new_data[self._columns[quantity]] = list(rounder(q_bins)(self._ps_data[self._columns[quantity]]))
             # new_data[self._columns[quantity]] = rounded_new_quantity
+        if in_place:
+            self.ps_data = new_data
+            self.reset_phase_space()
+        else:
+            # new_data[self._columns['particle type']] = new_data[self._columns['particle type']].astype(np.int32)
+            ps_data = DataLoaders.Load_PandasData(new_data)
+            new_PS = PhaseSpace(ps_data)
+            return new_PS
 
     def merge(self, in_place=False):
         """
@@ -1430,7 +1443,7 @@ class PhaseSpace:
 
         self.reset_phase_space()
         # first sort the phase space
-        quantities_to_merge = self._get_quantities(['x', 'y', 'z', 'px', 'py', 'pz', 'time'])
+        quantities_to_merge = self._get_quantities(['x', 'y', 'z', 'px', 'py', 'pz', 'time', 'particle type'])
         # self.sort(quantities_to_sort=quantities_to_merge)
         column_names_merge = self._quantities_to_column_names(quantities_to_merge)
         new_data = self._ps_data.groupby(column_names_merge).apply(add_weights)
@@ -1440,7 +1453,9 @@ class PhaseSpace:
         print(f'merge operation removed {len(self) - new_data.shape[0]: d} particles')
         if in_place:
             self.ps_data = new_data
+            self.reset_phase_space()
         else:
+            # new_data[self._columns['particle type']] = new_data[self._columns['particle type']].astype(np.int32)
             ps_data = DataLoaders.Load_PandasData(new_data)
             new_PS = PhaseSpace(ps_data)
             return new_PS
