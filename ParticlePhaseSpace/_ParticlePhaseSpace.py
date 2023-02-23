@@ -1350,10 +1350,13 @@ class PhaseSpace:
 
     def sort(self, quantities_to_sort: (None, list) = None):
         """
-        sort the data. Data will be sorted according quantities_to_sort, in order of quantity
+        sort the data. Data will be sorted according quantities_to_sort, in order of quantity.
+        Operates in place. example::
+
+            PS.sort(quantities_to_sort='x')
+            PS.sort(quantities_to_sort=['x', 'y', 'z', 'px'])
 
         :param quantities_to_sort:
-        :return:
         """
         quantities = self._get_quantities(quantities_to_sort)
         column_names_sort = self._quantities_to_column_names(quantities)
@@ -1365,17 +1368,19 @@ class PhaseSpace:
     def regrid(self, quantities: (list, None) = None, n_bins: (int, list) = 10, in_place=False):
         """
         this re-grids each quantity in quantities onto a new grid. The new grid is defined by
-        np.linspace(min(quantity, max(quantity), n_bins).
-              Regridding following by merging is a good way of combining particles which are very close together.
-              The underlying algorithm was developed by Leo Esnault
-        for the `p2sat <https://github.com/lesnat/p2sat>`_ code.
+         np.linspace(min(quantity, max(quantity), n_bins). Regridding following by merging is a good way of combining particles
+         which are very close together. The underlying algorithm was developed by Leo Esnault for the 
+         `p2sat <https://github.com/lesnat/p2sat>`_ code::
+         
+            PS.regrid()
+            PS.regrid(quantities=['x', 'y'], n_bins=50)
 
         :param quantities: Quantities to regrid; if None defaults of ['x', 'y', 'z', 'px', 'py', 'pz', 'time'] are used.
         :param n_bins: number of bins to rebin into. Can be a single number, in which case this is applied to all quantities,
             or a list of integers, one per quantity
         """
 
-        def rounder(values):
+        def _rounder(values):
             """
             function to round the values of an array to closest point in second array.
             Full credit here:
@@ -1410,7 +1415,7 @@ class PhaseSpace:
                 print(f'not regriding {quantity} as it is already single valued')
                 # skip quantities that are already single valued
                 continue
-            new_data[self._columns[quantity]] = list(rounder(q_bins)(self._ps_data[self._columns[quantity]]))
+            new_data[self._columns[quantity]] = list(_rounder(q_bins)(self._ps_data[self._columns[quantity]]))
             # new_data[self._columns[quantity]] = rounded_new_quantity
         if in_place:
             self.ps_data = new_data
@@ -1423,16 +1428,16 @@ class PhaseSpace:
 
     def merge(self, in_place=False):
         """
-        merges identical data points by taking the mean of all values except for the weights, which are added.
+        merges identical data points by combining their weights.
         Typically, before performing a merge operation you will want to perform a 'regrid' operation.
-        The underlying algorithm was developed by Leo Esnault
-        for the `p2sat <https://github.com/lesnat/p2sat>`_ code.
+        The underlying algorithm was developed by Leo Esnault for 
+        the `p2sat <https://github.com/lesnat/p2sat>`_ code.
 
         :param in_place: if True, self is operated on; if False, a new PhaseSpace is returned
         :return: new_PS if in_place is False.
         """
 
-        def add_weights(x):
+        def _add_weights(x):
             new_weight = x['weight'].sum()
             new_particle_ID = x[self._columns['particle id']].iloc[0]
             mean_data = x.mean()
@@ -1446,7 +1451,7 @@ class PhaseSpace:
         # self.sort(quantities_to_sort=quantities_to_merge)
         column_names_merge = self._quantities_to_column_names(quantities_to_merge)
         start_time = perf_counter()
-        new_data = self._ps_data.groupby(column_names_merge).apply(add_weights)
+        new_data = self._ps_data.groupby(column_names_merge).apply(_add_weights)
         new_data.index = np.arange(new_data.shape[0])
         # if this worked, the sum of weight should be the same:
         assert np.isclose(new_data['weight'].sum(), self._ps_data['weight'].sum())
