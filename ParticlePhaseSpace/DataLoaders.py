@@ -334,3 +334,45 @@ class Load_p2sat_txt(_DataLoadersBase):
         self.data[self._columns['px']] = px
         self.data[self._columns['py']] = py
         self.data[self._columns['pz']] = pz
+
+
+class Generate_Twiss(_DataLoadersBase):
+    """
+    This class will generate phase space data by samping from a user defined twiss ellipse
+    """
+
+    def __init__(self, x_twiss={'epsilon': .004,
+                                'alpha': -0.3,
+                                'beta': 200},
+                       y_twiss={'epsilon': .004,
+                                'alpha': -0.3,
+                                'beta': 200},
+                       n_particles=10000,
+                       energy_func=None, **kwargs):
+        if energy_func is None:
+            # then use some default
+            self._energy_func = self._default_energy_function
+
+        super().__init__(input_data=None, **kwargs)
+
+    def _default_energy_function(self):
+        pass
+
+    def _get_gamma(self):
+        """
+
+        :return:
+        """
+        pass
+
+    def _check_input_data(self):
+        if not self._particle_type:
+            raise Exception('particle_type must be specified when using the twiss generator')
+
+    def _import_data(self):
+        """
+        note that we actually generate rather than import data here, but will keep the name for compatability
+        with other data loaders
+        :return:
+        """
+        pass

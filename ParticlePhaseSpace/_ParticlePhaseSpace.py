@@ -741,7 +741,8 @@ class PhaseSpace:
             _scale = 'log'
         else:
             _scale = None
-        self.calculate_twiss_parameters(beam_direction=beam_direction)
+        if not self.twiss_parameters:
+            self.calculate_twiss_parameters(beam_direction=beam_direction)
         fig, axs = plt.subplots(nrows=len(self._unique_particles), ncols=2, squeeze=False)
         row = 0
         for particle in self._unique_particles:
