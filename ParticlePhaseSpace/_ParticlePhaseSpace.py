@@ -862,8 +862,9 @@ class PhaseSpace:
         :param beam_direction: the direction the beam is travelling in. "x", "y", or "z" (default)
         :type beam_direction: str, optional
         """
-        if not self.twiss_parameters:
-            self.calculate_twiss_parameters(beam_direction=beam_direction)
+        for particle in self._unique_particles:
+            if not self.twiss_parameters[particle_cfg.particle_properties[particle]['name']]:
+                self.calculate_twiss_parameters(beam_direction=beam_direction)
         if file_name:
             file_name = Path(file_name)
             if not file_name.parent.is_dir():
