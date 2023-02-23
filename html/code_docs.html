@@ -69,6 +69,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.filter_by_boolean_index"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.filter_by_boolean_index()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.filter_by_time"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.filter_by_time()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.get_downsampled_phase_space"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.get_downsampled_phase_space()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.merge"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.merge()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_energy_hist_1D"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.plot_energy_hist_1D()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_momentum_hist_1D"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.plot_momentum_hist_1D()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_n_particles_v_time"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.plot_n_particles_v_time()</span></code></a></li>
@@ -80,9 +81,11 @@
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.print_energy_stats"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.print_energy_stats()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.print_twiss_parameters"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.print_twiss_parameters()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.project_particles"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.project_particles()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.regrid"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.regrid()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.resample_via_gaussian_kde"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.resample_via_gaussian_kde()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.reset_phase_space"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.reset_phase_space()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.set_units"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.set_units()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.sort"><code class="docutils literal notranslate"><span class="pre">PhaseSpace.sort()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -359,6 +362,23 @@ before being randomly sampled.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.merge">
+<span class="sig-name descname"><span class="pre">merge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_place</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.merge" title="Permalink to this definition"></a></dt>
+<dd><p>merges identical data points by combining their weights.
+Typically, before performing a merge operation you will want to perform a ‘regrid’ operation.
+The underlying algorithm was developed by Leo Esnault for 
+the <a class="reference external" href="https://github.com/lesnat/p2sat">p2sat</a> code.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>in_place</strong> – if True, self is operated on; if False, a new PhaseSpace is returned</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>new_PS if in_place is False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_energy_hist_1D">
 <span class="sig-name descname"><span class="pre">plot_energy_hist_1D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_bins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.plot_energy_hist_1D" title="Permalink to this definition"></a></dt>
 <dd><p>generate a histogram plot of paritcle energies.
@@ -561,6 +581,30 @@ a new PhaseSpace object is returned</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.regrid">
+<span class="sig-name descname"><span class="pre">regrid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">quantities:</span> <span class="pre">(&lt;class</span> <span class="pre">'list'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">None)</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_bins:</span> <span class="pre">(&lt;class</span> <span class="pre">'int'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">&lt;class</span> <span class="pre">'list'&gt;)</span> <span class="pre">=</span> <span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_place=False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.regrid" title="Permalink to this definition"></a></dt>
+<dd><dl>
+<dt>this re-grids each quantity in quantities onto a new grid. The new grid is defined by</dt><dd><p>np.linspace(min(quantity, max(quantity), n_bins). Regridding following by merging is a good way of combining particles
+which are very close together. The underlying algorithm was developed by Leo Esnault for the 
+<a class="reference external" href="https://github.com/lesnat/p2sat">p2sat</a> code:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">regrid</span><span class="p">()</span>
+<span class="n">PS</span><span class="o">.</span><span class="n">regrid</span><span class="p">(</span><span class="n">quantities</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">n_bins</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>quantities</strong> – Quantities to regrid; if None defaults of [‘x’, ‘y’, ‘z’, ‘px’, ‘py’, ‘pz’, ‘time’] are used.</p></li>
+<li><p><strong>n_bins</strong> – number of bins to rebin into. Can be a single number, in which case this is applied to all quantities,
+or a list of integers, one per quantity</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.resample_via_gaussian_kde">
 <span class="sig-name descname"><span class="pre">resample_via_gaussian_kde</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_new_particles_factor:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolate_weights:</span> <span class="pre">(&lt;class</span> <span class="pre">'bool'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">None)</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.resample_via_gaussian_kde" title="Permalink to this definition"></a></dt>
 <dd><p>Generate a new phase space based on the existing data, by fitting a gaussian kernel density
@@ -596,6 +640,22 @@ This will also reset the phase space to just the required columns</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>new_units</strong> (<em>UnitSet</em>) – the new units to convert to</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.sort">
+<span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">quantities_to_sort:</span> <span class="pre">(None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">&lt;class</span> <span class="pre">'list'&gt;)</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.sort" title="Permalink to this definition"></a></dt>
+<dd><p>sort the data. Data will be sorted according quantities_to_sort, in order of quantity.
+Operates in place. example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">quantities_to_sort</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">PS</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">quantities_to_sort</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="s1">&#39;px&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>quantities_to_sort</strong> – </p>
 </dd>
 </dl>
 </dd></dl>
