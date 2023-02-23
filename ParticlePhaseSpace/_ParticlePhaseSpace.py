@@ -1,23 +1,20 @@
-from timeit import timeit
-
 import numpy as np
 from matplotlib import pyplot as plt
 import logging
 import pandas as pd
-
 logging.basicConfig(level=logging.WARNING)
 import warnings
 from scipy.stats import gaussian_kde
 from scipy import constants
 import json
 from pathlib import Path
+from time import perf_counter
 import ParticlePhaseSpace.__phase_space_config__ as ps_cfg
 import ParticlePhaseSpace.__particle_config__ as particle_cfg
 from ParticlePhaseSpace.DataLoaders import _DataLoadersBase
 from ParticlePhaseSpace import utilities as ps_util
 from ParticlePhaseSpace import DataLoaders
 from ParticlePhaseSpace import UnitSet, ParticlePhaseSpaceUnits
-
 
 
 class _FigureSpecs:
@@ -319,9 +316,40 @@ class PhaseSpace:
         return x_data_1, div_data_1, x_label_1, y_label_1, title_1, weight, elipse_parameters_1, \
             x_data_2, div_data_2, x_label_2, y_label_2, title_2, elipse_parameters_2
 
+    def _get_quantities(self, quantities):
+        """
+        process user inputs and return a valid list of quantities to process;
+         used by various methods that accept a quantities lsit
+        :param quantities:
+        :return:
+        """
+        if quantities is None:
+            quantities = ['x', 'y', 'z', 'px', 'py', 'pz', 'time']
+        if isinstance(quantities, str):
+            quantities = [quantities]  # in case user passes e.g. 'x'
+        for quantity in quantities:
+            if not quantity in self._columns.keys():
+                raise AttributeError(f'{quantity} is not a valid quantity: valid quantites are:'
+                                     f'\n{self._columns.keys()}')
+            if not self._columns[quantity] in self._ps_data.columns:
+                raise AttributeError(f'quantity {quantity} is valid, but is not currently included in PhaseSpace data. '
+                                     f'\nUse one of the "fill" methods to fill in this quantity')
+        return quantities
+
+    def _quantities_to_column_names(self, quantities):
+        """
+        convert generic quantities ('x' 'px' etc.) to unit appropriate column names
+        :param quantities:
+        :return:
+        """
+        column_names = []
+        for quantity in quantities:
+            column_names.append(self._columns[quantity])
+        return column_names
+
     # public methods
 
-    def plot_energy_hist_1D(self, n_bins: int=100, grid: bool=False):  # pragma: no cover
+    def plot_energy_hist_1D(self, n_bins: int = 100, grid: bool = False):  # pragma: no cover
         """
         generate a histogram plot of paritcle energies.
         Each particle spcies present in the phase space is overlaid  on the same plot.
@@ -353,7 +381,7 @@ class PhaseSpace:
         plt.tight_layout()
         plt.show()
 
-    def plot_position_hist_1D(self, n_bins: int=100, alpha: float=0.5, grid: bool=False):  # pragma: no cover
+    def plot_position_hist_1D(self, n_bins: int = 100, alpha: float = 0.5, grid: bool = False):  # pragma: no cover
         """
         plot a histogram of particle positions in x, y, z.
         a new histogram is generated for each particle species.
@@ -398,7 +426,7 @@ class PhaseSpace:
         plt.tight_layout()
         plt.show()
 
-    def plot_momentum_hist_1D(self, n_bins: int=100, alpha: float=0.5, grid: bool=False):
+    def plot_momentum_hist_1D(self, n_bins: int = 100, alpha: float = 0.5, grid: bool = False):
         """
         plot a histogram of particle momentum in x, y, z.
         a new histogram is generated for each particle species.
@@ -443,8 +471,8 @@ class PhaseSpace:
         plt.tight_layout()
         plt.show()
 
-    def plot_particle_positions_scatter_2D(self, beam_direction: str='z', weight_position_plot: bool=False,
-                                           grid: bool=True, xlim=None, ylim=None):  # pragma: no cover
+    def plot_particle_positions_scatter_2D(self, beam_direction: str = 'z', weight_position_plot: bool = False,
+                                           grid: bool = True, xlim=None, ylim=None):  # pragma: no cover
         """
         produce a scatter plot of particle positions.
         one plot is produced for each unique species.
@@ -521,9 +549,10 @@ class PhaseSpace:
         plt.tight_layout()
         plt.show()
 
-    def plot_particle_positions_hist_2D(self, beam_direction: str='z', quantity: str='intensity',
-                                             grid: bool=True, log_scale: bool=False, bins: int=100,
-                                             normalize: bool=True, xlim=None, ylim=None, vmin=None, vmax=None,):  # pragma: no cover
+    def plot_particle_positions_hist_2D(self, beam_direction: str = 'z', quantity: str = 'intensity',
+                                        grid: bool = True, log_scale: bool = False, bins: int = 100,
+                                        normalize: bool = True, xlim=None, ylim=None, vmin=None,
+                                        vmax=None, ):  # pragma: no cover
         """
         plot a 2D histogram of data, either of accumulated number of particules or accumulated energy
 
@@ -561,7 +590,7 @@ class PhaseSpace:
         if not quantity in ['intensity', 'energy']:
             raise NotImplementedError('quantity must be "intensity" or "energy"')
 
-        if not self._columns['Ek'] in self._ps_data.columns:
+        if (not self._columns['Ek'] in self._ps_data.columns):
             self.fill_kinetic_E()
         for particle in self._unique_particles:
             ind = self._ps_data['particle type [pdg_code]'] == particle
@@ -618,8 +647,8 @@ class PhaseSpace:
         plt.tight_layout()
         plt.show()
 
-    def plot_transverse_trace_space_scatter_2D(self, beam_direction: str='z', plot_twiss_ellipse: bool=True,
-                                               grid: bool=True, xlim=None, ylim=None, ):  # pragma: no cover
+    def plot_transverse_trace_space_scatter_2D(self, beam_direction: str = 'z', plot_twiss_ellipse: bool = True,
+                                               grid: bool = True, xlim=None, ylim=None, ):  # pragma: no cover
         """
         Generate a scatter plot of x versus x'=px/pz and y versus y'=py/pz (these definitions are for
         beam_direction='z')
@@ -682,9 +711,10 @@ class PhaseSpace:
         plt.tight_layout()
         plt.show()
 
-    def plot_transverse_trace_space_hist_2D(self, beam_direction: str='z', plot_twiss_ellipse: bool=True,
-                                            grid: bool=True, bins: int=100,  log_scale: bool=True, normalize: bool=True,
-                                            xlim=None, ylim=None, vmin=None, vmax=None,):  # pragma: no cover
+    def plot_transverse_trace_space_hist_2D(self, beam_direction: str = 'z', plot_twiss_ellipse: bool = True,
+                                            grid: bool = True, bins: int = 100, log_scale: bool = True,
+                                            normalize: bool = True,
+                                            xlim=None, ylim=None, vmin=None, vmax=None, ):  # pragma: no cover
         """
         plot the intensity of the beam in trace space
 
@@ -730,11 +760,12 @@ class PhaseSpace:
             X = np.linspace(xlim[0], xlim[1], bins)
             Y = np.linspace(ylim[0], ylim[1], bins)
             _extent = [xlim[0], xlim[1], ylim[0], ylim[1]]
-            h, xedges, yedges = np.histogram2d(x_data_1, div_data_1, bins=[X, Y], weights=ps_data[self._columns['weight']])
+            h, xedges, yedges = np.histogram2d(x_data_1, div_data_1, bins=[X, Y],
+                                               weights=ps_data[self._columns['weight']])
             if normalize:
                 h = h * 100 / h.max()
             _im1 = axs[row, 0].pcolormesh(xedges, yedges, h.T, cmap='inferno',
-                                            norm=_scale, rasterized=False, vmin=vmin, vmax=vmax)
+                                          norm=_scale, rasterized=False, vmin=vmin, vmax=vmax)
             fig.colorbar(_im1, ax=axs[row, 0])
             axs[row, 0].set_xlabel(x_label_1)
             axs[row, 0].set_ylabel(y_label_1)
@@ -746,7 +777,8 @@ class PhaseSpace:
             axs[row, 0].set_xlim(xlim)
             axs[row, 0].set_ylim(ylim)
             axs[row, 0].set_aspect('auto')
-            h, xedges, yedges = np.histogram2d(x_data_2, div_data_2, bins=[X, Y], weights=ps_data[self._columns['weight']])
+            h, xedges, yedges = np.histogram2d(x_data_2, div_data_2, bins=[X, Y],
+                                               weights=ps_data[self._columns['weight']])
             if normalize:
                 h = h * 100 / h.max()
             _im2 = axs[row, 1].pcolormesh(xedges, yedges, h.T, cmap='inferno',
@@ -770,7 +802,7 @@ class PhaseSpace:
         plt.tight_layout()
         plt.show()
 
-    def plot_n_particles_v_time(self, n_bins: int = 100, grid: bool=False):  # pragma: no cover
+    def plot_n_particles_v_time(self, n_bins: int = 100, grid: bool = False):  # pragma: no cover
         """
         basic plot of number of particles versus time; useful for quickly seperating out different bunches
         of electrons such that you can apply the 'filter_by_time' method
@@ -819,7 +851,7 @@ class PhaseSpace:
                   f'\n        min energy {self.energy_stats[particle]["min energy"]: 1.2f} {self._units.energy.label}'
                   f'\n        max energy {self.energy_stats[particle]["max energy"]: 1.2f} {self._units.energy.label}')
 
-    def print_twiss_parameters(self, file_name=None, beam_direction: str='z'):  # pragma: no cover
+    def print_twiss_parameters(self, file_name=None, beam_direction: str = 'z'):  # pragma: no cover
         """
         prints the twiss parameters if they exist
         they are always printed to the screen.
@@ -830,8 +862,9 @@ class PhaseSpace:
         :param beam_direction: the direction the beam is travelling in. "x", "y", or "z" (default)
         :type beam_direction: str, optional
         """
-        if not self.twiss_parameters:
-            self.calculate_twiss_parameters(beam_direction=beam_direction)
+        for particle in self._unique_particles:
+            if not self.twiss_parameters:
+                self.calculate_twiss_parameters(beam_direction=beam_direction)
         if file_name:
             file_name = Path(file_name)
             if not file_name.parent.is_dir():
@@ -907,10 +940,10 @@ class PhaseSpace:
 
     def fill_absolute_momentum(self):
 
-        self._ps_data[self._columns['p_abs']] = np.sqrt(
+        self._ps_data[self._columns['p_abs']] = np.sqrt((
             self._ps_data[self._columns['px']] ** 2 +
             self._ps_data[self._columns['py']] ** 2 +
-            self._ps_data[self._columns['pz']] ** 2)
+            self._ps_data[self._columns['pz']] ** 2).to_numpy())
 
     def fill_beta_and_gamma(self):
         """
@@ -953,7 +986,7 @@ class PhaseSpace:
         self._ps_data[self._columns['Direction Cosine Z']] = self._ps_data[self._columns['pz']] / V
         self._check_ps_data_format()
 
-    def get_downsampled_phase_space(self, downsample_factor: int=10):
+    def get_downsampled_phase_space(self, downsample_factor: int = 10):
         """
         return a new phase space object which randomlt samples from the larger phase space.
         the new phase space has size 'original data/downsample_factor'. the data is shuffled
@@ -1032,7 +1065,7 @@ class PhaseSpace:
                                                sample_weight=ps_data['weight'])
             self.energy_stats[particle_name]['energy spread IQR'] = q25 - q75
 
-    def project_particles(self, beam_direction: str='z', distance: float=100, in_place: bool=False):
+    def project_particles(self, beam_direction: str = 'z', distance: float = 100, in_place: bool = False):
         """
         Update the positions of each particle by projecting it forward/back by distance.
 
@@ -1102,8 +1135,9 @@ class PhaseSpace:
         self.energy_stats = {}
         self._check_ps_data_format()
         self._unique_particles = self._ps_data['particle type [pdg_code]'].unique()
+        self._ps_data['particle id'] = self._ps_data['particle id'].astype(np.int64)  # seems to keep getting recast as float which is annoying
 
-    def assess_density_versus_r(self, Rvals=None, verbose: bool=True, beam_direction: str='z'):
+    def assess_density_versus_r(self, Rvals=None, verbose: bool = True, beam_direction: str = 'z'):
         """
         Assess how many particles are in a given radius
 
@@ -1165,7 +1199,7 @@ class PhaseSpace:
         print(f'Filtered data contains {len(new_instance): d} particles')
         return new_instance
 
-    def filter_by_boolean_index(self, boolean_index, in_place:bool=False, split: bool=False):
+    def filter_by_boolean_index(self, boolean_index, in_place: bool = False, split: bool = False):
         """
         filter data by input boolean index, keeping 'True' and discarding 'False'
 
@@ -1188,7 +1222,7 @@ class PhaseSpace:
             boolean_index_false_PS = PhaseSpace(ps_data)
             print(f'data where boolean_index=True accounts for'
                   f' {(np.count_nonzero(boolean_index) * 100 / len(boolean_index)): 1.1f} %'
-                  f'of the original data')
+                  f' of the original data')
             return boolean_index_true_PS, boolean_index_false_PS
         if in_place:
             self.ps_data = self.ps_data[boolean_index].reset_index().drop('index', axis=1)
@@ -1234,7 +1268,7 @@ class PhaseSpace:
     def get_units(self):
         return self._units
 
-    def resample_via_gaussian_kde(self, n_new_particles_factor: int=1, interpolate_weights: (bool, None)=None):
+    def resample_via_gaussian_kde(self, n_new_particles_factor: int = 1, interpolate_weights: (bool, None) = None):
         """
         Generate a new phase space based on the existing data, by fitting a gaussian kernel density
         estimate to the 6-D space:
@@ -1265,7 +1299,7 @@ class PhaseSpace:
                 interpolate_weights = False
 
         if interpolate_weights:
-            n_new_particles = int(len(self)*n_new_particles_factor)
+            n_new_particles = int(len(self) * n_new_particles_factor)
             xyz_pxpypz_w = np.vstack([self.ps_data[self._columns['x']],
                                       self.ps_data[self._columns['y']],
                                       self.ps_data[self._columns['z']],
@@ -1276,13 +1310,13 @@ class PhaseSpace:
             k = gaussian_kde(xyz_pxpypz_w)
             new_points = k.resample(n_new_particles)
         else:
-            n_new_particles = int(len(self)*n_new_particles_factor)
+            n_new_particles = int(len(self) * n_new_particles_factor)
             xyz_pxpypz = np.vstack([self.ps_data[self._columns['x']],
-                                      self.ps_data[self._columns['y']],
-                                      self.ps_data[self._columns['z']],
-                                      self.ps_data[self._columns['px']],
-                                      self.ps_data[self._columns['py']],
-                                      self.ps_data[self._columns['pz']]])
+                                    self.ps_data[self._columns['y']],
+                                    self.ps_data[self._columns['z']],
+                                    self.ps_data[self._columns['px']],
+                                    self.ps_data[self._columns['py']],
+                                    self.ps_data[self._columns['pz']]])
             k = gaussian_kde(xyz_pxpypz, weights=self._ps_data[self._columns['weight']])
             new_points = k.resample(n_new_particles)
             _new_weights = np.ones(new_points.shape[1]) * np.mean(self._ps_data[self._columns['weight']])
@@ -1314,4 +1348,120 @@ class PhaseSpace:
         new_PS = PhaseSpace(new_data)
         return new_PS
 
+    def sort(self, quantities_to_sort: (None, list) = None):
+        """
+        sort the data. Data will be sorted according quantities_to_sort, in order of quantity.
+        Operates in place. example::
 
+            PS.sort(quantities_to_sort='x')
+            PS.sort(quantities_to_sort=['x', 'y', 'z', 'px'])
+
+        :param quantities_to_sort:
+        """
+        quantities = self._get_quantities(quantities_to_sort)
+        column_names_sort = self._quantities_to_column_names(quantities)
+        # sort:
+        self._ps_data.sort_values(column_names_sort, axis=0, ascending=True, inplace=True,
+                                  kind='quicksort', na_position='last',
+                                  ignore_index=True, key=None)
+
+    def regrid(self, quantities: (list, None) = None, n_bins: (int, list) = 10, in_place=False):
+        """
+        this re-grids each quantity in quantities onto a new grid. The new grid is defined by
+         np.linspace(min(quantity, max(quantity), n_bins). Regridding following by merging is a good way of combining particles
+         which are very close together. The underlying algorithm was developed by Leo Esnault for the 
+         `p2sat <https://github.com/lesnat/p2sat>`_ code::
+         
+            PS.regrid()
+            PS.regrid(quantities=['x', 'y'], n_bins=50)
+
+        :param quantities: Quantities to regrid; if None defaults of ['x', 'y', 'z', 'px', 'py', 'pz', 'time'] are used.
+        :param n_bins: number of bins to rebin into. Can be a single number, in which case this is applied to all quantities,
+            or a list of integers, one per quantity
+        """
+
+        def _rounder(values):
+            """
+            function to round the values of an array to closest point in second array.
+            Full credit here:
+            https://stackoverflow.com/questions/33450235/rounding-a-list-of-values-to-the-nearest-value-from-another-list-in-python
+            """
+            def f(x):
+                idx = np.argmin(np.abs(values - x))
+                return values[idx]
+            return np.frompyfunc(f, 1, 1)
+
+        # set up quantities to regrid:
+        quantities = self._get_quantities(quantities)
+
+        # set up bins:
+        if isinstance(n_bins, int):
+            # all quantities have same number of bins
+            n_bins = [n_bins] * len(quantities)
+        elif isinstance(n_bins, list):
+            # different number of bins per quantity
+            if not len(n_bins) == len(quantities):
+                raise Exception(f'length of bins must equal length of quantities; '
+                                f'\nyou have len(n_bins)={len(n_bins)} and len(quantities)={len(quantities)}')
+        bin_array = {}
+        for quantity, bin_length in zip(quantities, n_bins):
+            bin_min = self._ps_data[self._columns[quantity]].min()
+            bin_max = self._ps_data[self._columns[quantity]].max()
+            bin_array[quantity] = np.linspace(bin_min, bin_max, bin_length)
+        new_data = self._ps_data.copy(True)
+        for quantity in quantities:
+            q_bins = bin_array[quantity]
+            if len(np.unique(q_bins)) == 1:
+                print(f'not regriding {quantity} as it is already single valued')
+                # skip quantities that are already single valued
+                continue
+            new_data[self._columns[quantity]] = list(_rounder(q_bins)(self._ps_data[self._columns[quantity]]))
+            # new_data[self._columns[quantity]] = rounded_new_quantity
+        if in_place:
+            self.ps_data = new_data
+            self.reset_phase_space()
+        else:
+            # new_data[self._columns['particle type']] = new_data[self._columns['particle type']].astype(np.int32)
+            ps_data = DataLoaders.Load_PandasData(new_data)
+            new_PS = PhaseSpace(ps_data)
+            return new_PS
+
+    def merge(self, in_place=False):
+        """
+        merges identical data points by combining their weights.
+        Typically, before performing a merge operation you will want to perform a 'regrid' operation.
+        The underlying algorithm was developed by Leo Esnault for 
+        the `p2sat <https://github.com/lesnat/p2sat>`_ code.
+
+        :param in_place: if True, self is operated on; if False, a new PhaseSpace is returned
+        :return: new_PS if in_place is False.
+        """
+
+        def _add_weights(x):
+            new_weight = x['weight'].sum()
+            new_particle_ID = x[self._columns['particle id']].iloc[0]
+            mean_data = x.mean()
+            mean_data['weight'] = new_weight
+            mean_data[self._columns['particle id']] = new_particle_ID
+            return mean_data
+
+        self.reset_phase_space()
+        # first sort the phase space
+        quantities_to_merge = self._get_quantities(['x', 'y', 'z', 'px', 'py', 'pz', 'time', 'particle type'])
+        # self.sort(quantities_to_sort=quantities_to_merge)
+        column_names_merge = self._quantities_to_column_names(quantities_to_merge)
+        start_time = perf_counter()
+        new_data = self._ps_data.groupby(column_names_merge).apply(_add_weights)
+        new_data.index = np.arange(new_data.shape[0])
+        # if this worked, the sum of weight should be the same:
+        assert np.isclose(new_data['weight'].sum(), self._ps_data['weight'].sum())
+        print(f'merge operation removed {len(self) - new_data.shape[0]: d} particles. Original data had {len(self): d}')
+        print(f'merge operation took {perf_counter() - start_time: 1.1f} s')
+        if in_place:
+            self.ps_data = new_data
+            self.reset_phase_space()
+        else:
+            # new_data[self._columns['particle type']] = new_data[self._columns['particle type']].astype(np.int32)
+            ps_data = DataLoaders.Load_PandasData(new_data)
+            new_PS = PhaseSpace(ps_data)
+            return new_PS
