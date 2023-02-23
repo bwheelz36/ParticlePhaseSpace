@@ -9,4 +9,5 @@ Examples
    /new_data_loader
    /new_data_exporter
    /units
+   /grid_merge
    /resampling_via_gaussian_kde
