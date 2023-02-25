@@ -51,7 +51,6 @@ class _DataExportersBase(ABC):
         check that the columns that are required for data export are actually allowed
         :return:
         """
-        allowed_columns = list(ps_cfg.get_all_column_names(self._units).values())
         allowed_columns = ps_cfg.required_columns + list(ps_cfg.allowed_columns.keys())
         for col in self._required_columns:
             if not col in allowed_columns:
@@ -62,14 +61,12 @@ class _DataExportersBase(ABC):
         fill in any data required for the export
         :return:
         """
-        allowed_columns = ps_cfg.required_columns + list(ps_cfg.allowed_columns.keys())
-
         for col in self._required_columns:
             if col in ps_cfg.required_columns:
                 continue
             if not col in self._PS.ps_data.columns:
                 try:
-                    self._PS.__getattribute__(ps_cfg.allowed_columns[col])()
+                    self._PS.fill.__getattribute__(ps_cfg.allowed_columns[col])()
                 except (AttributeError, KeyError):
                     raise AttributeError(f'unable to fill required column {col}')
 

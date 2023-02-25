@@ -29,21 +29,22 @@ allowed_columns = {name of column: name of method to calculate it in _ParticlePh
 automatic testing is applied to ensure all these methods can be calculated
 '''
 
-allowed_columns = {'Ek': 'fill_kinetic_E',  # Kinetic energy
-                   'rest mass': 'fill_rest_mass',  # rest mass
-                   'relativistic mass': 'fill_relativistic_mass',  # relatavistic mass
-                   'gamma': 'fill_beta_and_gamma',   # lorentz factor
-                   'beta_x': 'fill_beta_and_gamma',    # relatavistic beta vx/c
-                   'beta_y': 'fill_beta_and_gamma',    # relatavistic beta vy/c
-                   'beta_z': 'fill_beta_and_gamma',    # relatavistic beta vz/c
-                   'beta_abs': 'fill_beta_and_gamma',    # relatavistic beta v/c
-                   'vx': 'fill_velocity',  # x velocity
-                   'vy': 'fill_velocity',  # y velocity
-                   'vz': 'fill_velocity',  # z velocity
-                   'Direction Cosine X': 'fill_direction_cosines',  # x cosine of momentum
-                   'Direction Cosine Y': 'fill_direction_cosines',  # y cosine of momentum
-                   'Direction Cosine Z': 'fill_direction_cosines',  # z cosine of momentum
-                   'p_abs': 'fill_absolute_momentum'}
+
+allowed_columns = {'Ek': 'kinetic_E',  # Kinetic energy
+                   'rest mass': 'rest_mass',  # rest mass
+                   'relativistic mass': 'relativistic_mass',  # relatavistic mass
+                   'gamma': 'beta_and_gamma',   # lorentz factor
+                   'beta_x': 'beta_and_gamma',    # relatavistic beta vx/c
+                   'beta_y': 'beta_and_gamma',    # relatavistic beta vy/c
+                   'beta_z': 'beta_and_gamma',    # relatavistic beta vz/c
+                   'beta_abs': 'beta_and_gamma',    # relatavistic beta v/c
+                   'vx': 'velocity',  # x velocity
+                   'vy': 'velocity',  # y velocity
+                   'vz': 'velocity',  # z velocity
+                   'Direction Cosine X': 'direction_cosines',  # x cosine of momentum
+                   'Direction Cosine Y': 'direction_cosines',  # y cosine of momentum
+                   'Direction Cosine Z': 'direction_cosines',  # z cosine of momentum
+                   'p_abs': 'absolute_momentum'}  # absolute momentum
 
 
 
