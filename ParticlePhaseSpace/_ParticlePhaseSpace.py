@@ -68,7 +68,7 @@ class _Plots(_PhaseSpace_MethodHolder):
         """
         Efig, axs = plt.subplots()
         if not self._PS.columns['Ek'] in self._PS._ps_data.columns:
-            self._PS.fill_kinetic_E()
+            self._PS.fill.kinetic_E()
         legend = []
         for particle in self._PS._unique_particles:
             legend.append(particle_cfg.particle_properties[particle]['name'])
@@ -297,7 +297,7 @@ class _Plots(_PhaseSpace_MethodHolder):
             raise NotImplementedError('quantity must be "intensity" or "energy"')
 
         if (not self._PS.columns['Ek'] in self._PS._ps_data.columns):
-            self._PS.fill_kinetic_E()
+            self._PS.fill.kinetic_E()
         for particle in self._PS._unique_particles:
             ind = self._PS._ps_data['particle type [pdg_code]'] == particle
             ps_data = self._PS._ps_data.loc[ind]
@@ -1065,7 +1065,7 @@ class PhaseSpace:
 
     def calculate_energy_statistics(self):
         if not self.columns['Ek'] in self._ps_data.columns:
-            self.fill_kinetic_E()
+            self.fill.kinetic_E()
         for particle in self._unique_particles:
             particle_name = particle_cfg.particle_properties[particle]['name']
             self.energy_stats[particle_name] = {}
