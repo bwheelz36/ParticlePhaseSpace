@@ -45,6 +45,8 @@ allowed_columns = {'Ek': 'fill_kinetic_E',  # Kinetic energy
                    'Direction Cosine Z': 'fill_direction_cosines',  # z cosine of momentum
                    'p_abs': 'fill_absolute_momentum'}
 
+
+
 def _check_all_column_names(column_names: dict):
 
     allowed_column_names = required_columns + list(allowed_columns.keys())
@@ -59,6 +61,7 @@ def _check_all_column_names(column_names: dict):
     # check that all allowed columns and defined columns same length
     assert len(allowed_column_names) == len(column_names)
 
+
 def get_all_column_names(units: UnitSet):
     """
     return a dictionary of column names appropriate for the unit set defined in units
@@ -67,9 +70,6 @@ def get_all_column_names(units: UnitSet):
     :type units: UnitSet
     :return: column_names: dictionary of unit-appropriate columns names
     """
-
-    # if not isinstance(units, ParticlePhaseSpaceUnits):
-    #     raise TypeError('units must be an instance of articlePhaseSpace.ParticlePhaseSpaceUnits')
 
     column_names = {'x': f'x [{units.length.label}]',
                     'y': f'y [{units.length.label}]',
@@ -99,6 +99,7 @@ def get_all_column_names(units: UnitSet):
     _check_all_column_names(column_names)
     return column_names
 
+
 def get_required_column_names(units: UnitSet):
 
     all_column_names = get_all_column_names(units)
@@ -106,6 +107,4 @@ def get_required_column_names(units: UnitSet):
     for column in required_columns:
         required_column_names.append(all_column_names[column])
     return required_column_names
-
-
 
