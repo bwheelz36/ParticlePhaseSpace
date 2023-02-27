@@ -20,7 +20,7 @@ PS = PhaseSpace(data)
 def test_all_allowed_columns_can_be_filled():
     for col in list(ps_cfg.allowed_columns.keys()):
         try:
-            PS.__getattribute__(ps_cfg.allowed_columns[col])()
+            PS.fill.__getattribute__(ps_cfg.allowed_columns[col])()
         except AttributeError:
             raise AttributeError(f'unable to fill required column {col}')
 
@@ -186,8 +186,8 @@ def test_beta_gamma_momentum_relation():
     PS = PhaseSpace(data)
     PS_electrons = PS('electrons')
 
-    PS_electrons.fill_beta_and_gamma()
-    PS_electrons.fill_rest_mass()
+    PS_electrons.fill.beta_and_gamma()
+    PS_electrons.fill.rest_mass()
     px = np.multiply(np.multiply(PS_electrons.ps_data['beta_x'], PS_electrons.ps_data['gamma']),
                      PS_electrons.ps_data['rest mass [MeV/c^2]'])
     assert np.allclose(px, PS_electrons.ps_data['px [MeV/c]'])

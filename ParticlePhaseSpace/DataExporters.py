@@ -129,7 +129,7 @@ class Topas_Exporter(_DataExportersBase):
         """
 
         if 'windows' in platform.system().lower():
-            raise Exception('to generate a valid file, please use a unix-based system')
+            warnings.warn('to generate a valid file, please use a unix-based system')
         print('generating topas data file')
 
         self._generate_topas_header_file()
@@ -194,19 +194,19 @@ class Topas_Exporter(_DataExportersBase):
         for particle in self._PS._unique_particles:
             if particle_cfg.particle_properties[particle]['name'] == 'electrons':
                 electron_PS = self._PS('electrons')
-                electron_PS.fill_kinetic_E()
+                electron_PS.fill.kinetic_E()
                 particle_number_string.append('Number of e-: ' + str(len(electron_PS.ps_data['x [mm]'])) )
                 minimum_Ek_string.append('Minimum Kinetic Energy of e-: ' + str(min(electron_PS.ps_data['Ek [MeV]'])) + ' MeV')
                 maximum_Ek_string.append('Maximum Kinetic Energy of e-: ' + str(max(electron_PS.ps_data['Ek [MeV]'])) + ' MeV')
             elif particle_cfg.particle_properties[particle]['name'] == 'positrons':
                 positron_PS = self._PS('positrons')
-                positron_PS.fill_kinetic_E()
+                positron_PS.fill.kinetic_E()
                 particle_number_string.append('Number of e+: ' + str(len(positron_PS.ps_data['x [mm]'])))
                 minimum_Ek_string.append('Minimum Kinetic Energy of e+: ' + str(min(positron_PS.ps_data['Ek [MeV]'])) + ' MeV')
                 maximum_Ek_string.append('Maximum Kinetic Energy of e+: ' + str(max(positron_PS.ps_data['Ek [MeV]'])) + ' MeV')
             elif particle_cfg.particle_properties[particle]['name'] == 'gammas':
                 gamma_PS = self._PS('gammas')
-                gamma_PS.fill_kinetic_E()
+                gamma_PS.fill.kinetic_E()
                 particle_number_string.append('Number of gamma: ' + str(len(gamma_PS.ps_data['x [mm]'])))
                 minimum_Ek_string.append('Minimum Kinetic Energy of gamma: ' + str(min(gamma_PS.ps_data['Ek [MeV]'])) + ' MeV')
                 maximum_Ek_string.append('Maximum Kinetic Energy of gamma: ' + str(max(gamma_PS.ps_data['Ek [MeV]'])) + ' MeV')

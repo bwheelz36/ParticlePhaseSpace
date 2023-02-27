@@ -16,6 +16,7 @@ from ParticlePhaseSpace import utilities as ps_util
 from ParticlePhaseSpace import DataLoaders
 from ParticlePhaseSpace import UnitSet, ParticlePhaseSpaceUnits
 from abc import ABC
+from numba import njit
 # from ._PS_public_methods import _Plots, _Fill_Methods
 
 
@@ -52,6 +53,7 @@ class _PhaseSpace_MethodHolder(ABC):
             if attribute == 'get_methods':
                 continue
             print(attribute)
+
 
 class _Plots(_PhaseSpace_MethodHolder):
 
@@ -634,7 +636,6 @@ class _Fill_Methods(_PhaseSpace_MethodHolder):
         self._PS._ps_data[self._PS.columns['Direction Cosine Y']] = self._PS._ps_data[self._PS.columns['py']] / V
         self._PS._ps_data[self._PS.columns['Direction Cosine Z']] = self._PS._ps_data[self._PS.columns['pz']] / V
         self._PS._check_ps_data_format()
-
 
 
 class PhaseSpace:
