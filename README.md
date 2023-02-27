@@ -32,4 +32,4 @@ Please use the 'issues' tab in this repository to report problems or request sup
 Below is a (almost certainly incomplete) list of other packages I have come accross for analysis of particle phase space data:
 
 - [p2sat](https://github.com/lesnat/p2sat)
-- [postpic](https://github.com/skuschel/postpic)
+- [postpic](https://github.com/skuschel/postpic) 
