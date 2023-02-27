@@ -51,7 +51,6 @@ class _DataExportersBase(ABC):
         check that the columns that are required for data export are actually allowed
         :return:
         """
-        allowed_columns = list(ps_cfg.get_all_column_names(self._units).values())
         allowed_columns = ps_cfg.required_columns + list(ps_cfg.allowed_columns.keys())
         for col in self._required_columns:
             if not col in allowed_columns:
@@ -62,14 +61,12 @@ class _DataExportersBase(ABC):
         fill in any data required for the export
         :return:
         """
-        allowed_columns = ps_cfg.required_columns + list(ps_cfg.allowed_columns.keys())
-
         for col in self._required_columns:
             if col in ps_cfg.required_columns:
                 continue
             if not col in self._PS.ps_data.columns:
                 try:
-                    self._PS.__getattribute__(ps_cfg.allowed_columns[col])()
+                    self._PS.fill.__getattribute__(ps_cfg.allowed_columns[col])()
                 except (AttributeError, KeyError):
                     raise AttributeError(f'unable to fill required column {col}')
 
@@ -132,7 +129,7 @@ class Topas_Exporter(_DataExportersBase):
         """
 
         if 'windows' in platform.system().lower():
-            raise Exception('to generate a valid file, please use a unix-based system')
+            warnings.warn('to generate a valid file, please use a unix-based system')
         print('generating topas data file')
 
         self._generate_topas_header_file()
@@ -197,19 +194,19 @@ class Topas_Exporter(_DataExportersBase):
         for particle in self._PS._unique_particles:
             if particle_cfg.particle_properties[particle]['name'] == 'electrons':
                 electron_PS = self._PS('electrons')
-                electron_PS.fill_kinetic_E()
+                electron_PS.fill.kinetic_E()
                 particle_number_string.append('Number of e-: ' + str(len(electron_PS.ps_data['x [mm]'])) )
                 minimum_Ek_string.append('Minimum Kinetic Energy of e-: ' + str(min(electron_PS.ps_data['Ek [MeV]'])) + ' MeV')
                 maximum_Ek_string.append('Maximum Kinetic Energy of e-: ' + str(max(electron_PS.ps_data['Ek [MeV]'])) + ' MeV')
             elif particle_cfg.particle_properties[particle]['name'] == 'positrons':
                 positron_PS = self._PS('positrons')
-                positron_PS.fill_kinetic_E()
+                positron_PS.fill.kinetic_E()
                 particle_number_string.append('Number of e+: ' + str(len(positron_PS.ps_data['x [mm]'])))
                 minimum_Ek_string.append('Minimum Kinetic Energy of e+: ' + str(min(positron_PS.ps_data['Ek [MeV]'])) + ' MeV')
                 maximum_Ek_string.append('Maximum Kinetic Energy of e+: ' + str(max(positron_PS.ps_data['Ek [MeV]'])) + ' MeV')
             elif particle_cfg.particle_properties[particle]['name'] == 'gammas':
                 gamma_PS = self._PS('gammas')
-                gamma_PS.fill_kinetic_E()
+                gamma_PS.fill.kinetic_E()
                 particle_number_string.append('Number of gamma: ' + str(len(gamma_PS.ps_data['x [mm]'])))
                 minimum_Ek_string.append('Minimum Kinetic Energy of gamma: ' + str(min(gamma_PS.ps_data['Ek [MeV]'])) + ' MeV')
                 maximum_Ek_string.append('Maximum Kinetic Energy of gamma: ' + str(max(gamma_PS.ps_data['Ek [MeV]'])) + ' MeV')

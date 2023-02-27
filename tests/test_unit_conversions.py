@@ -21,8 +21,8 @@ def test_consistency_of_unitless_quantities():
     data = DataLoaders.Load_TopasData(test_data_loc / 'coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp')
     PS = PhaseSpace(data)
     PS_electrons = PS('electrons')
-    PS_electrons.fill_beta_and_gamma()
-    PS_electrons.fill_direction_cosines()
+    PS_electrons.fill.beta_and_gamma()
+    PS_electrons.fill.direction_cosines()
     gamma_base = PS_electrons.ps_data['gamma'].copy()
     beta_base = PS_electrons.ps_data['beta_abs'].copy()
     cos_x_base = PS_electrons.ps_data['Direction Cosine X'].copy()
@@ -31,8 +31,8 @@ def test_consistency_of_unitless_quantities():
     unit_sets = available_units.get_available_unit_strings()
     for unit_set in unit_sets:
         PS_electrons.set_units(available_units(unit_set))
-        PS_electrons.fill_beta_and_gamma()
-        PS_electrons.fill_direction_cosines()
+        PS_electrons.fill.beta_and_gamma()
+        PS_electrons.fill.direction_cosines()
         for quantity, base in zip(['gamma', 'beta_abs', 'Direction Cosine X', 'Direction Cosine Y', 'Direction Cosine Z'],
                                   [gamma_base, beta_base, cos_x_base, cos_y_base, cos_z_base]):
             if not np.allclose(base, PS_electrons.ps_data[quantity]):
@@ -46,7 +46,7 @@ def test_velocity_consistency():
     test_data_loc = this_file_loc / 'test_data'
     data = DataLoaders.Load_TopasData(test_data_loc / 'coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp')
     PS = PhaseSpace(data)
-    PS.fill_velocity()
+    PS.fill.velocity()
     vx_base = PS.ps_data['vx [m/s]'].copy()
     vy_base = PS.ps_data['vy [m/s]'].copy()
     vz_base = PS.ps_data['vz [m/s]'].copy()
@@ -55,7 +55,7 @@ def test_velocity_consistency():
         if not available_units(unit_set).velocity.label == 'm/s':
             continue
         PS.set_units(available_units(unit_set))
-        PS.fill_velocity()
+        PS.fill.velocity()
         for quantity, base in zip(
                 ['vx [m/s]', 'vy [m/s]', 'vz [m/s]'],
                 [vx_base, vy_base, vz_base]):
