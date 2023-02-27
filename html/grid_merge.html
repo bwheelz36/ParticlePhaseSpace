@@ -375,7 +375,7 @@ div.rendered_html tbody tr:hover {
 <section id="Compress-phase-space-via-regrid/merge-operations">
 <h1>Compress phase space via regrid/merge operations<a class="headerlink" href="#Compress-phase-space-via-regrid/merge-operations" title="Permalink to this heading"></a></h1>
 <p>A simple mechanism to reduce the size of phase space data is to merge identical particles while adding their weights. In practice, this doesn’t tend to be that useful, because even in a large data set, there are quite few truly identical particles. What there <strong>are</strong> however, are many particles which are close together.</p>
-<p>This tutorial demonstrates how to explot this fact by first regridding phase space data (which in effect ‘nudges’ particles which are close together in 7-D space into the same bin) followed by merging the phase space. This algorithm is based on work originally developed by Léo Esnault for the <a class="reference external" href="https://github.com/lesnat/p2sat">p2sat</a> code.</p>
+<p>This tutorial demonstrates how to explot this fact by first regridding phase space data (which in effect ‘nudges’ particles which are close together in 7-D space into the same bin) followed by merging the phase space. This algorithm is based on work originally developed by LÃ©o Esnault for the <a class="reference external" href="https://github.com/lesnat/p2sat">p2sat</a> code.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -415,22 +415,14 @@ data where boolean_index=True accounts for  89.6 % of the original data
 </pre></div></div>
 </div>
 <p>Ok, so this operation removed about 10% of the input data. First, let’s try merging any identical particles:</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># PS.merge(in_place=True)</span>
+<span class="c1"># I&#39;m not actually going to run this because it slows test execution too much - but trust me: it doesn&#39;t have any effect!</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-merge operation removed  0 particles. Original data had  279094
-merge operation took  186.5 s
-</pre></div></div>
 </div>
 <p>We can see that not only did this not remove many particles, it also took an quite a long time!</p>
 <p>Let’s try the same thing after performing a re-grid operation:</p>
@@ -465,7 +457,7 @@ not regriding time as it is already single valued
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 merge operation removed  157174 particles. Original data had  279094
-merge operation took  70.5 s
+merge operation took  91.4 s
 </pre></div></div>
 </div>
 <p>What we have done here is regridded the default quantitiues [‘x’, ‘y’, ‘z’, ‘px’, ‘py’, ‘pz’, ‘time’] into 100 bins. The values for each bin are calculated based on the range of the input data. The resultant phase space is roughly 33% the size of the original data. Now, we can add back in the data we extracted previously:</p>
@@ -485,8 +477,8 @@ merge operation took  70.5 s
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">plot_particle_positions_hist_2D</span><span class="p">(</span><span class="n">xlim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span> <span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">])</span>
-<span class="n">new_PS</span><span class="o">.</span><span class="n">plot_particle_positions_hist_2D</span><span class="p">(</span><span class="n">xlim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span> <span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">])</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">particle_positions_hist_2D</span><span class="p">(</span><span class="n">xlim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span> <span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">])</span>
+<span class="n">new_PS</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">particle_positions_hist_2D</span><span class="p">(</span><span class="n">xlim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span> <span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -508,8 +500,8 @@ merge operation took  70.5 s
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">plot_position_hist_1D</span><span class="p">()</span>
-<span class="n">new_PS</span><span class="o">.</span><span class="n">plot_position_hist_1D</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">position_hist_1D</span><span class="p">()</span>
+<span class="n">new_PS</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">position_hist_1D</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -534,8 +526,8 @@ merge operation took  70.5 s
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">plot_energy_hist_1D</span><span class="p">()</span>
-<span class="n">new_PS</span><span class="o">.</span><span class="n">plot_energy_hist_1D</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">energy_hist_1D</span><span class="p">()</span>
+<span class="n">new_PS</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">energy_hist_1D</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -575,7 +567,7 @@ number of unique particle species:  3
      308280 gammas
         mean energy:  1.91 MeV
         median energy:  1.20 MeV
-        Energy spread IQR:  2.04 MeV
+        Energy spread IQR:  2.03 MeV
         min energy  0.01 MeV
         max energy  10.35 MeV
      2853 electrons
@@ -622,8 +614,8 @@ number of unique particle species:  3
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">plot_momentum_hist_1D</span><span class="p">()</span>
-<span class="n">new_PS</span><span class="o">.</span><span class="n">plot_momentum_hist_1D</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">momentum_hist_1D</span><span class="p">()</span>
+<span class="n">new_PS</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">momentum_hist_1D</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
