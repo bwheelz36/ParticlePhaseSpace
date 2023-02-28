@@ -310,8 +310,9 @@ before being randomly sampled.</p>
 <span class="sig-name descname"><span class="pre">merge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_place</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.merge" title="Permalink to this definition"></a></dt>
 <dd><p>merges identical data points by combining their weights.
 Typically, before performing a merge operation you will want to perform a ‘regrid’ operation.
-The underlying algorithm was developed by Leo Esnault for 
-the <a class="reference external" href="https://github.com/lesnat/p2sat">p2sat</a> code.</p>
+The underlying algorithm was developed by Leo Esnault for
+the <a class="reference external" href="https://github.com/lesnat/p2sat">p2sat</a> code.
+Merged particles retain the particle ID from the first particle in the merged group.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>in_place</strong> – if True, self is operated on; if False, a new PhaseSpace is returned</p>
@@ -386,7 +387,8 @@ which are very close together. The underlying algorithm was developed by Leo Esn
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>quantities</strong> – Quantities to regrid; if None defaults of [‘x’, ‘y’, ‘z’, ‘px’, ‘py’, ‘pz’, ‘time’] are used.</p></li>
+<li><p><strong>quantities</strong> – Quantities to regrid; if None defaults of [‘x’, ‘y’, ‘z’, ‘px’, ‘py’, ‘pz’, ‘time’] are used.
+quantities can be anything in PhaseSpace.columns</p></li>
 <li><p><strong>n_bins</strong> – number of bins to rebin into. Can be a single number, in which case this is applied to all quantities,
 or a list of integers, one per quantity</p></li>
 </ul>
