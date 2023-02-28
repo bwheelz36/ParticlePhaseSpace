@@ -1412,6 +1412,7 @@ class PhaseSpace:
             PS.regrid(quantities=['x', 'y'], n_bins=50)
 
         :param quantities: Quantities to regrid; if None defaults of ['x', 'y', 'z', 'px', 'py', 'pz', 'time'] are used.
+            quantities can be anything in PhaseSpace.columns
         :param n_bins: number of bins to rebin into. Can be a single number, in which case this is applied to all quantities,
             or a list of integers, one per quantity
         """
@@ -1440,6 +1441,7 @@ class PhaseSpace:
                 raise Exception(f'length of bins must equal length of quantities; '
                                 f'\nyou have len(n_bins)={len(n_bins)} and len(quantities)={len(quantities)}')
         bin_array = {}
+        start_time =perf_counter()
         for quantity, bin_length in zip(quantities, n_bins):
             bin_min = self._ps_data[self.columns[quantity]].min()
             bin_max = self._ps_data[self.columns[quantity]].max()
@@ -1453,6 +1455,7 @@ class PhaseSpace:
                 continue
             new_data[self.columns[quantity]] = list(_rounder(q_bins)(self._ps_data[self.columns[quantity]]))
             # new_data[self.columns[quantity]] = rounded_new_quantity
+        print(f'regrid operation took {perf_counter() - start_time: 1.1f} s')
         if in_place:
             self.ps_data = new_data
             self.reset_phase_space()
@@ -1466,32 +1469,31 @@ class PhaseSpace:
         """
         merges identical data points by combining their weights.
         Typically, before performing a merge operation you will want to perform a 'regrid' operation.
-        The underlying algorithm was developed by Leo Esnault for 
+        The underlying algorithm was developed by Leo Esnault for
         the `p2sat <https://github.com/lesnat/p2sat>`_ code.
+        Merged particles retain the particle ID from the first particle in the merged group.
 
         :param in_place: if True, self is operated on; if False, a new PhaseSpace is returned
         :return: new_PS if in_place is False.
         """
-
-        def _add_weights(x):
-            new_weight = x['weight'].sum()
-            new_particle_ID = x[self.columns['particle id']].iloc[0]
-            mean_data = x.mean()
-            mean_data['weight'] = new_weight
-            mean_data[self.columns['particle id']] = new_particle_ID
-            return mean_data
-
         self.reset_phase_space()
         # first sort the phase space
         quantities_to_merge = self._get_quantities(['x', 'y', 'z', 'px', 'py', 'pz', 'time', 'particle type'])
         # self.sort(quantities_to_sort=quantities_to_merge)
         column_names_merge = self._quantities_to_column_names(quantities_to_merge)
         start_time = perf_counter()
-        new_data = self._ps_data.groupby(column_names_merge).apply(_add_weights)
+        # new_data = self._ps_data.groupby(column_names_merge).apply(_add_weights)
+        merge_data = self._ps_data.groupby(column_names_merge, as_index=False)
+        new_data = merge_data.mean()
+        weights = merge_data.sum()[self.columns['weight']]
+        id = merge_data.first()[self.columns['particle id']]
+        new_data[self.columns['weight']] = weights
+        new_data[self.columns['particle id']] = id
         new_data.index = np.arange(new_data.shape[0])
         # if this worked, the sum of weight should be the same:
         assert np.isclose(new_data['weight'].sum(), self._ps_data['weight'].sum())
-        print(f'merge operation removed {len(self) - new_data.shape[0]: d} particles. Original data had {len(self): d}')
+        print(f'merge operation removed {len(self) - new_data.shape[0]: d} of {len(self): d}'
+              f' particles ({100 - (new_data.shape[0]*100/len(self)): 1.1f} % removed)')
         print(f'merge operation took {perf_counter() - start_time: 1.1f} s')
         if in_place:
             self.ps_data = new_data
