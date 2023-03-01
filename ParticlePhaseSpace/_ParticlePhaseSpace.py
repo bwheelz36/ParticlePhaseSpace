@@ -132,7 +132,7 @@ class _Plots(_PhaseSpace_MethodHolder):
         plt.tight_layout()
         plt.show()
 
-    def momentum_hist_1D(self, n_bins: int = 100, alpha: float = 0.5, grid: bool = False):
+    def momentum_hist_1D(self, n_bins: int = 100, alpha: float = 0.5, grid: bool = False):  # pragma: no cover
         """
         plot a histogram of particle momentum in x, y, z.
         a new histogram is generated for each particle species.
