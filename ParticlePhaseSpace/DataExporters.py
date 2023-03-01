@@ -29,17 +29,9 @@ class _DataExportersBase(ABC):
         self._output_name = output_name
         self._required_columns = []  # filled in _define_required_columns
         self._define_required_columns()
-        # self._convert_required_columns_to_expected_units()
         self._check_required_columns_allowed()
         self._fill_required_columns()
         self._export_data()
-
-    def _convert_required_columns_to_expected_units(self):
-        _columns = ps_cfg.get_all_column_names(self._expected_units)
-        _required_columns_with_units = []
-        for col in self._required_columns:
-            _required_columns_with_units.append(_columns[col])
-        self._required_columns = _required_columns_with_units
 
     def _check_output_location_exists(self):
         if not self._output_location.is_dir():
@@ -118,7 +110,6 @@ class Topas_Exporter(_DataExportersBase):
     def _define_required_columns(self):
         self._required_columns = ['x', 'y', 'z', 'Direction Cosine X', 'Direction Cosine Y',
                                   'Direction Cosine Z', 'Ek', 'weight', 'particle id']
-
 
     def _export_data(self):
         """
@@ -210,6 +201,22 @@ class Topas_Exporter(_DataExportersBase):
                 particle_number_string.append('Number of gamma: ' + str(len(gamma_PS.ps_data['x [mm]'])))
                 minimum_Ek_string.append('Minimum Kinetic Energy of gamma: ' + str(min(gamma_PS.ps_data['Ek [MeV]'])) + ' MeV')
                 maximum_Ek_string.append('Maximum Kinetic Energy of gamma: ' + str(max(gamma_PS.ps_data['Ek [MeV]'])) + ' MeV')
+            elif particle_cfg.particle_properties[particle]['name'] == 'neutrons':
+                neutrons_PS = self._PS('neutrons')
+                neutrons_PS.fill.kinetic_E()
+                particle_number_string.append('Number of neutrons: ' + str(len(neutrons_PS.ps_data['x [mm]'])))
+                minimum_Ek_string.append(
+                    'Minimum Kinetic Energy of neutron: ' + str(min(neutrons_PS.ps_data['Ek [MeV]'])) + ' MeV')
+                maximum_Ek_string.append(
+                    'Maximum Kinetic Energy of neutron: ' + str(max(neutrons_PS.ps_data['Ek [MeV]'])) + ' MeV')
+            elif particle_cfg.particle_properties[particle]['name'] == 'protons':
+                protons_PS = self._PS('protons')
+                protons_PS.fill.kinetic_E()
+                particle_number_string.append('Number of protons: ' + str(len(protons_PS.ps_data['x [mm]'])))
+                minimum_Ek_string.append(
+                    'Minimum Kinetic Energy of proton: ' + str(min(protons_PS.ps_data['Ek [MeV]'])) + ' MeV')
+                maximum_Ek_string.append(
+                    'Maximum Kinetic Energy of proton: ' + str(max(protons_PS.ps_data['Ek [MeV]'])) + ' MeV')
             else:
                 raise NotImplementedError(f'cannot currently export particle type {particle_cfg.particle_properties[particle]["name"]}.'
                                           f'\nneed to update header writer')
