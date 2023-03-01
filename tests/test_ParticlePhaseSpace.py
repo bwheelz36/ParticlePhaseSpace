@@ -106,6 +106,22 @@ def test_project_particles():
     assert np.allclose([x2, y2, z2], [PS_projected.ps_data['x [mm]'][0], PS_projected.ps_data['y [mm]'][0],
                                       PS_projected.ps_data['z [mm]'][0]])
 
+    # now in place:
+    x1 = PS.ps_data['x [mm]'][0]
+    y1 = PS.ps_data['y [mm]'][0]
+    z1 = PS.ps_data['z [mm]'][0]
+    px1 = PS.ps_data['px [MeV/c]'][0]
+    py1 = PS.ps_data['py [MeV/c]'][0]
+    pz1 = PS.ps_data['pz [MeV/c]'][0]
+
+    x2 = x1 + ((px1 / pz1) * project_dist)
+    y2 = y1 + ((py1 / pz1) * project_dist)
+    z2 = z1 + ((pz1 / pz1) * project_dist)
+    PS.project_particles(beam_direction='z', distance=project_dist, in_place=True)
+    # compare:
+    assert np.allclose([x2, y2, z2], [PS.ps_data['x [mm]'][0], PS.ps_data['y [mm]'][0],
+                                      PS.ps_data['z [mm]'][0]])
+
 
 def test_reset_phase_space():
     PS.reset_phase_space()
@@ -275,3 +291,27 @@ def test_sort():
     # test quantities
     quantities = ['x', 'y', 'px', 'py', 'pz']
     PS.sort(quantities_to_sort=quantities)
+
+
+def test_print_methods():
+    # this only tests that the method runs
+    data = DataLoaders.Load_TopasData(test_data_loc / 'coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp')
+    PS = PhaseSpace(data)
+    PS.plot.get_methods()
+
+
+def test_filter_by_boolean_index():
+    data = DataLoaders.Load_TopasData(test_data_loc / 'coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp')
+    PS = PhaseSpace(data)
+
+    index_1 = np.ones(len(PS)) > 0
+    new_PS = PS.filter_by_boolean_index(index_1)  # this should do nothing
+    assert np.allclose(PS.ps_data, new_PS.ps_data)
+
+    index_1[round(len(PS)/2):] = False
+    PS1, PS2 = PS.filter_by_boolean_index(index_1, split=True)
+    assert np.isclose(len(PS1) / len(PS2), 1)
+    # in place
+    old_length = len(PS)
+    PS.filter_by_boolean_index(index_1, in_place=True)
+    assert np.isclose(old_length / len(PS), 2)

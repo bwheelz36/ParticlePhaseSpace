@@ -221,6 +221,14 @@ class Load_PandasData(_DataLoadersBase):
     def _import_data(self):
 
         self.data = self._input_data
+        # make sure column names match the input units
+
+        column_names = ps_cfg.get_required_column_names(self._units)
+        for existing_col in self.data.columns:
+            if not existing_col in column_names:
+                raise Exception(f'the column names in the input pandas data are not consistent with the defined unit set:'
+                                f'{self._units.label}')
+
         #         Note that the format of the data is checked by the base class,
         #         so no additional checks are required here
 
