@@ -11,10 +11,8 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -52,6 +50,7 @@
 <li class="toctree-l2"><a class="reference internal" href="basic_example.html">Basic Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="new_data_loader.html">Writing a new data loader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="new_data_exporter.html">Writing a new data exporter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transform.html">Transformation of phase space data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="units.html">Working with different units</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Compress phase space via regrid/merge operations</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Particle-Positions">Particle Positions</a></li>
@@ -376,7 +375,7 @@ div.rendered_html tbody tr:hover {
 <section id="Compress-phase-space-via-regrid/merge-operations">
 <h1>Compress phase space via regrid/merge operations<a class="headerlink" href="#Compress-phase-space-via-regrid/merge-operations" title="Permalink to this heading"></a></h1>
 <p>A simple mechanism to reduce the size of phase space data is to merge identical particles while adding their weights. In practice, this doesn’t tend to be that useful, because even in a large data set, there are quite few truly identical particles. What there <strong>are</strong> however, are many particles which are close together.</p>
-<p>This tutorial demonstrates how to explot this fact by first regridding phase space data (which in effect ‘nudges’ particles which are close together in 7-D space into the same bin) followed by merging the phase space. This algorithm is based on work originally developed by LÃƒÂ©o Esnault for the <a class="reference external" href="https://github.com/lesnat/p2sat">p2sat</a> code.</p>
+<p>This tutorial demonstrates how to explot this fact by first regridding phase space data (which in effect ‘nudges’ particles which are close together in 7-D space into the same bin) followed by merging the phase space. This algorithm is based on work originally developed by Leo Esnault for the <a class="reference external" href="https://github.com/lesnat/p2sat">p2sat</a> code.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -439,7 +438,7 @@ merge operation took  0.9 s
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_PS</span> <span class="o">=</span> <span class="n">PS</span><span class="o">.</span><span class="n">regrid</span><span class="p">(</span><span class="n">n_bins</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_PS</span> <span class="o">=</span> <span class="n">PS</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">regrid</span><span class="p">(</span><span class="n">n_bins</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -450,7 +449,7 @@ merge operation took  0.9 s
 <div class="highlight"><pre>
 not regriding z as it is already single valued
 not regriding time as it is already single valued
-regrid operation took  7.3 s
+regrid operation took  7.4 s
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -741,14 +740,6 @@ gamma    0.591994  1.094013
 <li><p>The most strongly affected quantity in this case appeared to be the twiss parameters/ trace space = however, even here, the RMS ellipse is quite close.</p></li>
 <li><p>Grid/Merge operations can be a highly effective approach to reducing the total size of a phase space without losing too much information - however, as always, the extent to which this is appropriate is very much application specific.</p></li>
 </ul>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-</div>
 </section>
 </section>
 

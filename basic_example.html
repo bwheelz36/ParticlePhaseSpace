@@ -11,10 +11,8 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -56,12 +54,12 @@
 <li class="toctree-l3"><a class="reference internal" href="#Basic-analytics">Basic analytics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Seperating,-adding,-and-subtracting-phase-space-objects">Seperating, adding, and subtracting phase space objects</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Twiss-parameters">Twiss parameters</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Manipulating-data-in-the-phase-space">Manipulating data in the phase space</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Exporting-the-data">Exporting the data</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="new_data_loader.html">Writing a new data loader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="new_data_exporter.html">Writing a new data exporter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transform.html">Transformation of phase space data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="units.html">Working with different units</a></li>
 <li class="toctree-l2"><a class="reference internal" href="grid_merge.html">Compress phase space via regrid/merge operations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="resampling_via_gaussian_kde.html">Up/Down sampling phase space data using gaussian KDE</a></li>
@@ -1086,35 +1084,13 @@ gamma    0.591913  1.095932
 <img alt="_images/basic_example_41_0.png" src="_images/basic_example_41_0.png" />
 </div>
 </div>
-<p>Again, this is quite illuminating; it shows that the gamma particles are fairly evenly dsitributed spread between -1 and 1 mm, have almost no divergence (note the highly intesense line in the middle, and the use og a log scale). Again, since this data is from an x-ray collimator, this makes a lot of sense!</p>
-</section>
-<section id="Manipulating-data-in-the-phase-space">
-<h2>Manipulating data in the phase space<a class="headerlink" href="#Manipulating-data-in-the-phase-space" title="Permalink to this heading"></a></h2>
-<p>For some research purposes you may wish to manipulate the data in the phase space - for instance, change the z value of all particles because different simulation codes use different coordinate system.</p>
-<p>This is very possible with this code; you can directly change all data fields by directly interacting with the pandas data stored at <code class="docutils literal notranslate"><span class="pre">PhaseSpace.ps_data</span></code>.</p>
-<p><strong>HOWEVER!</strong> - you do this at your own risk, since there is no way for us to check the validity of any operations you make - following any edits to the underling data, you should manually <code class="docutils literal notranslate"><span class="pre">reset_phase_space</span></code>, because you have quite likely invalidated any previously calculated quantities. <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/code_docs.html#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.reset_phase_space">reset_phase_space</a> removes any calculated data from the phase space,
-reducing it to just the <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/phase_space_format.html">required columns</a></p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># zero the z coordinate</span>
-<span class="n">PS</span><span class="o">.</span><span class="n">ps_data</span><span class="p">[</span><span class="n">PS</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">PS</span><span class="o">.</span><span class="n">ps_data</span><span class="p">[</span><span class="n">PS</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">]]</span> <span class="o">-</span> <span class="n">PS</span><span class="o">.</span><span class="n">ps_data</span><span class="p">[</span><span class="n">PS</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-<span class="c1"># double the pz momentum:</span>
-<span class="n">PS</span><span class="o">.</span><span class="n">ps_data</span><span class="p">[</span><span class="n">PS</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="s1">&#39;pz&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">PS</span><span class="o">.</span><span class="n">ps_data</span><span class="p">[</span><span class="n">PS</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="s1">&#39;pz&#39;</span><span class="p">]]</span> <span class="o">*</span> <span class="mi">2</span>
-<span class="c1"># reset the phase space because previous calculations may now be invalid:</span>
-<span class="n">PS</span><span class="o">.</span><span class="n">reset_phase_space</span><span class="p">()</span>
-<span class="c1"># re-calculate any desired quantities</span>
-<span class="n">PS</span><span class="o">.</span><span class="n">fill</span><span class="o">.</span><span class="n">kinetic_E</span><span class="p">()</span>  <span class="c1"># for example</span>
-</pre></div>
-</div>
-</div>
+<p>Again, this is quite illuminating; it shows that the gamma particles are fairly evenly distributed spread between -1 and 1 mm, have almost no divergence (note the highly intesense line in the middle, and the use og a log scale). Again, since this data is from an x-ray collimator, this makes a lot of sense!</p>
 </section>
 <section id="Exporting-the-data">
 <h2>Exporting the data<a class="headerlink" href="#Exporting-the-data" title="Permalink to this heading"></a></h2>
 <p>Similarly to the data import stage we use an instance of <code class="docutils literal notranslate"><span class="pre">ParticlePhaseSpace.DataLoaders</span></code> to export the data. You can see the currently available data exporters <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/code_docs.html#module-ParticlePhaseSpace.DataExporters">here</a>, and you see a demonstration of writing a new data exporter <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/new_data_exporter.html">here</a>.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ParticlePhaseSpace</span> <span class="kn">import</span> <span class="n">DataExporters</span>
@@ -1124,12 +1100,12 @@ reducing it to just the <a class="reference external" href="https://bwheelz36.gi
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;ParticlePhaseSpace.DataExporters.CSV_Exporter at 0x136b2582400&gt;
+&lt;ParticlePhaseSpace.DataExporters.CSV_Exporter at 0x29c513f5dc0&gt;
 </pre></div></div>
 </div>
 </section>
