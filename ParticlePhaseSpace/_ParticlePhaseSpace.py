@@ -6,6 +6,7 @@ logging.basicConfig(level=logging.WARNING)
 import warnings
 from scipy.stats import gaussian_kde
 from scipy import constants
+from scipy.spatial.transform import Rotation as R
 import json
 from pathlib import Path
 from time import perf_counter
@@ -527,6 +528,211 @@ class _Plots(_PhaseSpace_MethodHolder):
         plt.tight_layout()
 
 
+class _Transform(_PhaseSpace_MethodHolder):
+    """
+    sub-class of PhaseSpace; methods for the transformation of the particle position data
+    """
+
+    def _return_position_update(self, new_x, new_y, new_z, in_place, new_px=None, new_py=None, new_pz=None):
+        self._PS.reset_phase_space()
+        if in_place:
+            if new_x is not None:
+                self._PS._ps_data[self._PS.columns['x']] = new_x
+            if new_y is not None:
+                self._PS._ps_data[self._PS.columns['y']] = new_y
+            if new_z is not None:
+                self._PS._ps_data[self._PS.columns['z']] = new_z
+            if new_px is not None:
+                self._PS._ps_data[self._PS.columns['px']] = new_px
+            if new_py is not None:
+                self._PS._ps_data[self._PS.columns['py']] = new_py
+            if new_pz is not None:
+                self._PS._ps_data[self._PS.columns['pz']] = new_pz
+        else:
+            ps_data = self._PS._ps_data.copy(deep=True)
+            if new_x is not None:
+                ps_data[self._PS.columns['x']] = new_x
+            if new_y is not None:
+                ps_data[self._PS.columns['y']] = new_y
+            if new_z is not None:
+                ps_data[self._PS.columns['z']] = new_z
+            if new_px is not None:
+                ps_data[self._PS.columns['px']] = new_px
+            if new_py is not None:
+                ps_data[self._PS.columns['py']] = new_py
+            if new_pz is not None:
+                ps_data[self._PS.columns['pz']] = new_pz
+
+            new_data = DataLoaders.Load_PandasData(ps_data, units=self._PS._units)
+            new_instance = PhaseSpace(new_data)
+            return new_instance
+
+    def translate(self, direction: str = 'z', distance: float = 100.0, in_place: bool = False):
+        """
+        :param beam_direction:
+        :param distance:
+        :param in_place:
+        :return:
+        """
+        if direction == 'x':
+            new_x = self._PS._ps_data[self._PS.columns['x']] + distance
+            new_y = None
+            new_z = None
+        elif direction == 'y':
+            new_x = None
+            new_y = self._PS._ps_data[self._PS.columns['y']] + distance
+            new_z = None
+        elif direction == 'z':
+            new_x = None
+            new_y = None
+            new_z = self._PS._ps_data[self._PS.columns['z']] + distance
+        else:
+            raise NotImplementedError('beam_direction must be "x", "y", or "z"')
+        new_instance = self._return_position_update(new_x, new_y, new_z, in_place)
+        return new_instance  # nb: None if in_place = True
+
+    def rotate(self, rotation_axis: str = 'x', angle: float = 90.0, in_place: bool = False, rotate_momentum_vector=False):
+        """
+        rotate the phase space about an axis
+
+        :param rotation_axis: axis to rotate; one of 'x','y','z'
+        :type rotation_axis: str
+        :param angle: angle to rotate in degrees
+        :type angle: float
+        :param in_place: operate in place or not
+        :type in_place: bool
+        :param rotate_momentum_vector: if True, will rotate the momentum data as well as the position data
+        :type rotate_momentum_vector: bool
+        :return: None or PhaseSpace
+        """
+        self._PS.reset_phase_space()
+        r = R.from_euler(rotation_axis, angle, degrees=True)
+        cols = [self._PS.columns['x'], self._PS.columns['y'], self._PS.columns['z']]
+        rotated_points = r.apply(self._PS._ps_data[cols])
+
+        if rotate_momentum_vector:
+            cols = [self._PS.columns['px'], self._PS.columns['py'], self._PS.columns['pz']]
+            rotated_mom = r.apply(self._PS._ps_data[cols])
+            new_instance = self._return_position_update(rotated_points[:, 0],
+                                                        rotated_points[:, 1],
+                                                        rotated_points[:, 2],
+                                                        in_place,
+                                                        new_px=rotated_mom[:, 0],
+                                                        new_py=rotated_mom[:, 1],
+                                                        new_pz=rotated_mom[:, 2])
+        else:
+            new_instance = self._return_position_update(rotated_points[:, 0],
+                                                        rotated_points[:, 1],
+                                                        rotated_points[:, 2],
+                                                        in_place)
+
+        return new_instance  # nb: None if in_place = True
+
+    def project(self, direction: str = 'z', distance: float = 100, in_place: bool = False):
+        """
+        Update the positions of each particle by projecting it forward/back by distance.
+
+        This is valid in cases where the particles would end up in the absence of any forces or interactions.
+
+        :param beam_direction: the direction to project in. 'x', 'y', or 'z'
+        :type beam_direction: str, optional
+        :param distance: how far to project in mm
+        :type distance: float, optional
+        :param in_place: if True, the existing PhaseSpace object has its data updated. if False,
+            a new PhaseSpace object is returned
+        :type in_place: bool, optional
+        :return: new_instance: if in_place = False, a new PhaseSpace object is returned
+        """
+        if direction == 'x':
+            new_x = self._PS._ps_data[self._PS.columns['x']] + distance
+            new_y = self._PS._ps_data[self._PS.columns['y']] + np.divide(self._PS._ps_data[self._PS.columns['py']],
+                                                                  self._PS._ps_data[self._PS.columns['px']]) * distance
+            new_z = self._PS._ps_data[self._PS.columns['z']] + np.divide(self._PS._ps_data[self._PS.columns['pz']],
+                                                                  self._PS._ps_data[self._PS.columns['px']]) * distance
+        elif direction == 'y':
+            new_x = self._PS._ps_data[self._PS.columns['x']] + np.divide(self._PS._ps_data[self._PS.columns['px']],
+                                                                  self._PS._ps_data[self._PS.columns['py']]) * distance
+            new_y = self._PS._ps_data[self._PS.columns['y']] + distance
+            new_z = self._PS._ps_data[self._PS.columns['z']] + np.divide(self._PS._ps_data[self._PS.columns['pz']],
+                                                                  self._PS._ps_data[self._PS.columns['py']]) * distance
+        elif direction == 'z':
+            new_x = self._PS._ps_data[self._PS.columns['x']] + np.divide(self._PS._ps_data[self._PS.columns['px']],
+                                                                  self._PS._ps_data[self._PS.columns['pz']]) * distance
+            new_y = self._PS._ps_data[self._PS.columns['y']] + np.divide(self._PS._ps_data[self._PS.columns['py']],
+                                                                  self._PS._ps_data[self._PS.columns['pz']]) * distance
+            new_z = self._PS._ps_data[self._PS.columns['z']] + distance
+        else:
+            raise NotImplementedError('direction must be "x", "y", or "z"')
+
+        new_instance = self._return_position_update(new_x, new_y, new_z, in_place)
+        return new_instance  # nb: None if in_place = True
+
+    def regrid(self, quantities: (list, None) = None, n_bins: (int, list) = 10, in_place=False):
+        """
+        this re-grids each quantity in quantities onto a new grid. The new grid is defined by
+         np.linspace(min(quantity, max(quantity), n_bins). Regridding following by merging is a good way of combining particles
+         which are very close together. The underlying algorithm was developed by Leo Esnault for the
+         `p2sat <https://github.com/lesnat/p2sat>`_ code::
+
+            PS.regrid()
+            PS.regrid(quantities=['x', 'y'], n_bins=50)
+
+        :param quantities: Quantities to regrid; if None defaults of ['x', 'y', 'z', 'px', 'py', 'pz', 'time'] are used.
+            quantities can be anything in PhaseSpace.columns
+        :param n_bins: number of bins to rebin into. Can be a single number, in which case this is applied to all quantities,
+            or a list of integers, one per quantity
+        """
+
+        def _rounder(values):
+            """
+            function to round the values of an array to closest point in second array.
+            Full credit here:
+            https://stackoverflow.com/questions/33450235/rounding-a-list-of-values-to-the-nearest-value-from-another-list-in-python
+            """
+
+            def f(x):
+                idx = np.argmin(np.abs(values - x))
+                return values[idx]
+
+            return np.frompyfunc(f, 1, 1)
+
+        # set up quantities to regrid:
+        quantities = self._PS._get_quantities(quantities)
+
+        # set up bins:
+        if isinstance(n_bins, int):
+            # all quantities have same number of bins
+            n_bins = [n_bins] * len(quantities)
+        elif isinstance(n_bins, list):
+            # different number of bins per quantity
+            if not len(n_bins) == len(quantities):
+                raise Exception(f'length of bins must equal length of quantities; '
+                                f'\nyou have len(n_bins)={len(n_bins)} and len(quantities)={len(quantities)}')
+        bin_array = {}
+        start_time = perf_counter()
+        for quantity, bin_length in zip(quantities, n_bins):
+            bin_min = self._PS._ps_data[self._PS.columns[quantity]].min()
+            bin_max = self._PS._ps_data[self._PS.columns[quantity]].max()
+            bin_array[quantity] = np.linspace(bin_min, bin_max, bin_length)
+        new_data = self._PS._ps_data.copy(True)
+        for quantity in quantities:
+            q_bins = bin_array[quantity]
+            if len(np.unique(q_bins)) == 1:
+                print(f'not regriding {quantity} as it is already single valued')
+                # skip quantities that are already single valued
+                continue
+            new_data[self._PS.columns[quantity]] = list(_rounder(q_bins)(self._PS._ps_data[self._PS.columns[quantity]]))
+            # new_data[self._PS.columns[quantity]] = rounded_new_quantity
+        print(f'regrid operation took {perf_counter() - start_time: 1.1f} s')
+        if in_place:
+            self._PS.ps_data = new_data
+            self._PS.reset_phase_space()
+        else:
+            ps_data = DataLoaders.Load_PandasData(new_data)
+            new_PS = PhaseSpace(ps_data)
+            return new_PS
+
+
 class _Fill_Methods(_PhaseSpace_MethodHolder):
     """
     Methods for calculating secondary quantities and adding them to ps_data
@@ -660,6 +866,8 @@ class PhaseSpace:
         self.energy_stats = {}
         self.plot = _Plots(PS=self)
         self.fill = _Fill_Methods(PS=self)
+        self.transform = _Transform(PS=self)
+
 
     def __call__(self, particle_list):
         """
@@ -1083,62 +1291,6 @@ class PhaseSpace:
                                                sample_weight=ps_data['weight'])
             self.energy_stats[particle_name]['energy spread IQR'] = q25 - q75
 
-    def project_particles(self, beam_direction: str = 'z', distance: float = 100, in_place: bool = False):
-        """
-        Update the positions of each particle by projecting it forward/back by distance.
-
-        This serves as a crude approximation to more advanced particle transport codes
-        and represents where the particles would end up in the absence of any forces or interactions.
-
-        :param beam_direction: the direction to project in. 'x', 'y', or 'z'
-        :type beam_direction: str, optional
-        :param distance: how far to project in mm
-        :type distance: float, optional
-        :param in_place: if True, the existing PhaseSpace object has its data updated. if False,
-            a new PhaseSpace object is returned
-        :type in_place: bool, optional
-        :return: new_instance: if in_place = False, a new PhaseSpace object is returned
-        """
-        if beam_direction == 'x':
-            new_x = self._ps_data[self.columns['x']] + distance
-            new_y = self._ps_data[self.columns['y']] + np.divide(self._ps_data[self.columns['py']],
-                                                                  self._ps_data[self.columns['px']]) * distance
-            new_z = self._ps_data[self.columns['z']] + np.divide(self._ps_data[self.columns['pz']],
-                                                                  self._ps_data[self.columns['px']]) * distance
-        elif beam_direction == 'y':
-            new_x = self._ps_data[self.columns['x']] + np.divide(self._ps_data[self.columns['px']],
-                                                                  self._ps_data[self.columns['py']]) * distance
-            new_y = self._ps_data[self.columns['y']] + distance
-            new_z = self._ps_data[self.columns['z']] + np.divide(self._ps_data[self.columns['pz']],
-                                                                  self._ps_data[self.columns['py']]) * distance
-        elif beam_direction == 'z':
-            new_x = self._ps_data[self.columns['x']] + np.divide(self._ps_data[self.columns['px']],
-                                                                  self._ps_data[self.columns['pz']]) * distance
-            new_y = self._ps_data[self.columns['y']] + np.divide(self._ps_data[self.columns['py']],
-                                                                  self._ps_data[self.columns['pz']]) * distance
-            new_z = self._ps_data[self.columns['z']] + distance
-        else:
-            raise NotImplementedError('beam_direction must be "x", "y", or "z"')
-
-        if in_place:
-            self._ps_data[self.columns['x']] = new_x
-            self._ps_data[self.columns['y']] = new_y
-            self._ps_data[self.columns['z']] = new_z
-            self.reset_phase_space()
-        else:
-            ps_data = self._ps_data.copy(deep=True)
-            for col_name in ps_data.columns:
-                if not col_name in ps_cfg.get_required_column_names(self._units):
-                    ps_data.drop(columns=col_name, inplace=True)
-            ps_data[self.columns['x']] = new_x
-            ps_data[self.columns['y']] = new_y
-            ps_data[self.columns['z']] = new_z
-            new_data = DataLoaders.Load_PandasData(ps_data, units=self._units)
-            new_instance = PhaseSpace(new_data)
-            return new_instance
-
-        self.reset_phase_space()  # safest to get rid of any derived quantities
-
     def reset_phase_space(self):
         """
         reduce self._ps_data to only the required columns
@@ -1400,70 +1552,6 @@ class PhaseSpace:
         self._ps_data.sort_values(column_names_sort, axis=0, ascending=True, inplace=True,
                                   kind='quicksort', na_position='last',
                                   ignore_index=True, key=None)
-
-    def regrid(self, quantities: (list, None) = None, n_bins: (int, list) = 10, in_place=False):
-        """
-        this re-grids each quantity in quantities onto a new grid. The new grid is defined by
-         np.linspace(min(quantity, max(quantity), n_bins). Regridding following by merging is a good way of combining particles
-         which are very close together. The underlying algorithm was developed by Leo Esnault for the 
-         `p2sat <https://github.com/lesnat/p2sat>`_ code::
-         
-            PS.regrid()
-            PS.regrid(quantities=['x', 'y'], n_bins=50)
-
-        :param quantities: Quantities to regrid; if None defaults of ['x', 'y', 'z', 'px', 'py', 'pz', 'time'] are used.
-            quantities can be anything in PhaseSpace.columns
-        :param n_bins: number of bins to rebin into. Can be a single number, in which case this is applied to all quantities,
-            or a list of integers, one per quantity
-        """
-
-        def _rounder(values):
-            """
-            function to round the values of an array to closest point in second array.
-            Full credit here:
-            https://stackoverflow.com/questions/33450235/rounding-a-list-of-values-to-the-nearest-value-from-another-list-in-python
-            """
-            def f(x):
-                idx = np.argmin(np.abs(values - x))
-                return values[idx]
-            return np.frompyfunc(f, 1, 1)
-
-        # set up quantities to regrid:
-        quantities = self._get_quantities(quantities)
-
-        # set up bins:
-        if isinstance(n_bins, int):
-            # all quantities have same number of bins
-            n_bins = [n_bins] * len(quantities)
-        elif isinstance(n_bins, list):
-            # different number of bins per quantity
-            if not len(n_bins) == len(quantities):
-                raise Exception(f'length of bins must equal length of quantities; '
-                                f'\nyou have len(n_bins)={len(n_bins)} and len(quantities)={len(quantities)}')
-        bin_array = {}
-        start_time =perf_counter()
-        for quantity, bin_length in zip(quantities, n_bins):
-            bin_min = self._ps_data[self.columns[quantity]].min()
-            bin_max = self._ps_data[self.columns[quantity]].max()
-            bin_array[quantity] = np.linspace(bin_min, bin_max, bin_length)
-        new_data = self._ps_data.copy(True)
-        for quantity in quantities:
-            q_bins = bin_array[quantity]
-            if len(np.unique(q_bins)) == 1:
-                print(f'not regriding {quantity} as it is already single valued')
-                # skip quantities that are already single valued
-                continue
-            new_data[self.columns[quantity]] = list(_rounder(q_bins)(self._ps_data[self.columns[quantity]]))
-            # new_data[self.columns[quantity]] = rounded_new_quantity
-        print(f'regrid operation took {perf_counter() - start_time: 1.1f} s')
-        if in_place:
-            self.ps_data = new_data
-            self.reset_phase_space()
-        else:
-            # new_data[self.columns['particle type']] = new_data[self.columns['particle type']].astype(np.int32)
-            ps_data = DataLoaders.Load_PandasData(new_data)
-            new_PS = PhaseSpace(ps_data)
-            return new_PS
 
     def merge(self, in_place=False):
         """

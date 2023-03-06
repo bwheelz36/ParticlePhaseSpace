@@ -25,6 +25,7 @@ shutil.copy(this_file_loc.parent / 'examples' / 'new_data_exporter.ipynb', this_
 shutil.copy(this_file_loc.parent / 'examples' / 'units.ipynb', this_file_loc)
 shutil.copy(this_file_loc.parent / 'examples' / 'resampling_via_gaussian_kde.ipynb', this_file_loc)
 shutil.copy(this_file_loc.parent / 'examples' / 'grid_merge.ipynb', this_file_loc)
+shutil.copy(this_file_loc.parent / 'examples' / 'transform.ipynb', this_file_loc)
 
 # -- Project information -----------------------------------------------------
 

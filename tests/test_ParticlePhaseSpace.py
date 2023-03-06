@@ -11,6 +11,7 @@ from ParticlePhaseSpace import PhaseSpace
 import ParticlePhaseSpace.__phase_space_config__ as ps_cfg
 import pytest
 import ParticlePhaseSpace.__particle_config__ as particle_cfg
+from ParticlePhaseSpace import ParticlePhaseSpaceUnits
 
 test_data_loc = this_file_loc / 'test_data'
 data = DataLoaders.Load_TopasData(test_data_loc / 'coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp')
@@ -67,7 +68,7 @@ def test_project_particles():
     x2 = x1 + ((px1 / pz1) * project_dist)
     y2 = y1 + ((py1 / pz1) * project_dist)
     z2 = z1 + ((pz1 / pz1) * project_dist)
-    PS_projected = PS.project_particles(beam_direction='z', distance=project_dist)
+    PS_projected = PS.transform.project(direction='z', distance=project_dist)
     # compare:
     assert np.allclose([x2, y2, z2], [PS_projected.ps_data['x [mm]'][0], PS_projected.ps_data['y [mm]'][0],
                                       PS_projected.ps_data['z [mm]'][0]])
@@ -84,7 +85,7 @@ def test_project_particles():
     x2 = x1 + ((px1 / px1) * project_dist)
     y2 = y1 + ((py1 / px1) * project_dist)
     z2 = z1 + ((pz1 / px1) * project_dist)
-    PS_projected = PS.project_particles(beam_direction='x', distance=project_dist)
+    PS_projected = PS.transform.project(direction='x', distance=project_dist)
     # compare:
     assert np.allclose([x2, y2, z2], [PS_projected.ps_data['x [mm]'][0], PS_projected.ps_data['y [mm]'][0],
                                       PS_projected.ps_data['z [mm]'][0]])
@@ -101,7 +102,7 @@ def test_project_particles():
     x2 = x1 + ((px1 / py1) * project_dist)
     y2 = y1 + ((py1 / py1) * project_dist)
     z2 = z1 + ((pz1 / py1) * project_dist)
-    PS_projected = PS.project_particles(beam_direction='y', distance=project_dist)
+    PS_projected = PS.transform.project(direction='y', distance=project_dist)
     # compare:
     assert np.allclose([x2, y2, z2], [PS_projected.ps_data['x [mm]'][0], PS_projected.ps_data['y [mm]'][0],
                                       PS_projected.ps_data['z [mm]'][0]])
@@ -117,7 +118,7 @@ def test_project_particles():
     x2 = x1 + ((px1 / pz1) * project_dist)
     y2 = y1 + ((py1 / pz1) * project_dist)
     z2 = z1 + ((pz1 / pz1) * project_dist)
-    PS.project_particles(beam_direction='z', distance=project_dist, in_place=True)
+    PS.transform.project(direction='z', distance=project_dist, in_place=True)
     # compare:
     assert np.allclose([x2, y2, z2], [PS.ps_data['x [mm]'][0], PS.ps_data['y [mm]'][0],
                                       PS.ps_data['z [mm]'][0]])
@@ -242,19 +243,19 @@ def test_regrid():
     PS = PhaseSpace(data)
     # regrid 100 bins
     quantities = ['x', 'y', 'px', 'py', 'pz']
-    new_PS = PS.regrid(n_bins=100, quantities=quantities)
+    new_PS = PS.transform.regrid(n_bins=100, quantities=quantities)
 
     columns = new_PS._quantities_to_column_names(quantities)
     for col in columns:
         assert len(np.unique(new_PS.ps_data[col])) <= 100
 
     # regrid x into 10 bins
-    new_PS = PS.regrid(quantities='x', n_bins=10)
+    new_PS = PS.transform.regrid(quantities='x', n_bins=10)
     assert len(np.unique(new_PS.ps_data['y [mm]'])) == len(np.unique(PS.ps_data['y [mm]']))
     assert len(np.unique(new_PS.ps_data['x [mm]'])) == 10
     # compare in Place to Note in Place
-    new_PS = PS.regrid()
-    PS.regrid(in_place=True)
+    new_PS = PS.transform.regrid()
+    PS.transform.regrid(in_place=True)
     assert np.allclose(new_PS.ps_data, PS.ps_data)
 
 
@@ -262,7 +263,7 @@ def test_merge():
     data = DataLoaders.Load_TopasData(test_data_loc / 'coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp')
     PS = PhaseSpace(data)
 
-    new_PS = PS.regrid(n_bins=10, in_place=False)
+    new_PS = PS.transform.regrid(n_bins=10, in_place=False)
     new_PS.merge(in_place=True)
 
     # test merge didn't effect energy stats:
@@ -298,6 +299,8 @@ def test_print_methods():
     data = DataLoaders.Load_TopasData(test_data_loc / 'coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp')
     PS = PhaseSpace(data)
     PS.plot.get_methods()
+    PS.transform.get_methods()
+    PS.fill.get_methods()
 
 
 def test_filter_by_boolean_index():
@@ -315,3 +318,81 @@ def test_filter_by_boolean_index():
     old_length = len(PS)
     PS.filter_by_boolean_index(index_1, in_place=True)
     assert np.isclose(old_length / len(PS), 2)
+
+
+def test_translate():
+    # test that mean coordinate matches translation in all directions
+    data = DataLoaders.Load_TopasData(test_data_loc / 'coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp')
+    PS = PhaseSpace(data)
+
+    new_PS  = PS.transform.translate(direction='x', distance=100)
+    assert np.allclose(new_PS.ps_data[new_PS.columns['x']], PS.ps_data[PS.columns['x']] + 100)
+    new_PS  = PS.transform.translate(direction='y', distance=50)
+    assert np.allclose(new_PS.ps_data[new_PS.columns['y']], PS.ps_data[PS.columns['y']] + 50)
+    new_PS  = PS.transform.translate(direction='z', distance=-70)
+    assert np.allclose(new_PS.ps_data[new_PS.columns['z']], PS.ps_data[PS.columns['z']] - 70)
+
+    # test in place works
+    old_x_mean = PS.ps_data[PS.columns['x']].mean()
+    PS.transform.translate(direction='x', distance=100, in_place=True)
+    assert np.allclose(old_x_mean+100, PS.ps_data[PS.columns['x']].mean())
+
+
+def test_rotate():
+    # test rotation in different directions for simple data
+    units = ParticlePhaseSpaceUnits()('mm_MeV')
+    all_allowed_columns = ps_cfg.get_all_column_names(units)
+    demo_data = pd.DataFrame(
+        {all_allowed_columns['x']: [0., 1., 2.],
+         all_allowed_columns['y']: [2., 3., 4.],
+         all_allowed_columns['z']: [5., 6., 7.],
+         all_allowed_columns['px']: [1000, 1000, 2000],
+         all_allowed_columns['py']: [1000, 1000, 2000],
+         all_allowed_columns['pz']: [10000, 100000, 200000],
+         all_allowed_columns['particle type']: [11, 11, 11],
+         all_allowed_columns['weight']: [1, 1, 2],
+         all_allowed_columns['particle id']: [0, 1, 2],
+         all_allowed_columns['time']: [0, 0, 0]})
+    data = DataLoaders.Load_PandasData(demo_data)
+    PS = PhaseSpace(data)
+
+    PS_rotate = PS.transform.rotate(rotation_axis='x', angle=-90)
+    assert np.allclose(PS.ps_data['z [mm]'], PS_rotate.ps_data['y [mm]'])
+    PS_rotate = PS.transform.rotate(rotation_axis='y', angle=-90)
+    assert np.allclose(PS.ps_data['x [mm]'], PS_rotate.ps_data['z [mm]'])
+    PS_rotate = PS.transform.rotate(rotation_axis='z', angle=90)
+    assert np.allclose(PS.ps_data['x [mm]'], PS_rotate.ps_data['y [mm]'])
+
+    # test in place
+    old_y = PS.ps_data['y [mm]']
+    PS.transform.rotate(rotation_axis='x', angle=90, in_place=True)
+    assert np.allclose(old_y, PS.ps_data['z [mm]'])
+
+
+def test_rotate_momentum():
+
+    units = ParticlePhaseSpaceUnits()('mm_MeV')
+    all_allowed_columns = ps_cfg.get_all_column_names(units)
+    demo_data = pd.DataFrame(
+        {all_allowed_columns['x']: [0., 1., 2.],
+         all_allowed_columns['y']: [2., 3., 4.],
+         all_allowed_columns['z']: [5., 6., 7.],
+         all_allowed_columns['px']: [1000, 1000, 2000],
+         all_allowed_columns['py']: [1000, 1000, 2000],
+         all_allowed_columns['pz']: [10000, 100000, 200000],
+         all_allowed_columns['particle type']: [11, 11, 11],
+         all_allowed_columns['weight']: [1, 1, 2],
+         all_allowed_columns['particle id']: [0, 1, 2],
+         all_allowed_columns['time']: [0, 0, 0]})
+    data = DataLoaders.Load_PandasData(demo_data)
+    PS = PhaseSpace(data)
+
+    PS_rotate = PS.transform.rotate(rotation_axis='x', angle=-90, rotate_momentum_vector=True)
+    assert np.allclose(PS.ps_data['pz [MeV/c]'], PS_rotate.ps_data['py [MeV/c]'])
+    assert np.allclose(PS.ps_data['z [mm]'], PS_rotate.ps_data['y [mm]'])
+    PS_rotate = PS.transform.rotate(rotation_axis='y', angle=-90, rotate_momentum_vector=True)
+    assert np.allclose(PS.ps_data['px [MeV/c]'], PS_rotate.ps_data['pz [MeV/c]'])
+    assert np.allclose(PS.ps_data['x [mm]'], PS_rotate.ps_data['z [mm]'])
+    PS_rotate = PS.transform.rotate(rotation_axis='z', angle=90, rotate_momentum_vector=True)
+    assert np.allclose(PS.ps_data['px [MeV/c]'], PS_rotate.ps_data['py [MeV/c]'])
+    assert np.allclose(PS.ps_data['x [mm]'], PS_rotate.ps_data['y [mm]'])
