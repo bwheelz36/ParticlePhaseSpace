@@ -359,7 +359,7 @@ class Load_varian_IAEA(_DataLoadersBase):
         if not Path(self._input_data).suffix == '.phsp':
             raise Exception('This data loader reads in files of extension *.phsp')
         if self._particle_type:
-            warnings.warn('particle type is ignored in topas read in')
+            warnings.warn('particle type is ignored in IAEA read in')
 
     def _import_data(self):
         dt = np.dtype([('Type', 'i1'),
@@ -407,8 +407,8 @@ class Load_varian_IAEA(_DataLoadersBase):
             E = np.abs(E)
         self._rest_masses = get_rest_masses_from_pdg_codes(self.data['particle type [pdg_code]'])
         P = np.sqrt((E + self._rest_masses) ** 2 - self._rest_masses ** 2)
-        self.data[self._columns['px']] = np.multiply(P, DirCosineX)
-        self.data[self._columns['py']] = np.multiply(P, DirCosineY)
+        self.data[self._columns['px']] = pd.Series(np.multiply(P, DirCosineX), dtype=np.float32)
+        self.data[self._columns['py']] = pd.Series(np.multiply(P, DirCosineY), dtype=np.float32)
         temp = P ** 2 - self.data[self._columns['px']] ** 2 - self.data[self._columns['py']] ** 2
         _negative_temp_ind = temp < 0
         if any(_negative_temp_ind):
@@ -428,7 +428,7 @@ class Load_varian_IAEA(_DataLoadersBase):
                           f'\nWe will now check that momentum and energy are consistent to within '
                           f'{self._energy_consistency_check_cutoff: 1.4f} {self._units.energy.label}')
 
-        self.data[self._columns['pz']] = np.sqrt(temp)
+        self.data[self._columns['pz']] = pd.Series(np.sqrt(temp), dtype=np.float32)
         self._check_energy_consistency(Ek=E)
 
     def _varian_types_to_pdg(self, varian_types):
