@@ -84,7 +84,9 @@ class _DataLoadersBase(ABC):
 
         # are NaNs present?
         if self.data.isnull().values.any():
-            raise AttributeError(f'input data may not contain NaNs')
+            NaN_cols = self.data.columns[self.data.isna().any()].tolist()
+            raise AttributeError(f'input data may not contain NaNs; the following columns contain NaN:'
+                                 f'\n{NaN_cols}')
 
         tot_mom = np.sqrt(self.data[self._columns['px']]**2 + self.data[self._columns['py']]**2 + self.data[self._columns['pz']]**2)
         if not np.min(tot_mom)>0:
@@ -342,3 +344,102 @@ class Load_p2sat_txt(_DataLoadersBase):
         self.data[self._columns['px']] = px
         self.data[self._columns['py']] = py
         self.data[self._columns['pz']] = pz
+
+
+class Load_varian_IAEA(_DataLoadersBase):
+    """
+    this loads a binary varian IAEA sent through the topas forums.
+    The format appears extremely specific, so I doubt this will work for general data,
+    but it may be a usefult template for reading this extremely annoying data format
+    """
+
+    def _check_input_data(self):
+        if not Path(self._input_data).is_file():
+            raise FileNotFoundError(f'input data file {self._import_data()} does not exist')
+        if not Path(self._input_data).suffix == '.phsp':
+            raise Exception('This data loader reads in files of extension *.phsp')
+        if self._particle_type:
+            warnings.warn('particle type is ignored in topas read in')
+
+    def _import_data(self):
+        dt = np.dtype([('Type', 'i1'),
+                       ('Energy', 'f4'),
+                       ('X position', 'f4'),
+                       ('Y position', 'f4'),
+                       ('Component of momentum direction in X', 'f4'),
+                       ('Component of momentum direction in Y', 'f4')])
+
+        '''
+        note that varian have named the last two columns inconsistently as they wrote out their notes on a type writer
+        '''
+
+        data = np.fromfile(self._input_data, dtype=dt)
+        '''
+        at this point we have an array of tuples, each tuple containing [particle_type, Energy, X, Y, CosineX, CosineY]
+        in addition, the header specifies that the following two constants:
+                
+            26.7       // Constant Z
+            1.0000     // Constant Weight
+            
+        So our job now:
+        - convert the tuplles into a workable format
+        - convert varians weird types with pdg types
+        - populate the data frame        
+        '''
+
+        pdg_types = self._varian_types_to_pdg(data['Type'])  # this contains 1,2,3 - I am going to guess this means photons, electrons, positrons
+
+        self.data[self._columns['particle type']] = pdg_types.astype(int)
+        # self.data[self._columns['particle type']] = pd.Series(pdg_types, dtype="category")
+        self.data[self._columns['x']] = data['X position']
+        self.data[self._columns['y']] = data['Y position']
+        self.data[self._columns['z']] = pd.Series(26.7 * np.ones(self.data.shape[0]), dtype="category")
+        self.data[self._columns['weight']] = pd.Series(1 * np.ones(self.data.shape[0]), dtype="category")
+        self.data[self._columns['particle id']] = np.arange(
+            len(self.data))  # may want to replace with track ID if available?
+        self.data[self._columns['time']] = pd.Series(0  * np.ones(self.data.shape[0]), dtype="category")  # may want to replace with time feature if available?
+        # figure out the momentums:
+        DirCosineX = data['Component of momentum direction in X']
+        DirCosineY = data['Component of momentum direction in Y']
+        E = data['Energy']
+        if E.min() < 0:
+            warnings.warn('this data has negative energy in it, wtf does that even mean. forcing all energy to positive')
+            E = np.abs(E)
+        self._rest_masses = get_rest_masses_from_pdg_codes(self.data['particle type [pdg_code]'])
+        P = np.sqrt((E + self._rest_masses) ** 2 - self._rest_masses ** 2)
+        self.data[self._columns['px']] = np.multiply(P, DirCosineX)
+        self.data[self._columns['py']] = np.multiply(P, DirCosineY)
+        temp = P ** 2 - self.data[self._columns['px']] ** 2 - self.data[self._columns['py']] ** 2
+        _negative_temp_ind = temp < 0
+        if any(_negative_temp_ind):
+            # this should never happen, but does occur when pz is essentially 0. we will attempt to resolve it here.
+            negative_locations = np.where(_negative_temp_ind)[0]
+            n_negative_locations = np.count_nonzero(_negative_temp_ind)
+            momentum_precision_factor = 1e-3
+            for location in negative_locations:
+                relative_difference = np.divide(np.sqrt(abs(temp[location])), P[location])
+                if relative_difference < momentum_precision_factor:
+                    temp[location] = 0
+                else:
+                    raise Exception(f'failed to calculate momentums from topas data. Possible solution is to increase'
+                                    f'the value of momentum_precision_factor, currently set to {momentum_precision_factor: 1.2e}'
+                                    f'and failed data has value {relative_difference: 1.2e}')
+            warnings.warn(f'{n_negative_locations: d} entries returned invalid pz values and were set to zero.'
+                          f'\nWe will now check that momentum and energy are consistent to within '
+                          f'{self._energy_consistency_check_cutoff: 1.4f} {self._units.energy.label}')
+
+        self.data[self._columns['pz']] = np.sqrt(temp)
+        self._check_energy_consistency(Ek=E)
+
+    def _varian_types_to_pdg(self, varian_types):
+        """
+        convert varian integer type code to pdg integer type code
+        :param varian_types:
+        :return:
+        """
+        pdg_types = np.zeros(varian_types.shape, dtype=np.int)
+        pdg_types[varian_types==1] = 22
+        pdg_types[varian_types == 2] = 11
+        pdg_types[varian_types == 3] = -11
+
+        return pdg_types
