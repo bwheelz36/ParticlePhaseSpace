@@ -44,6 +44,7 @@ class _DataLoadersBase(ABC):
                             'UnitSets are accessed through the ParticlePhaseSpaceUnits class')
         self._units = units
         self._columns = ps_cfg.get_all_column_names(self._units)
+        self._required_columns = ps_cfg.get_required_column_names(self._units)
         self._energy_consistency_check_cutoff = .001 * self._units.energy.conversion # in cases where it is possible to check energy/momentum consistency,
         # discrepencies greater than this will raise an error
         if particle_type:
@@ -89,14 +90,14 @@ class _DataLoadersBase(ABC):
         4. "particle id" should be unique
         """
         # required columns present?
-        required_columns = ps_cfg.get_required_column_names(self._units)
-        for col_name in required_columns:
+
+        for col_name in self._required_columns:
             if not col_name in self.data.columns:
                 raise AttributeError(f'invalid data input; required column "{col_name}" is missing')
 
         # all columns allowed?
         for col_name in self.data.columns:
-            if not col_name in required_columns:
+            if not col_name in self._required_columns:
                 raise AttributeError(f'non allowed column "{col_name}" in data.')
 
         # are NaNs present?
@@ -142,6 +143,7 @@ class _DataLoadersBase(ABC):
         except AssertionError:
             raise AttributeError('invalid dtypes provided. must be a dict with keys "int" and "float" and'
                                  'values which are valid data types')
+
 
 class Load_TopasData(_DataLoadersBase):
     """
@@ -377,14 +379,20 @@ class Load_IAEA(_DataLoadersBase):
     """
 
     def __init__(self, input_data: (str, Path), n_records:int=-1, data_schema=None, constants=None):
-        if data_schema is None:
-            self._data_schema = np.dtype([
-                       ('Type', 'i1'),
-                       ('Energy', 'f4'),
-                       ('X position', 'f4'),
-                       ('Y position', 'f4'),
-                       ('Component of momentum direction in X', 'f4'),
-                       ('Component of momentum direction in Y', 'f4')])
+        # if data_schema is None:
+        #     self._data_schema = np.dtype([
+        #                ('particle type', 'i1'),
+        #                ('Ek', 'f4'),
+        #                ('x', 'f4'),
+        #                ('y', 'f4'),
+        #                ('Cosine X', 'f4'),
+        #                ('Cosine Y', 'f4')])
+        # else:
+        self._data_schema = data_schema
+        # if constants is None:
+        #     self._constants = {'z': np.float32(26.7), 'weight': np.int8(1)}
+        # else:
+        self._constants = constants
         self._n_records = n_records
         super().__init__(input_data, dtypes={'int': np.float32, 'float': np.float64})
 
@@ -401,27 +409,43 @@ class Load_IAEA(_DataLoadersBase):
 
     def _import_data(self):
         self._header_to_dict()
+        if self._data_schema is None:
+            self._build_data_schema()
+        if self._constants is None:
+            self._build_constants()
         self._check_required_info_present()
+        self._check_record_length_versus_data_schema()
+        for quantity in ['Cosine X', 'Cosine Y', 'Ek']:
+            if not quantity in self._data_schema.fields:
+                raise AttributeError('need at least Cosine X, Cosine Y, and Ek to read data')
         data = np.fromfile(self._input_data, dtype=self._data_schema, count=self._n_records)
-        pdg_types = self._varian_types_to_pdg(data['Type'])  # this contains 1,2,3 - I am going to guess this means photons, electrons, positrons
+        # convert
+          # this contains 1,2,3 - I am going to guess this means photons, electrons, positrons
 
-        self.data[self._columns['particle type']] = pdg_types.astype(int)
-        # self.data[self._columns['particle type']] = pd.Series(pdg_types, dtype="category")
-        self.data[self._columns['x']] = data['X position']
-        self.data[self._columns['y']] = data['Y position']
-        self.data[self._columns['z']] = pd.Series(26.7 * np.ones(self.data.shape[0]), dtype="category")
-        self.data[self._columns['weight']] = pd.Series(1 * np.ones(self.data.shape[0]), dtype="category")
+        for field in self._data_schema.fields:
+            if field in self._columns.keys():
+                if self._columns[field] in self._required_columns:
+                    self.data[self._columns[field]] = data[field]
+        for constant in self._constants:
+            if constant in self._columns.keys():
+                if self._columns[constant] in self._required_columns:
+                    self.data[self._columns[constant]] = pd.Series(self._constants[constant] *
+                                                                   np.ones(self.data.shape[0]), dtype="category")
+
+        # OK; add the fields I assume is not in the data
+        particle_types_pdg = self._iaea_types_to_pdg(data['particle type'])
+        self.data[self._columns['particle type']] = particle_types_pdg
         self.data[self._columns['particle id']] = np.arange(
             len(self.data))  # may want to replace with track ID if available?
-        self.data[self._columns['time']] = pd.Series(0  * np.ones(self.data.shape[0]), dtype="category")  # may want to replace with time feature if available?
+        self.data[self._columns['time']] = pd.Series(0 * np.ones(self.data.shape[0]), dtype="category")  # may want to replace with time feature if available?
         # figure out the momentums:
-        DirCosineX = data['Component of momentum direction in X']
-        DirCosineY = data['Component of momentum direction in Y']
-        E = data['Energy']
+        DirCosineX = data['Cosine X']
+        DirCosineY = data['Cosine Y']
+        E = data['Ek']
         if E.min() < 0:
-            warnings.warn('this data has negative energy in it, wtf does that even mean. forcing all energy to positive')
+            warnings.warn('this data has negative energy in it, what does that even mean. forcing all energy to positive')
             E = np.abs(E)
-        self._rest_masses = get_rest_masses_from_pdg_codes(self.data['particle type [pdg_code]'])
+        self._rest_masses = get_rest_masses_from_pdg_codes(particle_types_pdg)
         P = np.sqrt((E + self._rest_masses) ** 2 - self._rest_masses ** 2)
         self.data[self._columns['px']] = pd.Series(np.multiply(P, DirCosineX), dtype=np.float32)
         self.data[self._columns['py']] = pd.Series(np.multiply(P, DirCosineY), dtype=np.float32)
@@ -447,16 +471,24 @@ class Load_IAEA(_DataLoadersBase):
         self.data[self._columns['pz']] = pd.Series(np.sqrt(temp), dtype=np.float32)
         self._check_energy_consistency(Ek=E)
 
-    def _varian_types_to_pdg(self, varian_types):
+    def _iaea_types_to_pdg(self, varian_types):
         """
         convert varian integer type code to pdg integer type code
         :param varian_types:
         :return:
         """
-        pdg_types = np.zeros(varian_types.shape, dtype=np.int)
-        pdg_types[varian_types==1] = 22
-        pdg_types[varian_types == 2] = 11
-        pdg_types[varian_types == 3] = -11
+        pdg_types = np.zeros(varian_types.shape, dtype=np.int32)
+        for type in np.unique(varian_types):
+            if not type in [1, 2, 3, 4, 5]:
+                raise TypeError(f'unknown particle code {type}')
+        pdg_types[varian_types==1] = 22  # gammas
+        pdg_types[varian_types == 2] = 11  # electrons
+        pdg_types[varian_types == 3] = -11  # positrons
+        pdg_types[varian_types == 4] = 2112  # neutrons
+        pdg_types[varian_types == 5] = 2212  # protons
+        for type in np.unique(pdg_types):
+            if not type in [22, 11, -11, 2112, 2212]:
+                raise TypeError(f'unknown particle code {type}')
 
         return pdg_types
 
@@ -494,12 +526,15 @@ class Load_IAEA(_DataLoadersBase):
                             break
                         # extract var_name
                         try:
-                            sub_var_name = re.split('//', var_line)[1][1]
+                            sub_var_name = re.search(' \S+ ',re.split('//', var_line)[1])[0]
+                            sub_var_name = sub_var_name.replace(' ','')
                             exists = bool(int(re.split('//', var_line)[0]))
                             self._header_dict[var_name][sub_var_name] = exists
                         except Exception as e:
                             print('failed to extract data from IAEA header during RECORD_CONTENTS stage')
                             raise e
+                elif var_name == 'RECORD_LENGTH':
+                    self._header_dict[var_name] = int(lines[i+1])
 
     def _check_required_info_present(self):
         """
@@ -507,27 +542,35 @@ class Load_IAEA(_DataLoadersBase):
         or defined as constants
         :return:
         """
-        warnings.warn('no check implemented yet')
+        defined_quantities = list(self._data_schema.fields.keys()) + list(self._constants.keys())
+        required_quantities = ['x', 'y', 'z', 'Ek', 'Cosine X', 'Cosine Y', 'weight']
+        for quantity in required_quantities:
+            if not quantity in defined_quantities:
+                raise Exception(f'could not find required quantity {quantity}')
 
-    def _construct_dtype_schema(self):
+    def _check_record_length_versus_data_schema(self):
         """
-        construct the dtype schema needed to read the binary phase space
-
-        example::
-
-            dt = np.dtype([('Type', 'i1'),
-               ('Energy', 'f4'),
-               ('X position', 'f4'),
-               ('Y position', 'f4'),
-               ('Component of momentum direction in X', 'f4'),
-               ('Component of momentum direction in Y', 'f4')])
+        there is often a field called RECORD_LENGTH which describest the total byte length on each row.
+        if this exists, make sure the
+        input data_schema is consistent
         :return:
         """
-        print('gelo')
+        if 'RECORD_LENGTH' in self._header_dict.keys():
+            if not self._data_schema.itemsize == self._header_dict['RECORD_LENGTH']:
+                raise Exception(f'specified data schema has differeny byte length to that indicated in header.'
+                                f'\nheader specifies {self._header_dict["RECORD_LENGTH"]},'
+                                f'\nschema specifies {self._data_schema.itemsize}')
 
-    def _get_data_schema(self):
-        """
-        try and figure out the data scheme from the header
-        :return:
-        """
+    def _build_data_schema(self):
+        scheme_list = []
+        for quantity in self._header_dict['RECORD_CONTENTS'].keys():
+            if self._header_dict['RECORD_CONTENTS'][quantity] == True:
+                if quantity in ['X', 'Y', 'Z']:
+                    scheme_list.append((quantity.lower(), 'f4'))
+                elif quantity == 'U':
+                    pass
+
+
+
+    def _build_constants(self):
         pass
