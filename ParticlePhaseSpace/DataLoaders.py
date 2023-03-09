@@ -9,6 +9,7 @@ import ParticlePhaseSpace.__particle_config__ as particle_cfg
 from ParticlePhaseSpace import UnitSet
 import warnings
 from ParticlePhaseSpace import ParticlePhaseSpaceUnits
+import re
 
 units=ParticlePhaseSpaceUnits()
 
@@ -16,10 +17,28 @@ class _DataLoadersBase(ABC):
     """
     DataLoader Abstract Base Class.
     Inherited by new instances of DataLoaders
+
+    :param input_data:
+    :param particle_type:
+    :param units:
+    :param data_schema:
     """
 
-    def __init__(self, input_data, particle_type=None, units=units('mm_MeV')):
+    def __init__(self, input_data: (str, Path), particle_type:str=None, units:UnitSet=units('mm_MeV'),
+                 dtypes: (dict, None)=None):
+        """
+
+        :param input_data:
+        :param particle_type:
+        :param units:
+        :param data_schema:
+        """
         self.data = pd.DataFrame()
+        if dtypes is None:
+            self.dtypes = {'int': np.int64, 'float': np.float64}
+        else:
+            self.dtypes = dtypes
+        self._check_dtypes()
         if not isinstance(units, UnitSet):
             raise TypeError('units must be an instance of articlePhaseSpace.__unit_config__._UnitSet.'
                             'UnitSets are accessed through the ParticlePhaseSpaceUnits class')
@@ -27,8 +46,6 @@ class _DataLoadersBase(ABC):
         self._columns = ps_cfg.get_all_column_names(self._units)
         self._energy_consistency_check_cutoff = .001 * self._units.energy.conversion # in cases where it is possible to check energy/momentum consistency,
         # discrepencies greater than this will raise an error
-
-
         if particle_type:
             if not isinstance(particle_type, str):
                 allowed_particles = [el for el in list(particle_cfg.particle_properties.keys()) if isinstance(el, str)]
@@ -119,6 +136,12 @@ class _DataLoadersBase(ABC):
         if E_error > self._energy_consistency_check_cutoff:  # .01 MeV is an aribitrary cut off
             raise Exception('Energy check failed: read in of data may be incorrect')
 
+    def _check_dtypes(self):
+        try:
+            assert [val in self.dtypes.keys() for val in ['int', 'float']]
+        except AssertionError:
+            raise AttributeError('invalid dtypes provided. must be a dict with keys "int" and "float" and'
+                                 'values which are valid data types')
 
 class Load_TopasData(_DataLoadersBase):
     """
@@ -346,12 +369,24 @@ class Load_p2sat_txt(_DataLoadersBase):
         self.data[self._columns['pz']] = pz
 
 
-class Load_varian_IAEA(_DataLoadersBase):
+class Load_IAEA(_DataLoadersBase):
     """
     this loads a binary varian IAEA sent through the topas forums.
     The format appears extremely specific, so I doubt this will work for general data,
     but it may be a usefult template for reading this extremely annoying data format
     """
+
+    def __init__(self, input_data: (str, Path), n_records:int=-1, data_schema=None, constants=None):
+        if data_schema is None:
+            self._data_schema = np.dtype([
+                       ('Type', 'i1'),
+                       ('Energy', 'f4'),
+                       ('X position', 'f4'),
+                       ('Y position', 'f4'),
+                       ('Component of momentum direction in X', 'f4'),
+                       ('Component of momentum direction in Y', 'f4')])
+        self._n_records = n_records
+        super().__init__(input_data, dtypes={'int': np.float32, 'float': np.float64})
 
     def _check_input_data(self):
         if not Path(self._input_data).is_file():
@@ -360,33 +395,14 @@ class Load_varian_IAEA(_DataLoadersBase):
             raise Exception('This data loader reads in files of extension *.phsp')
         if self._particle_type:
             warnings.warn('particle type is ignored in IAEA read in')
+        if not self._input_data.with_suffix('.header').is_file():
+            raise FileNotFoundError(f'expected header file at {self._input_data.with_suffix(".header")} but'
+                                    f'was not found')
 
     def _import_data(self):
-        dt = np.dtype([('Type', 'i1'),
-                       ('Energy', 'f4'),
-                       ('X position', 'f4'),
-                       ('Y position', 'f4'),
-                       ('Component of momentum direction in X', 'f4'),
-                       ('Component of momentum direction in Y', 'f4')])
-
-        '''
-        note that varian have named the last two columns inconsistently as they wrote out their notes on a type writer
-        '''
-
-        data = np.fromfile(self._input_data, dtype=dt)
-        '''
-        at this point we have an array of tuples, each tuple containing [particle_type, Energy, X, Y, CosineX, CosineY]
-        in addition, the header specifies that the following two constants:
-                
-            26.7       // Constant Z
-            1.0000     // Constant Weight
-            
-        So our job now:
-        - convert the tuplles into a workable format
-        - convert varians weird types with pdg types
-        - populate the data frame        
-        '''
-
+        self._header_to_dict()
+        self._check_required_info_present()
+        data = np.fromfile(self._input_data, dtype=self._data_schema, count=self._n_records)
         pdg_types = self._varian_types_to_pdg(data['Type'])  # this contains 1,2,3 - I am going to guess this means photons, electrons, positrons
 
         self.data[self._columns['particle type']] = pdg_types.astype(int)
@@ -443,3 +459,75 @@ class Load_varian_IAEA(_DataLoadersBase):
         pdg_types[varian_types == 3] = -11
 
         return pdg_types
+
+    def _header_to_dict(self):
+        """
+        try to extract quantities from the IAEA header
+        for now will just get what I need, may be updated later
+        :return:
+        """
+        self._header_dict = {}
+        # read the header file
+        with open(self._input_data.with_suffix('.header')) as f:
+            lines = f.readlines()
+        for i, line in enumerate(lines):
+            if '$' in line:  # then we have a variable definition
+                var_name = line[1:-2]
+                if var_name == 'RECORD_CONSTANT':
+                    self._header_dict[var_name] = {}
+                    for var_line in lines[i+1:]:
+                        if var_line == '\n':
+                            break
+                        try:
+                            value = float(re.split('//', var_line)[0])
+                            gah = re.split('//', var_line)[1]
+                            # name = re.search(r' \S+\s', gah).group()
+                            name = re.split(' ', gah[:-1])[2]
+                            self._header_dict[var_name][name] = value
+                        except Exception as e:
+                            print('failed to extract data from IAEA header during RECORD_CONSTANT stage')
+                            raise e
+                elif var_name == 'RECORD_CONTENTS':
+                    self._header_dict[var_name] = {}
+                    for var_line in lines[i+1:]:
+                        if var_line == '\n':
+                            break
+                        # extract var_name
+                        try:
+                            sub_var_name = re.split('//', var_line)[1][1]
+                            exists = bool(int(re.split('//', var_line)[0]))
+                            self._header_dict[var_name][sub_var_name] = exists
+                        except Exception as e:
+                            print('failed to extract data from IAEA header during RECORD_CONTENTS stage')
+                            raise e
+
+    def _check_required_info_present(self):
+        """
+        check that all quantities required for read in are either present in data
+        or defined as constants
+        :return:
+        """
+        warnings.warn('no check implemented yet')
+
+    def _construct_dtype_schema(self):
+        """
+        construct the dtype schema needed to read the binary phase space
+
+        example::
+
+            dt = np.dtype([('Type', 'i1'),
+               ('Energy', 'f4'),
+               ('X position', 'f4'),
+               ('Y position', 'f4'),
+               ('Component of momentum direction in X', 'f4'),
+               ('Component of momentum direction in Y', 'f4')])
+        :return:
+        """
+        print('gelo')
+
+    def _get_data_schema(self):
+        """
+        try and figure out the data scheme from the header
+        :return:
+        """
+        pass

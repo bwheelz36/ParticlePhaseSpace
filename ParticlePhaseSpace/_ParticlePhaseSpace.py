@@ -707,6 +707,11 @@ class _Transform(_PhaseSpace_MethodHolder):
 
             return np.frompyfunc(f, 1, 1)
 
+
+        for col in self._PS._ps_data.columns:
+            if isinstance(self._PS._ps_data[col].dtype, pd.CategoricalDtype):
+                warnings.warn(f'forcing {col} from categorical to explicit for regrid')
+                self._PS._ps_data[col] = self._PS._ps_data[col].cat.codes
         # set up quantities to regrid:
         quantities = self._PS._get_quantities(quantities)
 
@@ -1588,6 +1593,10 @@ class PhaseSpace:
         :return: new_PS if in_place is False.
         """
         self.reset_phase_space()
+        for col in self._ps_data.columns:
+            if isinstance(self._ps_data[col].dtype, pd.CategoricalDtype):
+                warnings.warn(f'forcing {col} from categorical to explicit for merge')
+                self._ps_data[col] = self._ps_data[col].cat.codes
         # first sort the phase space
         quantities_to_merge = self._get_quantities(['x', 'y', 'z', 'px', 'py', 'pz', 'time', 'particle type'])
         # self.sort(quantities_to_sort=quantities_to_merge)
