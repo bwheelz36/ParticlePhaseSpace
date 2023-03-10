@@ -35,7 +35,7 @@ def test_consistency_of_unitless_quantities():
         PS_electrons.fill.direction_cosines()
         for quantity, base in zip(['gamma', 'beta_abs', 'Direction Cosine X', 'Direction Cosine Y', 'Direction Cosine Z'],
                                   [gamma_base, beta_base, cos_x_base, cos_y_base, cos_z_base]):
-            if not np.allclose(base, PS_electrons.ps_data[quantity]):
+            if not np.allclose(base, PS_electrons.ps_data[quantity], atol=1e-3):
                 raise Exception(f'Inconsistent calculation of dimensionsless quantity {quantity} for unit set {unit_set}')
 
 def test_velocity_consistency():

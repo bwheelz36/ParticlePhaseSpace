@@ -30,6 +30,7 @@ def get_rest_masses_from_pdg_codes(pdg_codes):
         particle_rest_mass[ind] = particle_cfg.particle_properties[particle_type]['rest_mass']
     return particle_rest_mass
 
+
 def get_unit_conversions(old_units: UnitSet, new_units: UnitSet):
     """
     get the conversion factors between the old units and new units

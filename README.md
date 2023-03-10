@@ -11,9 +11,10 @@ To install: ```pip install ParticlePhaseSpace```
 
 ## Usage and Documentation
 
-Detailed documentation is provided [here](https://bwheelz36.github.io/ParticlePhaseSpace/).
+- Detailed documentation is provided [here](https://bwheelz36.github.io/ParticlePhaseSpace/).
+- The source code for the [worked examples](https://bwheelz36.github.io/ParticlePhaseSpace/examples.html) is inside the examples folder.
+- For a list of the current data loaders, see [here](https://bwheelz36.github.io/ParticlePhaseSpace/code_docs.html#module-ParticlePhaseSpace.DataLoaders)
 
-The source code for the [worked examples](https://bwheelz36.github.io/ParticlePhaseSpace/examples.html) is inside the examples folder.
 
 ## Directory Structure
 
@@ -22,10 +23,11 @@ The source code for the [worked examples](https://bwheelz36.github.io/ParticlePh
 - **docsrc:** markdown/rst documentation.
 - **tests:** tests which are run through github actions
 
-## Contriubtions and support
+## Contributions
 
 Contributions in the form of pull requests are very welcome! 
-Please use the 'issues' tab in this repository to report problems or request support
+Please use the 'issues' tab in this repository to report problems 
+or request support
 
 ## Other packages for analysis of particle phase space data
 

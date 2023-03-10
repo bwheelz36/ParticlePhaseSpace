@@ -18,27 +18,15 @@ class _DataLoadersBase(ABC):
     DataLoader Abstract Base Class.
     Inherited by new instances of DataLoaders
 
-    :param input_data:
-    :param particle_type:
-    :param units:
-    :param data_schema:
+    :param input_data: location of file to read, or data to read
+    :param particle_type: optional parameter if phase space format does not specify particle.
+        particle type is a string matching a particle name from particle config
+    :param units:  optionally specify units by passing a unit set
     """
 
-    def __init__(self, input_data: (str, Path), particle_type:str=None, units:UnitSet=units('mm_MeV'),
-                 dtypes: (dict, None)=None):
-        """
+    def __init__(self, input_data: (str, Path), particle_type:str=None, units:UnitSet=units('mm_MeV')):
 
-        :param input_data:
-        :param particle_type:
-        :param units:
-        :param data_schema:
-        """
         self.data = pd.DataFrame()
-        if dtypes is None:
-            self.dtypes = {'int': np.int64, 'float': np.float64}
-        else:
-            self.dtypes = dtypes
-        self._check_dtypes()
         if not isinstance(units, UnitSet):
             raise TypeError('units must be an instance of articlePhaseSpace.__unit_config__._UnitSet.'
                             'UnitSets are accessed through the ParticlePhaseSpaceUnits class')
@@ -136,14 +124,6 @@ class _DataLoadersBase(ABC):
         E_error = max(Ek - Ek_internal)
         if E_error > self._energy_consistency_check_cutoff:  # .01 MeV is an aribitrary cut off
             raise Exception('Energy check failed: read in of data may be incorrect')
-
-    def _check_dtypes(self):
-        try:
-            assert [val in self.dtypes.keys() for val in ['int', 'float']]
-        except AssertionError:
-            raise AttributeError('invalid dtypes provided. must be a dict with keys "int" and "float" and'
-                                 'values which are valid data types')
-
 
 class Load_TopasData(_DataLoadersBase):
     """
@@ -374,33 +354,53 @@ class Load_p2sat_txt(_DataLoadersBase):
 class Load_IAEA(_DataLoadersBase):
     """
     this loads a binary varian IAEA sent through the topas forums.
-    The format appears extremely specific, so I doubt this will work for general data,
-    but it may be a usefult template for reading this extremely annoying data format
+    Because this format is so arbitrary, uses are required to pass a data_schema variable indicating the order
+    and types of the data in the phase space, because there is no general way for us to figure this out.
+    Please see `here <https://bwheelz36.github.io/ParticlePhaseSpace/IAEA.html>`_ for examples of how to
+    use this data loader.
+
+    :param data_schema: the types and order of data, specified as an np.dtype
+    :type data_schema: np.dtype
+    :param constants: any constants in the phase space
+    :type constatnts: dict
+    :param input_data: path to the a .phsp or .IAEAphsp file
+    :param n_records: specify how many rows of data to read in. By default, will read all rows.
+    :param offset: which row to start at. defaults to 0 (first row). Can be used in conjunction with n_records
+        to read a large file in a series of small chunks
+
+    Example::
+
+        from ParticlePhaseSpace import PhaseSpace, DataLoaders
+        from pathlib import Path
+        import numpy as np
+
+        file_name = Path(r'/home/brendan/Downloads/Varian_TrueBeam6MV_01.phsp')
+        data_schema = np.dtype([
+                               ('particle type', 'i1'),
+                               ('Ek', 'f4'),
+                               ('x', 'f4'),
+                               ('y', 'f4'),
+                               ('z', 'f4'),
+                               ('Cosine X', 'f4'),
+                               ('Cosine Y', 'f4')
+                               ])
+        constants = {'weight': np.int8(1)}
+        ps_data = DataLoaders.Load_IAEA(data_schema=data_schema, constants=constants, input_data=file_name, n_records=int(1e5))
+        PS = PhaseSpace(ps_data)
     """
 
-    def __init__(self, input_data: (str, Path), n_records:int=-1, data_schema=None, constants=None):
-        # if data_schema is None:
-        #     self._data_schema = np.dtype([
-        #                ('particle type', 'i1'),
-        #                ('Ek', 'f4'),
-        #                ('x', 'f4'),
-        #                ('y', 'f4'),
-        #                ('Cosine X', 'f4'),
-        #                ('Cosine Y', 'f4')])
-        # else:
+    def __init__(self,data_schema: np.dtype, constants: dict, input_data: (str, Path),  n_records:int=-1, offset=0, **kwargs):
         self._data_schema = data_schema
-        # if constants is None:
-        #     self._constants = {'z': np.float32(26.7), 'weight': np.int8(1)}
-        # else:
         self._constants = constants
         self._n_records = n_records
-        super().__init__(input_data, dtypes={'int': np.float32, 'float': np.float64})
+        self._offset = offset
+        super().__init__(input_data, **kwargs)
 
     def _check_input_data(self):
         if not Path(self._input_data).is_file():
             raise FileNotFoundError(f'input data file {self._import_data()} does not exist')
-        if not Path(self._input_data).suffix == '.phsp':
-            raise Exception('This data loader reads in files of extension *.phsp')
+        if not Path(self._input_data).suffix == '.phsp' or Path(self._input_data).suffix == '.IAEAphsp':
+            raise Exception('This data loader reads in files of extension *.phsp or *.IAEAphsp')
         if self._particle_type:
             warnings.warn('particle type is ignored in IAEA read in')
         if not self._input_data.with_suffix('.header').is_file():
@@ -409,19 +409,12 @@ class Load_IAEA(_DataLoadersBase):
 
     def _import_data(self):
         self._header_to_dict()
-        if self._data_schema is None:
-            self._build_data_schema()
-        if self._constants is None:
-            self._build_constants()
         self._check_required_info_present()
         self._check_record_length_versus_data_schema()
         for quantity in ['Cosine X', 'Cosine Y', 'Ek']:
             if not quantity in self._data_schema.fields:
                 raise AttributeError('need at least Cosine X, Cosine Y, and Ek to read data')
-        data = np.fromfile(self._input_data, dtype=self._data_schema, count=self._n_records)
-        # convert
-          # this contains 1,2,3 - I am going to guess this means photons, electrons, positrons
-
+        data = np.fromfile(self._input_data, dtype=self._data_schema, count=self._n_records, offset=self._offset)
         for field in self._data_schema.fields:
             if field in self._columns.keys():
                 if self._columns[field] in self._required_columns:
@@ -434,6 +427,7 @@ class Load_IAEA(_DataLoadersBase):
 
         # OK; add the fields I assume is not in the data
         particle_types_pdg = self._iaea_types_to_pdg(data['particle type'])
+        self._check_n_particles_in_header(particle_types_pdg)
         self.data[self._columns['particle type']] = particle_types_pdg
         self.data[self._columns['particle id']] = np.arange(
             len(self.data))  # may want to replace with track ID if available?
@@ -455,7 +449,7 @@ class Load_IAEA(_DataLoadersBase):
             # this should never happen, but does occur when pz is essentially 0. we will attempt to resolve it here.
             negative_locations = np.where(_negative_temp_ind)[0]
             n_negative_locations = np.count_nonzero(_negative_temp_ind)
-            momentum_precision_factor = 1e-3
+            momentum_precision_factor = 2e-3
             for location in negative_locations:
                 relative_difference = np.divide(np.sqrt(abs(temp[location])), P[location])
                 if relative_difference < momentum_precision_factor:
@@ -533,7 +527,7 @@ class Load_IAEA(_DataLoadersBase):
                         except Exception as e:
                             print('failed to extract data from IAEA header during RECORD_CONTENTS stage')
                             raise e
-                elif var_name == 'RECORD_LENGTH':
+                elif var_name in ['RECORD_LENGTH', 'PARTICLES', 'PHOTONS', 'ELECTRONS','POSITRONS', 'PROTONS']:
                     self._header_dict[var_name] = int(lines[i+1])
 
     def _check_required_info_present(self):
@@ -561,16 +555,35 @@ class Load_IAEA(_DataLoadersBase):
                                 f'\nheader specifies {self._header_dict["RECORD_LENGTH"]},'
                                 f'\nschema specifies {self._data_schema.itemsize}')
 
-    def _build_data_schema(self):
-        scheme_list = []
-        for quantity in self._header_dict['RECORD_CONTENTS'].keys():
-            if self._header_dict['RECORD_CONTENTS'][quantity] == True:
-                if quantity in ['X', 'Y', 'Z']:
-                    scheme_list.append((quantity.lower(), 'f4'))
-                elif quantity == 'U':
-                    pass
+    def _check_n_particles_in_header(self, pdg_codes):
+        """
+        check that the number of particles we extracted from the record matches what is in the header
 
-
-
-    def _build_constants(self):
-        pass
+        we won't stop reading in the data if it doesn't seem to match the header but we will warn
+        """
+        if not self._n_records == -1:
+            # if the user is only reading chunks at a time this check makes no sense
+            return
+        unique_particle_codes = np.unique(pdg_codes)
+        unique_particle_names = []
+        for code in unique_particle_codes:
+            unique_particle_names.append(particle_cfg.particle_properties[code]['name'])
+        for particle_name, particle_code in zip(unique_particle_names, unique_particle_codes):
+            # attempt to extract the number from the header dict
+            if particle_name == 'gammas':
+                particle_name = 'photons'
+            try:
+                n_particles_header = self._header_dict[particle_name.upper()]
+            except KeyError:
+                warnings.warn(f'\nunable to check number of particles is correct for species {particle_name}')
+                n_particles_header = np.nan
+            n_particles_code = np.count_nonzero(pdg_codes == particle_code)
+            if not n_particles_header == n_particles_code:
+                warnings.warn(f'this code read in {n_particles_code} {particle_name}, but the header specifies'
+                              f'{n_particles_header}')
+            try:
+                if not len(pdg_codes) == self._header_dict['PARTICLES']:
+                    warnings.warn(f'\nheader file specifies {self._header_dict["PARTICLES"]}, but read in'
+                                  f'{len(pdg_codes)}')
+            except KeyError:
+                pass

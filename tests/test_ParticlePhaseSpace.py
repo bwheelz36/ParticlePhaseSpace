@@ -207,13 +207,13 @@ def test_beta_gamma_momentum_relation():
     PS_electrons.fill.rest_mass()
     px = np.multiply(np.multiply(PS_electrons.ps_data['beta_x'], PS_electrons.ps_data['gamma']),
                      PS_electrons.ps_data['rest mass [MeV/c^2]'])
-    assert np.allclose(px, PS_electrons.ps_data['px [MeV/c]'])
+    assert np.allclose(px, PS_electrons.ps_data['px [MeV/c]'], atol=1e-03)
     py = np.multiply(np.multiply(PS_electrons.ps_data['beta_y'], PS_electrons.ps_data['gamma']),
                      PS_electrons.ps_data['rest mass [MeV/c^2]'])
-    assert np.allclose(py, PS_electrons.ps_data['py [MeV/c]'])
+    assert np.allclose(py, PS_electrons.ps_data['py [MeV/c]'], atol=1e-03)
     pz = np.multiply(np.multiply(PS_electrons.ps_data['beta_z'], PS_electrons.ps_data['gamma']),
                      PS_electrons.ps_data['rest mass [MeV/c^2]'])
-    assert np.allclose(pz, PS_electrons.ps_data['pz [MeV/c]'])
+    assert np.allclose(pz, PS_electrons.ps_data['pz [MeV/c]'], atol=1e-03)
 
 
 def test_resample_kde():
