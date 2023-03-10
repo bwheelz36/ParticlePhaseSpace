@@ -21,6 +21,7 @@ sys.path.insert(0, os.path.abspath('..'))
 this_file_loc = Path(__file__).parent
 shutil.copy(this_file_loc.parent / 'examples' / 'basic_example.ipynb', this_file_loc)
 shutil.copy(this_file_loc.parent / 'examples' / 'new_data_loader.ipynb', this_file_loc)
+shutil.copy(this_file_loc.parent / 'examples' / 'IAEA.ipynb', this_file_loc)
 shutil.copy(this_file_loc.parent / 'examples' / 'new_data_exporter.ipynb', this_file_loc)
 shutil.copy(this_file_loc.parent / 'examples' / 'units.ipynb', this_file_loc)
 shutil.copy(this_file_loc.parent / 'examples' / 'resampling_via_gaussian_kde.ipynb', this_file_loc)
