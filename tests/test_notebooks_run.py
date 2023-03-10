@@ -26,7 +26,7 @@ def test_all_notebooks_run():
     notebooks = glob(str(this_file_loc.parent / 'examples' / '*.ipynb'))
     notebooks_not_to_run = ['IAEA.ipynb']
     for notebook in notebooks:
-        for notebook_not_to_run in notebooks:
+        for notebook_not_to_run in notebooks_not_to_run:
             if notebook_not_to_run in notebook:
                 continue
         check_notebook_runs(notebook)
