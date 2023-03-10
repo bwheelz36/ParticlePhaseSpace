@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reading IAEA phase space &mdash; Particle Phase Space  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Writing a new data exporter" href="new_data_exporter.html" />
+    <link rel="prev" title="Writing a new data loader" href="new_data_loader.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Particle Phase Space
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="examples.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="basic_example.html">Basic Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="new_data_loader.html">Writing a new data loader</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Reading IAEA phase space</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#The-IAEA-format">The IAEA format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Reading-an-IAEA-phase-space-file">Reading an IAEA phase space file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#When-things-don’t-work-quite-so-well…">When things don’t work quite so well…</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Next-steps">Next steps</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="new_data_exporter.html">Writing a new data exporter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transform.html">Transformation of phase space data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="units.html">Working with different units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="grid_merge.html">Compress phase space via regrid/merge operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="resampling_via_gaussian_kde.html">Up/Down sampling phase space data using gaussian KDE</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="phase_space_format.html">Phase Space Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="supported_particles.html">Supported particles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code_docs.html">Code Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Particle Phase Space</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="examples.html">Examples</a></li>
+      <li class="breadcrumb-item active">Reading IAEA phase space</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/IAEA.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars and line breaks on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+    white-space: pre;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt .copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+.jp-RenderedHTMLCommon table,
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+.jp-RenderedHTMLCommon thead,
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+.jp-RenderedHTMLCommon tr,
+.jp-RenderedHTMLCommon th,
+.jp-RenderedHTMLCommon td,
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+.jp-RenderedHTMLCommon th,
+div.rendered_html th {
+  font-weight: bold;
+}
+.jp-RenderedHTMLCommon tbody tr:nth-child(odd),
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+.jp-RenderedHTMLCommon tbody tr:hover,
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="Reading-IAEA-phase-space">
+<h1>Reading IAEA phase space<a class="headerlink" href="#Reading-IAEA-phase-space" title="Permalink to this heading"></a></h1>
+<p>The international Atomic Energy Agency (IAEA) maintains a <a class="reference external" href="https://www-nds.iaea.org/phsp/photon1/">database of phase spaces</a> from different medical accelerators, as described in <a class="reference external" href="https://inis.iaea.org/collection/NCLCollectionStore/_Public/37/073/37073778.pdf?r=1">this report</a>.</p>
+<p>In principle, this is great: a standardised phase space format that everyone can adhere to! In reality, this is not so much a format as a loose fraternity of data. This mean it is very difficult to provide standardised methods to read these files; although we provide a DataLoader <code class="docutils literal notranslate"><span class="pre">Load_IAEA</span></code>, it is very likely that this will not work ‘out of the box’ for arbitrary data, and will require some fine tuning. Therefore, the point of this example is to demonstrate the process you would go through to
+read an IAEA phase space file into this code.</p>
+<section id="The-IAEA-format">
+<h2>The IAEA format<a class="headerlink" href="#The-IAEA-format" title="Permalink to this heading"></a></h2>
+<p>All IAEA phase spaces consist of two files:</p>
+<ol class="arabic simple">
+<li><p>A header file, which is ASCII (human readable) encoded. This contains a lot of information, some of which is essential to how to read the second file:</p></li>
+<li><p>The phasespace file (typical extension <code class="docutils literal notranslate"><span class="pre">.phsp</span></code> of <code class="docutils literal notranslate"><span class="pre">.IAEAphsp</span></code>. This is a file in binary format: to read it correctly, we need to understand exactly what order different quantities are described and how many bytes of data are used to describe them. In principle, such information should be available in the header!</p></li>
+</ol>
+<p>The IAEA report provides the following table describing their phase space format:</p>
+<p><img alt="image0" src="_images/IAEA_phase_space.png" /></p>
+<p>However, any of these quantities can also be described as constants, which means that the byte order of an IAEA file is essentially arbitrary. In principle, it should be possible to dervice this information from the header file, but it’s not yet clear to me whether they are consistent enough to always allow that in practice.</p>
+</section>
+<section id="Reading-an-IAEA-phase-space-file">
+<h2>Reading an IAEA phase space file<a class="headerlink" href="#Reading-an-IAEA-phase-space-file" title="Permalink to this heading"></a></h2>
+<p>With all this said, how does one actually go about reading an IAEA phase space? In this case, I will read in a small section of a varian phase space file which contained the following information in the header:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Format of the phase space file:
+Type (1 byte); Energy (4 bytes); X position (4); Y position (4); Component of
+momentum direction in X (4); Component of momentum direction vector in Y (4)
+</pre></div>
+</div>
+<p>and</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$RECORD_CONSTANT:
+     26.7       // Constant Z
+     1.0000     // Constant Weight
+</pre></div>
+</div>
+<p>With these two pieces of information, we can specify the order and types of the data, as well as the constants:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;../&#39;</span><span class="p">)</span> <span class="c1"># not necessary when code is installed</span>
+<span class="kn">from</span> <span class="nn">ParticlePhaseSpace</span> <span class="kn">import</span> <span class="n">PhaseSpace</span><span class="p">,</span> <span class="n">DataLoaders</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># get data file:</span>
+<span class="n">file_name</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;/home/brendan/Dropbox (Sydney Uni)/abstracts,presentations etc/temp/TrueBeam_v2_6X_00.phsp&#39;</span><span class="p">)</span>
+<span class="c1"># file_name = Path(r&#39;/home/brendan/Downloads/Varian_TrueBeam6MV_01.phsp&#39;)</span>
+<span class="c1"># read in</span>
+<span class="n">data_schema</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">([</span>
+               <span class="p">(</span><span class="s1">&#39;particle type&#39;</span><span class="p">,</span> <span class="s1">&#39;i1&#39;</span><span class="p">),</span>
+               <span class="p">(</span><span class="s1">&#39;Ek&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
+               <span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
+               <span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
+               <span class="p">(</span><span class="s1">&#39;Cosine X&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
+               <span class="p">(</span><span class="s1">&#39;Cosine Y&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">)])</span>
+
+<span class="n">constants</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="mf">26.7</span><span class="p">),</span> <span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">(</span><span class="mi">1</span><span class="p">)}</span>
+
+<span class="n">ps_data</span> <span class="o">=</span> <span class="n">DataLoaders</span><span class="o">.</span><span class="n">Load_IAEA</span><span class="p">(</span><span class="n">data_schema</span><span class="o">=</span><span class="n">data_schema</span><span class="p">,</span> <span class="n">constants</span><span class="o">=</span><span class="n">constants</span><span class="p">,</span> <span class="n">input_data</span><span class="o">=</span><span class="n">file_name</span><span class="p">,</span> <span class="n">n_records</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="mf">1e5</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/brendan/Documents/python/ParticlePhaseSpace/examples/../ParticlePhaseSpace/DataLoaders.py:462: UserWarning: this data has negative energy in it, what does that even mean. forcing all energy to positive
+  warnings.warn(&#39;this data has negative energy in it, what does that even mean. forcing all energy to positive&#39;)
+</pre></div></div>
+</div>
+<p>In this case, we were able to figure out the format of the data in the header, and specify this to the data loader.</p>
+<p>A few other notes here:</p>
+<ul class="simple">
+<li><p>we specified <code class="docutils literal notranslate"><span class="pre">n_records=1e5</span></code>; this controls how many rows of the data get read in. Since this files can be very large it is not always desirable to read them in one ‘chunk’.</p></li>
+<li><p>we got a warning about negative energy. As the warning says: the energy in this phase space is negative. I don’t know why that is; it physically makes no sense so I force the energy to positive.</p></li>
+</ul>
+<p>Now that we’ve loaded the data let’s take a look at it:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span> <span class="o">=</span> <span class="n">PhaseSpace</span><span class="p">(</span><span class="n">ps_data</span><span class="p">)</span>
+<span class="c1"># again, because this data can be quite large we can manually delete the loader now we&#39;ve finished with it</span>
+<span class="k">del</span> <span class="n">ps_data</span>
+<span class="n">PS</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">particle_positions_hist_2D</span><span class="p">(</span><span class="n">log_scale</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/IAEA_3_0.png" src="_images/IAEA_3_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">energy_hist_1D</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/IAEA_4_0.png" src="_images/IAEA_4_0.png" />
+</div>
+</div>
+</section>
+<section id="When-things-don’t-work-quite-so-well…">
+<h2>When things don’t work quite so well…<a class="headerlink" href="#When-things-don’t-work-quite-so-well…" title="Permalink to this heading"></a></h2>
+<p>To take another example; look at the TrueBeam data available on <a class="reference external" href="https://www-nds.iaea.org/phsp/photon1/">this database</a>.</p>
+<p>In this instance, the header does not nicely specify what is in the the phase space data, so we have to guess. This is what the header does tell us:</p>
+<div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="nv">$RECORD_CONTENTS:</span>
+<span class="w">    </span><span class="mi">1</span><span class="w">     </span><span class="sr">//</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="n">stored</span><span class="w"> </span><span class="p">?</span>
+<span class="w">    </span><span class="mi">1</span><span class="w">     </span><span class="sr">//</span><span class="w"> </span><span class="n">Y</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="n">stored</span><span class="w"> </span><span class="p">?</span>
+<span class="w">    </span><span class="mi">1</span><span class="w">     </span><span class="sr">//</span><span class="w"> </span><span class="n">Z</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="n">stored</span><span class="w"> </span><span class="p">?</span>
+<span class="w">    </span><span class="mi">1</span><span class="w">     </span><span class="sr">//</span><span class="w"> </span><span class="n">U</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="n">stored</span><span class="w"> </span><span class="p">?</span>
+<span class="w">    </span><span class="mi">1</span><span class="w">     </span><span class="sr">//</span><span class="w"> </span><span class="n">V</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="n">stored</span><span class="w"> </span><span class="p">?</span>
+<span class="w">    </span><span class="mi">1</span><span class="w">     </span><span class="sr">//</span><span class="w"> </span><span class="n">W</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="n">stored</span><span class="w"> </span><span class="p">?</span>
+<span class="w">    </span><span class="mi">0</span><span class="w">     </span><span class="sr">//</span><span class="w"> </span><span class="n">Weight</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="n">stored</span><span class="w"> </span><span class="p">?</span>
+<span class="w">    </span><span class="mi">0</span><span class="w">     </span><span class="sr">//</span><span class="w"> </span><span class="n">Extra</span><span class="w"> </span><span class="n">floats</span><span class="w"> </span><span class="n">stored</span><span class="w"> </span><span class="p">?</span>
+<span class="w">    </span><span class="mi">0</span><span class="w">     </span><span class="sr">//</span><span class="w"> </span><span class="n">Extra</span><span class="w"> </span><span class="n">longs</span><span class="w"> </span><span class="n">stored</span><span class="w"> </span><span class="p">?</span>
+
+<span class="nv">$RECORD_CONSTANT:</span>
+<span class="w">     </span><span class="mf">1.0000</span><span class="w">     </span><span class="sr">//</span><span class="w"> </span><span class="n">Constant</span><span class="w"> </span><span class="n">Weight</span>
+</pre></div>
+</div>
+<p>Based on this, and the info on IAEA phase space format in the table above, I would guess that the data scheme looks something like this:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data_schema</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">([</span>
+                       <span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
+                       <span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
+                       <span class="p">(</span><span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
+                       <span class="p">(</span><span class="s1">&#39;Cosine X&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
+                       <span class="p">(</span><span class="s1">&#39;Cosine Y&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
+                       <span class="p">(</span><span class="s1">&#39;Ek&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
+                       <span class="p">(</span><span class="s1">&#39;particle type&#39;</span><span class="p">,</span> <span class="s1">&#39;i2&#39;</span><span class="p">)])</span>
+
+<span class="n">constants</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">(</span><span class="mi">1</span><span class="p">)}</span>
+</pre></div>
+</div>
+</div>
+<p>let’s see how this goes…</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">file_name</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;/home/brendan/Downloads/Varian_TrueBeam6MV_01.phsp&#39;</span><span class="p">)</span>
+<span class="n">ps_data</span> <span class="o">=</span> <span class="n">DataLoaders</span><span class="o">.</span><span class="n">Load_IAEA</span><span class="p">(</span><span class="n">data_schema</span><span class="o">=</span><span class="n">data_schema</span><span class="p">,</span> <span class="n">constants</span><span class="o">=</span><span class="n">constants</span><span class="p">,</span> <span class="n">input_data</span><span class="o">=</span><span class="n">file_name</span><span class="p">,</span> <span class="n">n_records</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="mf">1e5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-cyan-fg">  Cell </span><span class="ansi-green-fg">In[5], line 2</span>
+<span class="ansi-red-fg">    ps_data = DataLoaders.Load_IAEA(data_schema=data_schema, constants=constants, input_data=file_name, n_records=int(1e5)</span>
+                                                                                                                          ^
+<span class="ansi-red-fg">SyntaxError</span><span class="ansi-red-fg">:</span> incomplete input
+
+</pre></div></div>
+</div>
+<p>So, this is an interesting error. There is a field called <code class="docutils literal notranslate"><span class="pre">$RECORD_LENGTH</span></code> in the header which specifies how many bytes are in each entry of data. Of course, the number of bytes specified by our data_scheme specification should match this, and the code checks that it does before trying anything else.</p>
+<p>In this case, it would appear that our specified data scheme is one byte longer than that specified in the header. Now, we know from the previous file that we loaded that varian has been known to use a 1 byte integer instead of a 2 byte integer (as specified by the IAEA, which could explain this discrepancy. So let’s try using a 1 byte integer instead:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data_schema</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">([</span>
+                       <span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
+                       <span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
+                       <span class="p">(</span><span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
+                       <span class="p">(</span><span class="s1">&#39;Cosine X&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
+                       <span class="p">(</span><span class="s1">&#39;Cosine Y&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
+                       <span class="p">(</span><span class="s1">&#39;Ek&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
+                       <span class="p">(</span><span class="s1">&#39;particle type&#39;</span><span class="p">,</span> <span class="s1">&#39;i1&#39;</span><span class="p">)])</span>
+
+<span class="n">constants</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">(</span><span class="mi">1</span><span class="p">)}</span>
+<span class="n">ps_data</span> <span class="o">=</span> <span class="n">DataLoaders</span><span class="o">.</span><span class="n">Load_IAEA</span><span class="p">(</span><span class="n">data_schema</span><span class="o">=</span><span class="n">data_schema</span><span class="p">,</span> <span class="n">constants</span><span class="o">=</span><span class="n">constants</span><span class="p">,</span> <span class="n">input_data</span><span class="o">=</span><span class="n">file_name</span><span class="p">,</span> <span class="n">n_records</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="mf">1e5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>OK, doing this at least the byte number is correct, but now we have an unidentified type of particle. This indicates that we very likely did not read in the particle type correctly. We also know from last time that varian specified the particle type first; let’s try that:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data_schema</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">([</span>
+                       <span class="p">(</span><span class="s1">&#39;particle type&#39;</span><span class="p">,</span> <span class="s1">&#39;i1&#39;</span><span class="p">),</span>
+                       <span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
+                       <span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
+                       <span class="p">(</span><span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
+                       <span class="p">(</span><span class="s1">&#39;Cosine X&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
+                       <span class="p">(</span><span class="s1">&#39;Cosine Y&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
+                       <span class="p">(</span><span class="s1">&#39;Ek&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
+                       <span class="p">])</span>
+
+<span class="n">constants</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">(</span><span class="mi">1</span><span class="p">)}</span>
+
+<span class="n">ps_data</span> <span class="o">=</span> <span class="n">DataLoaders</span><span class="o">.</span><span class="n">Load_IAEA</span><span class="p">(</span><span class="n">data_schema</span><span class="o">=</span><span class="n">data_schema</span><span class="p">,</span> <span class="n">constants</span><span class="o">=</span><span class="n">constants</span><span class="p">,</span> <span class="n">input_data</span><span class="o">=</span><span class="n">file_name</span><span class="p">,</span> <span class="n">n_records</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="mf">1e5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Getting closer! we read in the particles correctly, but the conversion to momentum failed.</p>
+<p>At this point, i basically did a lot of debugging. I was pretty sure that the data consisted of 1 1-byte integer and 6 4-byte floats. I also new for instance what the distribution of energy, x, and y should look like. So basically, I swapped around the order of the columns until all these distributions started to look right, ending up with the following schema:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ParticlePhaseSpace</span> <span class="kn">import</span> <span class="n">PhaseSpace</span><span class="p">,</span> <span class="n">DataLoaders</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># get data file:</span>
+<span class="n">file_name</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;/home/brendan/Dropbox (Sydney Uni)/abstracts,presentations etc/temp/TrueBeam_v2_6X_00.phsp&#39;</span><span class="p">)</span>
+<span class="n">file_name</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;/home/brendan/Downloads/Varian_TrueBeam6MV_01.phsp&#39;</span><span class="p">)</span>
+
+<span class="n">data_schema</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">([</span>
+                       <span class="p">(</span><span class="s1">&#39;particle type&#39;</span><span class="p">,</span> <span class="s1">&#39;i1&#39;</span><span class="p">),</span>
+                       <span class="p">(</span><span class="s1">&#39;Ek&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
+                       <span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
+                       <span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
+                       <span class="p">(</span><span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
+                       <span class="p">(</span><span class="s1">&#39;Cosine X&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
+                       <span class="p">(</span><span class="s1">&#39;Cosine Y&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">)</span>
+                       <span class="p">])</span>
+
+<span class="n">constants</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">(</span><span class="mi">1</span><span class="p">)}</span>
+
+<span class="n">ps_data</span> <span class="o">=</span> <span class="n">DataLoaders</span><span class="o">.</span><span class="n">Load_IAEA</span><span class="p">(</span><span class="n">data_schema</span><span class="o">=</span><span class="n">data_schema</span><span class="p">,</span> <span class="n">constants</span><span class="o">=</span><span class="n">constants</span><span class="p">,</span> <span class="n">input_data</span><span class="o">=</span><span class="n">file_name</span><span class="p">,</span> <span class="n">n_records</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="mf">1e5</span><span class="p">)</span>
+<span class="n">PS</span> <span class="o">=</span> <span class="n">PhaseSpace</span><span class="p">(</span><span class="n">ps_data</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">energy_hist_1D</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PS</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">position_hist_1D</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>OK, so this read in appears to have worked; all the consistency checks are passing and the data all looks as expected for a 6MV beam.</p>
+</section>
+<section id="Next-steps">
+<h2>Next steps<a class="headerlink" href="#Next-steps" title="Permalink to this heading"></a></h2>
+<p>What would be nice is to be able to develop an automated IAEA phase space reader. However, at this point it appears that the information is frequently ordered in arbitrary ways that are not actually explained in the header. For the most recent data, I only managed to figure out how to read it after a period of trial and error. It really does not appear that files in the IAEA database are following the IAEA format at all…</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="new_data_loader.html" class="btn btn-neutral float-left" title="Writing a new data loader" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="new_data_exporter.html" class="btn btn-neutral float-right" title="Writing a new data exporter" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Brendan Whelan.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

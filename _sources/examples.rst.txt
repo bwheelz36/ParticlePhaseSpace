@@ -7,6 +7,7 @@ Examples
 
    /basic_example
    /new_data_loader
+   /IAEA
    /new_data_exporter
    /transform
    /units
