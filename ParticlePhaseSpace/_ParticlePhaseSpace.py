@@ -1376,7 +1376,7 @@ class PhaseSpace:
             print(density_data)
         return density_data
 
-    def filter_by_time(self, t_start, t_finish):
+    def filter_by_time(self, t_start, t_finish, in_place: bool=False):
         """
         Generates a new PhaseSpace which only contains particles inside t_start and t_finish (inclusive).
         t_start and t_finish should be specfied in ps.
@@ -1389,16 +1389,9 @@ class PhaseSpace:
         """
         ind = np.logical_and(self._ps_data[self.columns['time']] >= t_start,
                              self._ps_data[self.columns['time']] <= t_finish)
-        ps_data = self._ps_data[ind]
-        for col_name in ps_data.columns:
-            if not col_name in ps_cfg.get_required_column_names(self._units):
-                ps_data.drop(columns=col_name, inplace=True)
-        # create a new instance of _DataImportersBase based on particle_data
-        ps_data_loader = DataLoaders.Load_PandasData(ps_data, units=self._units)
-        new_instance = PhaseSpace(ps_data_loader)
-        print(f'Original data contains {len(self): d} particles')
-        print(f'Filtered data contains {len(new_instance): d} particles')
-        return new_instance
+        new_PS = self.filter_by_boolean_index(ind, in_place=in_place)
+        return new_PS
+
 
     def filter_by_boolean_index(self, boolean_index, in_place: bool = False, split: bool = False):
         """
