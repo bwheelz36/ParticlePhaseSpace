@@ -181,9 +181,7 @@ class Load_TopasData(_DataLoadersBase):
                     raise Exception(f'failed to calculate momentums from topas data. Possible solution is to increase'
                                     f'the value of momentum_precision_factor, currently set to {momentum_precision_factor: 1.2e}'
                                     f'and failed data has value {relative_difference: 1.2e}')
-            warnings.warn(f'{n_negative_locations: d} entries returned invalid pz values and were set to zero.'
-                          f'\nWe will now check that momentum and energy are consistent to within '
-                          f'{self._energy_consistency_check_cutoff: 1.4f} {self._units.energy.label}')
+            warnings.warn(f'{n_negative_locations: d} entries returned invalid pz values and were set to zero.')
 
         ParticleDir = [-1 if elem else 1 for elem in ParticleDir]
         self.data[self._columns['pz']] = np.multiply(np.sqrt(temp), ParticleDir)

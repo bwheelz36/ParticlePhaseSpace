@@ -304,27 +304,32 @@ class _Plots(_PhaseSpace_MethodHolder):
             ind = self._PS._ps_data['particle type [pdg_code]'] == particle
             ps_data = self._PS._ps_data.loc[ind]
             if beam_direction == 'x':
-                loop_data = zip(ps_data[self._PS.columns['z']], ps_data[self._PS.columns['y']],
-                                ps_data[self._PS.columns['Ek']],
-                                ps_data['weight'])
-                _xlabel = self._PS.columns['z']
-                _ylabel = self._PS.columns['y']
-            if beam_direction == 'y':
-                loop_data = zip(ps_data[self._PS.columns['x']], ps_data[self._PS.columns['z']],
-                                ps_data[self._PS.columns['Ek']],
-                                ps_data['weight'])
-                _xlabel = self._PS.columns['x']
-                _ylabel = self._PS.columns['z']
-            if beam_direction == 'z':
-                loop_data = zip(ps_data[self._PS.columns['x']], ps_data[self._PS.columns['y']],
-                                ps_data[self._PS.columns['Ek']],
-                                ps_data['weight'])
-                _xlabel = self._PS.columns['x']
-                _ylabel = self._PS.columns['y']
+                x_data = ps_data[self._PS.columns['y']]
+                y_data = ps_data[self._PS.columns['z']]
+                _x_label = self._PS.columns['y']
+                _y_label = self._PS.columns['z']
+            elif beam_direction == 'y':
+                x_data = ps_data[self._PS.columns['x']]
+                y_data = ps_data[self._PS.columns['z']]
+                _x_label = self._PS.columns['x']
+                _y_label = self._PS.columns['z']
+            elif beam_direction == 'z':
+                x_data = ps_data[self._PS.columns['x']]
+                y_data = ps_data[self._PS.columns['y']]
+                _x_label = self._PS.columns['x']
+                _y_label = self._PS.columns['y']
+            else:
+                raise NotImplementedError('beam direction must be one of "x", "y" or "z"')
             if xlim is None:
-                xlim = [ps_data[self._PS.columns['x']].min(), ps_data[self._PS.columns['x']].max()]
+                if beam_direction == 'x':
+                    xlim = [ps_data[self._PS.columns['y']].min(), ps_data[self._PS.columns['y']].max()]
+                elif beam_direction == 'y' or beam_direction == 'z':
+                    xlim = [ps_data[self._PS.columns['x']].min(), ps_data[self._PS.columns['x']].max()]
             if ylim is None:
-                ylim = [ps_data[self._PS.columns['y']].min(), ps_data[self._PS.columns['y']].max()]
+                if beam_direction == 'z':
+                    ylim = [ps_data[self._PS.columns['y']].min(), ps_data[self._PS.columns['y']].max()]
+                elif beam_direction == 'x' or beam_direction == 'y':
+                    ylim = [ps_data[self._PS.columns['z']].min(), ps_data[self._PS.columns['z']].max()]
             if quantity == 'intensity':
                 _title = f"n_particles intensity;\n{particle_cfg.particle_properties[particle]['name']}"
                 _weight = ps_data['weight']
@@ -333,24 +338,23 @@ class _Plots(_PhaseSpace_MethodHolder):
                 _weight = np.multiply(ps_data['weight'], ps_data[self._PS.columns['Ek']])
             X = np.linspace(xlim[0], xlim[1], bins)
             Y = np.linspace(ylim[0], ylim[1], bins)
-            h, xedges, yedges = np.histogram2d(ps_data[self._PS.columns['x']],
-                                               ps_data[self._PS.columns['y']],
-                                               bins=[X, Y], weights=_weight, )
+            h, xedges, yedges = np.histogram2d(x_data,
+                                               y_data,
+                                               bins=[X, Y], weights=_weight)
+
             if normalize:
-                h = h * 100 / h.max()
-            # _im1 = axs[0, n_axs].hist2d(ps_data[self._PS.columns['x']], ps_data[self._PS.columns['y']],
-            #                           bins=[X,Y],
-            #                           weights=_weight, norm=LogNorm(vmin=1, vmax=100),
-            #                           cmap='inferno',
-            #                           vmin=vmin, vmax=vmax)[3]
+                try:
+                    h = h * 100 / h.max()
+                except ValueError:
+                    pass
             _im1 = axs[0, n_axs].pcolormesh(xedges, yedges, h.T, cmap='inferno',
                                             norm=_scale, rasterized=False, vmin=vmin, vmax=vmax)
 
             fig.colorbar(_im1, ax=axs[0, n_axs])
 
             axs[0, n_axs].set_title(_title)
-            axs[0, n_axs].set_xlabel(_xlabel, fontsize=_FigureSpecs.LabelFontSize)
-            axs[0, n_axs].set_ylabel(_ylabel, fontsize=_FigureSpecs.LabelFontSize)
+            axs[0, n_axs].set_xlabel(_x_label, fontsize=_FigureSpecs.LabelFontSize)
+            axs[0, n_axs].set_ylabel(_y_label, fontsize=_FigureSpecs.LabelFontSize)
             axs[0, n_axs].set_aspect('equal')
             if grid:
                 axs[0, n_axs].grid()
