@@ -32,7 +32,7 @@ Although the use of phase space data is well established, there is no consistent
 
 `ParticlePhaseSpace` aims to solve these issues by providing well documented, extensible mechanisms for the import and export of data in different formats, as well as a library of methods for visualizing, manipulating, characterizing and analyzing phase space data. There are many examples in the scientific literature where ParticlePhaseSpace would have been useful, for example; @st_aubin_integrated_2010, @whelan_novel_2016, @lesnat_particle_2021. The basic code hierarchy is shown in \autoref{figure 1}. 
 
-![Code structure overview\label{figure 1}](figure_1.png)
+![Code structure overview\label{figure 1}](figure_1.png){ width=50% }
 
 The underlying data is stored in a pandas data frame with clearly defined allowed columns and units. Users can select from a variety of pre-defined unit sets at the data read-in stage; units can also be set within the `PhaseSpace` object or at the data export stage. `PhaseSpaceConfig` define the quantities which **must** be included in in the PhaseSpaceData, as well as those which may optionally be calculated. All such quantities must have an associated method defining their calculation inside `PhaseSpace.fill`; if this method is not defined and callable the code tests will fail. The particles which are handled by this code are defined inside `ParticleConfig`. This code has been designed for extensibility: the supported particles, phase space data format, and import/export mechanisms are extensible, with [documentation](https://bwheelz36.github.io/ParticlePhaseSpace/basic_example.html) demonstrating how to do this. 
 
