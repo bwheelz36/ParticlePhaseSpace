@@ -9,10 +9,28 @@ Data Loaders
 .. automodule:: ParticlePhaseSpace.DataLoaders
    :members:
 
-Particle Phase Space
+PhaseSpace
+----------
+
+.. autoclass:: ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace
+   :members:
+
+PhaseSpace.plot
+---------------
+
+.. autoclass:: ParticlePhaseSpace._ParticlePhaseSpace._Plots
+   :members:
+
+PhaseSpace.fill
+-----------------------
+
+.. autoclass:: ParticlePhaseSpace._ParticlePhaseSpace._Fill_Methods
+   :members:
+
+PhaseSpace.transform
 --------------------
 
-.. automodule:: ParticlePhaseSpace._ParticlePhaseSpace
+.. autockass:: ParticlePhaseSpace._ParticlePhaseSpace._Transform
    :members:
 
 Data Exporters
