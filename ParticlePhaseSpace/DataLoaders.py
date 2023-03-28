@@ -585,3 +585,47 @@ class Load_IAEA(_DataLoadersBase):
                                   f'{len(pdg_codes)}')
             except KeyError:
                 pass
+
+
+class Load_CST_TRK(_DataLoadersBase):
+    """
+    Load ASCII data exported from CST 2D track monitor, of format::
+
+        posX posY posZ momX momY momZ mass macro-charge time particleID sourceID Current SEEGeneration
+
+    example::
+
+        from ParticlePhaseSpace import PhaseSpace, DataLoaders
+        from pathlib import Path
+
+        file_name = Path(r'/home/brendan/Dropbox (Sydney Uni)/Projects/Tibaray_planning/cst_check/Export/3d/beam_out.txt')
+        ps_data = DataLoaders.Load_CST_TRK(file_name, particle_type='electrons')
+        PS= PhaseSpace(ps_data)
+    """
+
+    def _check_input_data(self):
+        if not Path(self._input_data).is_file():
+            raise FileNotFoundError(f'input data file {self._import_data()} does not exist')
+        if not self._particle_type:
+            raise Exception('particle_type must be specified when reading CST trk data')
+
+    def _import_data(self):
+        Data = np.loadtxt(self._input_data, skiprows=8)
+        self.data[self._columns['x']] = Data[:, 0] * 1e3  # m to mm
+        self.data[self._columns['y']] = Data[:, 1] * 1e3
+        self.data[self._columns['z']] = Data[:, 2] * 1e3
+        self.data[self._columns['particle type']] = particle_cfg.particle_properties[self._particle_type]['pdg_code']
+        rest_mass = np.unique(get_rest_masses_from_pdg_codes(self.data[self._columns['particle type']]))
+        self.data[self._columns['px']] = Data[:, 3] * rest_mass
+        self.data[self._columns['py']] = Data[:, 4] * rest_mass
+        self.data[self._columns['pz']] = Data[:, 5] * rest_mass
+        self.data[self._columns['time']] = Data[:, 9] * 1e9 # s to ps
+        current = Data[:, 11]
+        '''
+        # so each track represents a certain amount of current. the total number of electrons would depend on how long
+        # the beam was on for. but the total number probably isn't important. it's the relative number.
+        '''
+        self.data[self._columns['weight']] = current/current.sum()
+        self.data[self._columns['particle id']] = Data[:, 9]
+
+
