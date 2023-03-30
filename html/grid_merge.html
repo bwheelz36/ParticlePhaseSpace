@@ -151,7 +151,7 @@ data where boolean_index=True accounts for  89.6 % of the original data
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 merge operation removed  0 of  279094 particles ( 0.0 % removed)
-merge operation took  0.8 s
+merge operation took  0.7 s
 </pre></div></div>
 </div>
 <p>We can see that without regridding, there are not identical particles in the data and hence no particles can be merged.</p>
@@ -171,7 +171,7 @@ merge operation took  0.8 s
 <div class="highlight"><pre>
 not regriding z as it is already single valued
 not regriding time as it is already single valued
-regrid operation took  17.4 s
+regrid operation took  6.4 s
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -188,7 +188,7 @@ regrid operation took  17.4 s
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 merge operation removed  157174 of  279094 particles ( 56.3 % removed)
-merge operation took  0.2 s
+merge operation took  0.1 s
 </pre></div></div>
 </div>
 <p>What we have done here is regridded the default quantitiues [‘x’, ‘y’, ‘z’, ‘px’, ‘py’, ‘pz’, ‘time’] into 100 bins. The values for each bin are calculated based on the range of the input data. The resultant phase space is roughly 33% the size of the original data. Now, we can add back in the data we extracted previously:</p>
