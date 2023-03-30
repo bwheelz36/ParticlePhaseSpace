@@ -31,7 +31,12 @@ particle_properties = {
     'neutrons':
         {'rest_mass': neutron_rest_mass,
          'charge': 0,
-         'pdg_code': int(2112)}
+         'pdg_code': int(2112)},
+    'optical_photons':
+        {'rest_mass': 0,
+         'charge': 0,
+         'pdg_code': int(0)}
+
 }
 
 # set up aliases with pdf codes
@@ -40,6 +45,7 @@ particle_properties[-11] = particle_properties['positrons']
 particle_properties[2212] = particle_properties['protons']
 particle_properties[22] = particle_properties['gammas']
 particle_properties[2112] = particle_properties['neutrons']
+particle_properties[0] = particle_properties['optical_photons']
 
 # check that there are the same number of aliases as entries
 keys = list(particle_properties.keys())

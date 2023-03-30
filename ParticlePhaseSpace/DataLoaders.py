@@ -125,6 +125,7 @@ class _DataLoadersBase(ABC):
         if E_error > self._energy_consistency_check_cutoff:  # .01 MeV is an aribitrary cut off
             raise Exception('Energy check failed: read in of data may be incorrect')
 
+
 class Load_TopasData(_DataLoadersBase):
     """
     DataLoader for `Topas <https://topas.readthedocs.io/en/latest/>`_ data.

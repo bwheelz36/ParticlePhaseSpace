@@ -2,17 +2,18 @@
 
 The following particles are currently supported:
 
-| particle name | pdg_code | rest_mass   | charge      |
-| ------------- | -------- | ----------- | ----------- |
-| electrons     | 11       | 0.511 MeV   | -1.602-19 C |
-| positrons     | -11      | 0.511 MeV   | 1.602-19 C  |
-| gammas        | 22       | 0 MeV       | 0 C         |
-| protons       | 2212     | 938.272 MeV | 1.602-19 C  |
-| neutrons      | 2112     | 939.565 MeV | 0 C         |
+| particle name   | pdg_code | rest_mass   | charge      |
+|-----------------|----------|-------------| ----------- |
+| electrons       | 11       | 0.511 MeV   | -1.602-19 C |
+| positrons       | -11      | 0.511 MeV   | 1.602-19 C  |
+| gammas          | 22       | 0 MeV       | 0 C         |
+| protons         | 2212     | 938.272 MeV | 1.602-19 C  |
+| neutrons        | 2112     | 939.565 MeV | 0 C         |
+| optical_photons | 0        | 0 MeV       | 0 C         |
 
 ## Adding new particles
 
-Adding new particles is simple:
+Adding new particles is simple:p
 
 - update the `particle_properties` dictionary in `ParticlePhaseSpace.__particle_config__.py`:
   ```python
