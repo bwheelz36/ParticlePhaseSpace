@@ -24,7 +24,7 @@ def test_topas_export():
                      all_allowed_columns['py']: [1, 1, 2, 1, 1],
                      all_allowed_columns['pz']: [1, 1, 2, 1, 1],
                      all_allowed_columns['particle type']: [11, 2212, 2112, -11, 22],
-                     all_allowed_columns['weight']: [0, 1, 2, 1, 1],
+                     all_allowed_columns['weight']: [2, 1, 2, 1, 1],
                      all_allowed_columns['particle id']: [0, 1, 2, 3, 4],
                      all_allowed_columns['time']: [0, 0, 0, 0, 0]})
 
