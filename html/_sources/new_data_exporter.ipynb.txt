@@ -25,10 +25,10 @@
    "id": "8b8cfdb7",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2023-03-30T21:39:36.485787Z",
-     "iopub.status.busy": "2023-03-30T21:39:36.485482Z",
-     "iopub.status.idle": "2023-03-30T21:39:37.209448Z",
-     "shell.execute_reply": "2023-03-30T21:39:37.208678Z"
+     "iopub.execute_input": "2023-04-04T04:02:20.411853Z",
+     "iopub.status.busy": "2023-04-04T04:02:20.411431Z",
+     "iopub.status.idle": "2023-04-04T04:02:21.147754Z",
+     "shell.execute_reply": "2023-04-04T04:02:21.147046Z"
     }
    },
    "outputs": [],
@@ -75,10 +75,10 @@
    "id": "c814a61a",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2023-03-30T21:39:37.212439Z",
-     "iopub.status.busy": "2023-03-30T21:39:37.212182Z",
-     "iopub.status.idle": "2023-03-30T21:39:37.219172Z",
-     "shell.execute_reply": "2023-03-30T21:39:37.218551Z"
+     "iopub.execute_input": "2023-04-04T04:02:21.151387Z",
+     "iopub.status.busy": "2023-04-04T04:02:21.151029Z",
+     "iopub.status.idle": "2023-04-04T04:02:21.156225Z",
+     "shell.execute_reply": "2023-04-04T04:02:21.155776Z"
     }
    },
    "outputs": [],
@@ -126,17 +126,17 @@
    "id": "48e6a00f",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2023-03-30T21:39:37.221410Z",
-     "iopub.status.busy": "2023-03-30T21:39:37.221155Z",
-     "iopub.status.idle": "2023-03-30T21:39:37.396632Z",
-     "shell.execute_reply": "2023-03-30T21:39:37.396051Z"
+     "iopub.execute_input": "2023-04-04T04:02:21.158203Z",
+     "iopub.status.busy": "2023-04-04T04:02:21.157950Z",
+     "iopub.status.idle": "2023-04-04T04:02:21.338684Z",
+     "shell.execute_reply": "2023-04-04T04:02:21.337976Z"
     }
    },
    "outputs": [
     {
      "data": {
       "text/plain": [
-       "<__main__.NewDataExporter at 0x7fa5ee520790>"
+       "<__main__.NewDataExporter at 0x7f76ac3b9570>"
       ]
      },
      "execution_count": 3,
@@ -170,10 +170,10 @@
    "id": "c6fae3c8",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2023-03-30T21:39:37.399114Z",
-     "iopub.status.busy": "2023-03-30T21:39:37.398920Z",
-     "iopub.status.idle": "2023-03-30T21:39:37.405440Z",
-     "shell.execute_reply": "2023-03-30T21:39:37.404888Z"
+     "iopub.execute_input": "2023-04-04T04:02:21.342265Z",
+     "iopub.status.busy": "2023-04-04T04:02:21.342080Z",
+     "iopub.status.idle": "2023-04-04T04:02:21.347743Z",
+     "shell.execute_reply": "2023-04-04T04:02:21.347320Z"
     }
    },
    "outputs": [],
@@ -225,10 +225,10 @@
    "id": "a14268a3",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2023-03-30T21:39:37.407671Z",
-     "iopub.status.busy": "2023-03-30T21:39:37.407529Z",
-     "iopub.status.idle": "2023-03-30T21:39:37.706745Z",
-     "shell.execute_reply": "2023-03-30T21:39:37.705898Z"
+     "iopub.execute_input": "2023-04-04T04:02:21.349541Z",
+     "iopub.status.busy": "2023-04-04T04:02:21.349377Z",
+     "iopub.status.idle": "2023-04-04T04:02:21.610373Z",
+     "shell.execute_reply": "2023-04-04T04:02:21.609634Z"
     }
    },
    "outputs": [
@@ -275,7 +275,7 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.9.5"
+   "version": "3.10.6"
   }
  },
  "nbformat": 4,
