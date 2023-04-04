@@ -265,11 +265,17 @@ class Load_TibarayData(_DataLoadersBase):
             raise Exception('particle_type must be specified when readin tibaray data')
         with open(self._input_data) as f:
             first_line = f.readline()
-            if not first_line == 'x y z rxy Bx By Bz G t m q nmacro rmacro ID \n':
+            
+            if first_line == 'x y z rxy Bx By Bz G t m q nmacro rmacro ID \n':
+                self._skiprows = 1  # update below if different formay
+            elif first_line == '@logo            B&M-General Particle Tracer\n':
+                self._skiprows = 5
+            else:
                 warnings.warn('first line of tibaray data does not look as expected, proceed with caution')
+                self._skiprows = 1  # take a guess
 
     def _import_data(self):
-        Data = np.loadtxt(self._input_data, skiprows=1)
+        Data = np.loadtxt(self._input_data, skiprows=self._skiprows)
         self.data[self._columns['x']] = Data[:, 0] * 1e3  # mm to m
         self.data[self._columns['y']] = Data[:, 1] * 1e3
         self.data[self._columns['z']] = Data[:, 2] * 1e3
