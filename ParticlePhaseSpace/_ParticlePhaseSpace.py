@@ -781,9 +781,7 @@ class _Fill_Methods(_PhaseSpace_MethodHolder):
         """
         rest_mass_MeV = ps_util.get_rest_masses_from_pdg_codes(self._PS._ps_data['particle type [pdg_code]'])
         rest_mass_correct_units = rest_mass_MeV / self._PS._conversions['mass']
-        self._PS._ps_data[self._PS.columns['rest mass']] = pd.Series(rest_mass_correct_units,
-                                                                     dtype=self._PS._ps_data[
-                                                                         self._PS.columns['x']].dtype)
+        self._PS._ps_data[self._PS.columns['rest mass']] = pd.Series(rest_mass_correct_units)
         self._PS._check_ps_data_format()
 
     def relativistic_mass(self):
