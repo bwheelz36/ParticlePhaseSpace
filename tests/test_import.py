@@ -30,7 +30,7 @@ def test_pandas_import_fails_when_particles_specfied():
          'time [ps]': [0, 1, 2]})
 
     with pytest.raises(Exception):
-        data = DataLoaders.Load_PandasData(demo_data)
+        data = DataLoaders.Load_PandasData(demo_data, particle_type='electrons')
 
 
 def test_tibaray_import():

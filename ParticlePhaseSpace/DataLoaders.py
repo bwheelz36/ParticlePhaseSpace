@@ -95,8 +95,9 @@ class _DataLoadersBase(ABC):
                                  f'\n{NaN_cols}')
 
         tot_mom = np.sqrt(self.data[self._columns['px']]**2 + self.data[self._columns['py']]**2 + self.data[self._columns['pz']]**2)
-        if not np.min(tot_mom)>0:
-            raise Exception('particles with zero absolute momentum make no sense')
+        if not np.min(tot_mom) > 0:
+            ind = tot_mom <= 0
+            warnings.warn(f'{np.count_nonzero(ind)} particles have zero absolute momentum; this makes no sense and they will be removed')
 
         # is every particle ID unique?
         if not len(self.data[self._columns['particle id']].unique()) == len(self.data[self._columns['particle id']]):

@@ -396,3 +396,36 @@ def test_rotate_momentum():
     PS_rotate = PS.transform.rotate(rotation_axis='z', angle=90, rotate_momentum_vector=True)
     assert np.allclose(PS.ps_data['px [MeV/c]'], PS_rotate.ps_data['py [MeV/c]'])
     assert np.allclose(PS.ps_data['x [mm]'], PS_rotate.ps_data['y [mm]'])
+
+
+def test_zero_momentum_particle():
+    """
+    occasionally due to precision issues, particles are read in with
+    zero absolute momnentum. I just want to make sure such cases still
+    run
+    :return:
+    """
+
+    units = ParticlePhaseSpaceUnits()('mm_MeV')
+    all_allowed_columns = ps_cfg.get_all_column_names(units)
+    demo_data = pd.DataFrame(
+        {all_allowed_columns['x']: [0., 1., 2.],
+         all_allowed_columns['y']: [2., 3., 4.],
+         all_allowed_columns['z']: [5., 6., 7.],
+         all_allowed_columns['px']: [1000, 1000, 0],
+         all_allowed_columns['py']: [1000, 1000, 0],
+         all_allowed_columns['pz']: [10000, 100000, 0],
+         all_allowed_columns['particle type']: [11, 11, 11],
+         all_allowed_columns['weight']: [1, 1, 2],
+         all_allowed_columns['particle id']: [0, 1, 2],
+         all_allowed_columns['time']: [0, 0, 0]})
+
+    data = DataLoaders.Load_PandasData(demo_data)
+    PS = PhaseSpace(data)
+    PS.fill.absolute_momentum()
+    PS.fill.beta_and_gamma()
+    PS.fill.direction_cosines()
+    PS.fill.kinetic_E()
+    PS.fill.relativistic_mass()
+    PS.fill.rest_mass()
+    PS.fill.velocity()
