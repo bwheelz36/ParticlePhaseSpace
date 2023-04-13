@@ -1218,7 +1218,8 @@ class PhaseSpace:
         print(f'Filtered data contains {len(new_instance): d} particles')
         return new_instance
 
-    def filter_by_boolean_index(self, boolean_index, in_place: bool = False, split: bool = False):
+    def filter_by_boolean_index(self, boolean_index, in_place: bool = False, split: bool = False,
+                                verbose: bool=True):
         """
         filter data by input boolean index, keeping 'True' and discarding 'False'
 
@@ -1239,18 +1240,21 @@ class PhaseSpace:
             ps_data = self.ps_data[np.logical_not(boolean_index)].reset_index().drop('index', axis=1)
             ps_data = DataLoaders.Load_PandasData(ps_data, units=self._units)
             boolean_index_false_PS = PhaseSpace(ps_data)
-            print(f'data where boolean_index=True accounts for'
-                  f' {(np.count_nonzero(boolean_index) * 100 / len(boolean_index)): 1.1f} %'
-                  f' of the original data')
-            return boolean_index_true_PS, boolean_index_false_PS
+            if verbose:
+                print(f'data where boolean_index=True accounts for'
+                      f' {(np.count_nonzero(boolean_index) * 100 / len(boolean_index)): 1.1f} %'
+                      f' of the original data')
+                return boolean_index_true_PS, boolean_index_false_PS
         if in_place:
             self.ps_data = self.ps_data[boolean_index].reset_index().drop('index', axis=1)
-            print(f'removed {100 - (np.count_nonzero(boolean_index) * 100 / len(boolean_index)): 1.1f} % of particles')
+            if verbose:
+                print(f'removed {100 - (np.count_nonzero(boolean_index) * 100 / len(boolean_index)): 1.1f} % of particles')
         else:
             ps_data = self.ps_data[boolean_index].reset_index().drop('index', axis=1)
             ps_data = DataLoaders.Load_PandasData(ps_data, units=self._units)
             new_PS = PhaseSpace(ps_data)
-            print(f'removed {100 - (np.count_nonzero(boolean_index) * 100 / len(boolean_index)): 1.1f} % of particles')
+            if verbose:
+                print(f'removed {100 - (np.count_nonzero(boolean_index) * 100 / len(boolean_index)): 1.1f} % of particles')
             return new_PS
 
     def set_units(self, new_units: UnitSet):
