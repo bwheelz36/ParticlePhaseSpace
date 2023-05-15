@@ -8,8 +8,16 @@ two categories:
     to represent the phase space; all other data can be derived from these. Each DataLoader must fill in these and only these columns to generate a valid import object.
 2. **Allowed columns** can optionally be filled in using a `fill` method on a PhaseSpace object. For instance, to fill the allowed column `Ek [MeV]` you would use the `fill_kinetic_E` method. You are free to update the `allowed_columns` at any time, however in order for the code to pass testing you must:
   1. Write an associated `fill` method
-  2. Update the test `test_all_allowed_columns_can_be_filled` inside `test_ParticlePhaseSpace`
-  3. Update the "Allowed Columns" documentation below
+  2. Update the "Allowed Columns" documentation below
+
+## User defined quantities
+
+We recognise that it is almost impossible to cater for every quantity that every researcher may require in a phase space.
+There is a delicate balance between being prescriptive enough with the format to enable good code development and testing,
+and being flexible enough to handle arbitrary data. 
+To enable the latter, we enable user defined quantites. These are the quantities below where the fill method is set
+to `None`. Basically, this means that the phase space won't crash if these quantites are included; but it is the users
+responsibility to include them and handle the units etc!
 
 
 ## Required Columns
@@ -25,16 +33,27 @@ two categories:
 
 ## Allowed Columns
 
-| Column Name                                                | Description                                                  | fill method              |
-| ---------------------------------------------------------- | ------------------------------------------------------------ | ------------------------ |
-| Ek [units]                                                 | Kinetic energy                                               | `fill_kinetic_E`         |
-| rest mass [units]                                          | Particle rest mass                                           | `fill_rest_mass`         |
+| Column Name                                                | Description                                                  | fill method             |
+|------------------------------------------------------------| ------------------------------------------------------------ |-------------------------|
+| Ek [units]                                                 | Kinetic energy                                               | `fill_kinetic_E`        |
+| rest mass [units]                                          | Particle rest mass                                           | `fill_rest_mass`        |
 | p_abs                                                      | Total momentum                                               | `fill_absolute_momentum` |
 | relativistic mass [units]                                  | Particle mass                                                | `fill_relativistic_mass` |
-| beta_x, beta_y, beta_z, beta_abs                           | [x Beta factor](https://en.wikipedia.org/wiki/Lorentz_factor) of particle | `fill_beta_and_gamma`    |
-| gamma                                                      | [Lorentz factor](https://en.wikipedia.org/wiki/Lorentz_factor) of particle | `fill_beta_and_gamma`    |
-| vx [units], vy [units], vz [units]                         | relativistic particle velocity in m/s                        | `fill_velocity`          |
+| beta_x, beta_y, beta_z, beta_abs                           | [x Beta factor](https://en.wikipedia.org/wiki/Lorentz_factor) of particle | `fill_beta_and_gamma`   |
+| gamma                                                      | [Lorentz factor](https://en.wikipedia.org/wiki/Lorentz_factor) of particle | `fill_beta_and_gamma`   |
+| vx [units], vy [units], vz [units]                         | relativistic particle velocity in m/s                        | `fill_velocity`         |
 | Direction Cosine X, Direction Cosine Y, Direction Cosine Z | [Direction Cosines](https://en.wikipedia.org/wiki/Direction_cosine) of particle momentum | `fill_direction_cosines` |
+| first_history_flag                                         | [Direction Cosines](https://en.wikipedia.org/wiki/Direction_cosine) of particle momentum | `None`                  |
+| time_of_flight                                             | [Direction Cosines](https://en.wikipedia.org/wiki/Direction_cosine) of particle momentum | `None`  |
+| run_id                                                     | [Direction Cosines](https://en.wikipedia.org/wiki/Direction_cosine) of particle momentum | `None`  |
+| event_id                                                   | [Direction Cosines](https://en.wikipedia.org/wiki/Direction_cosine) of particle momentum | `None` |
+| track_id                                                   | [Direction Cosines](https://en.wikipedia.org/wiki/Direction_cosine) of particle momentum | `None`  |
+| parent_id                                                  | [Direction Cosines](https://en.wikipedia.org/wiki/Direction_cosine) of particle momentum | `None`  |
+| initial_kinetic_energy                                     | relativistic particle velocity in m/s                        | `None`        |
+| initial_cosine_x, initial_cosine_y, initial_cosine_z       | relativistic particle velocity in m/s                        | `None`          |
+| vertex_x, vertex_y, vertex_z                               | relativistic particle velocity in m/s                        | `None`          |
+
+
 
 ## Units
 

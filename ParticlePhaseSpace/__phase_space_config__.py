@@ -29,7 +29,6 @@ allowed_columns = {name of column: name of method to calculate it in _ParticlePh
 automatic testing is applied to ensure all these methods can be calculated
 '''
 
-
 allowed_columns = {'Ek': 'kinetic_E',  # Kinetic energy
                    'rest mass': 'rest_mass',  # rest mass
                    'relativistic mass': 'relativistic_mass',  # relatavistic mass
@@ -44,9 +43,20 @@ allowed_columns = {'Ek': 'kinetic_E',  # Kinetic energy
                    'Direction Cosine X': 'direction_cosines',  # x cosine of momentum
                    'Direction Cosine Y': 'direction_cosines',  # y cosine of momentum
                    'Direction Cosine Z': 'direction_cosines',  # z cosine of momentum
-                   'p_abs': 'absolute_momentum'}  # absolute momentum
-
-
+                   'p_abs': 'absolute_momentum', # absolute momentum
+                   'first_history_flag': None,
+                   'time_of_flight': None,
+                   'run_id': None,
+                   'event_id': None,
+                   'track_id': None,
+                   'parent_id': None,
+                   'initial_kinetic_energy': None,
+                   'initial_cosine_x': None,
+                   'initial_cosine_y': None,
+                   'initial_cosine_z': None,
+                   'vertex_x': None,
+                   'vertex_y': None,
+                   'vertex_z': None,}
 
 def _check_all_column_names(column_names: dict):
 
@@ -96,7 +106,21 @@ def get_all_column_names(units: UnitSet):
                     'Direction Cosine Z': 'Direction Cosine Z',
                     'particle type': 'particle type [pdg_code]',
                     'weight': 'weight',
-                    'particle id': 'particle id'}
+                    'particle id': 'particle id',
+                    'first_history_flag': 'first_history_flag',
+                    'time_of_flight': 'time_of_flight',
+                    'run_id': 'run_id',
+                    'event_id': 'event_id',
+                    'track_id': 'track_id',
+                    'parent_id': 'parent_id',
+                    'initial_kinetic_energy': 'Ek_initial',
+                    'initial_cosine_x': 'initial_cosine_x',
+                    'initial_cosine_y': 'initial_cosine_y',
+                    'initial_cosine_z': 'initial_cosine_z',
+                    'vertex_x': 'vertex_x',
+                    'vertex_y': 'vertex_y',
+                    'vertex_z': 'vertex_z'
+                    }
     _check_all_column_names(column_names)
     return column_names
 

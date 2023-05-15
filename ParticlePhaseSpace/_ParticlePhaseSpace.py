@@ -882,7 +882,7 @@ class PhaseSpace:
     :type data_loader: _DataLoadersBase
     """
 
-    def __init__(self, data_loader):
+    def __init__(self, data_loader, UserDefinedMethods: (_PhaseSpace_MethodHolder, None) = None):
 
         if not isinstance(data_loader, _DataLoadersBase):
             raise TypeError(f'ParticlePhaseSpace must be instantiated with a valid object'
@@ -897,6 +897,8 @@ class PhaseSpace:
         self.plot = _Plots(PS=self)
         self.fill = _Fill_Methods(PS=self)
         self.transform = _Transform(PS=self)
+        if UserDefinedMethods is not None:
+            self.user_defined = UserDefinedMethods(PS=self)
 
     def __call__(self, particle_list):
         """
