@@ -42,6 +42,6 @@ There are some additional open source codes providing similar functionality to t
 
 # Acknowledgements
 
-Brendan Whelan acknowledges funding support from the NHMRC, and Julia Johnson (Image-X institute) for assistance with figure creation.
+Brendan Whelan acknowledges funding support from the NHMRC, and Julia Johnson (Image-X institute, University of Sydney, Australia) for assistance with figure creation.
 
 # References
