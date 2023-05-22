@@ -8,6 +8,8 @@ Common library for dealing with particle phase spaces, revolving around the simp
 
 To install: ```pip install ParticlePhaseSpace```
 
+If you want to develop the code, there are some additional requirements, listed in `dev_requirements.txt`
+
 ## Usage and Documentation
 
 - Detailed documentation is provided [here](https://bwheelz36.github.io/ParticlePhaseSpace/).
