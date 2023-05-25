@@ -5,7 +5,6 @@ pytest
 coverage
 interrogate
 coverage-badge
-pytest-cov
 myst_parser
 build
 twine
