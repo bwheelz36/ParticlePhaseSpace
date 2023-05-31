@@ -8,9 +8,9 @@ aims to serve as a general purpose python library for importing, analysing, mani
   :alt: Code structure
 
 
-The code can be installed from PyPi::
+The code can be `installed from PyPI <https://pypi.org/project/ParticlePhaseSpace/>`__::
 
-    pip install particle_phase_space
+    pip install ParticlePhaseSpace
 
 If you want to develop the code, there are some additional dependencies which are listed in the `dev_requirements.txt` file in the `github repository <https://github.com/bwheelz36/ParticlePhaseSpace>`_.
 
