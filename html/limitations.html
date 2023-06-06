@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Python Module Index &mdash; Particle Phase Space  documentation</title>
+  <title>Limitations &mdash; Particle Phase Space  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -19,9 +20,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
- 
-
-
+    <link rel="next" title="Code Documentation" href="code_docs.html" />
+    <link rel="prev" title="Supported particles" href="supported_particles.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -44,11 +44,11 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="phase_space_format.html">Phase Space Format</a></li>
 <li class="toctree-l1"><a class="reference internal" href="supported_particles.html">Supported particles</a></li>
-<li class="toctree-l1"><a class="reference internal" href="limitations.html">Limitations</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Limitations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="code_docs.html">Code Documentation</a></li>
 </ul>
 
@@ -66,8 +66,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Python Module Index</li>
+      <li class="breadcrumb-item active">Limitations</li>
       <li class="wy-breadcrumbs-aside">
+            <a href="_sources/limitations.md.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -75,39 +76,20 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-
-   <h1>Python Module Index</h1>
-
-   <div class="modindex-jumpbox">
-   <a href="#cap-p"><strong>p</strong></a>
-   </div>
-
-   <table class="indextable modindextable">
-     <tr class="pcap"><td></td><td>&#160;</td><td></td></tr>
-     <tr class="cap" id="cap-p"><td></td><td>
-       <strong>p</strong></td><td></td></tr>
-     <tr>
-       <td><img src="_static/minus.png" class="toggler"
-              id="toggle-1" style="display: none" alt="-" /></td>
-       <td>
-       <code class="xref">ParticlePhaseSpace</code></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="code_docs.html#module-ParticlePhaseSpace.DataExporters"><code class="xref">ParticlePhaseSpace.DataExporters</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="code_docs.html#module-ParticlePhaseSpace.DataLoaders"><code class="xref">ParticlePhaseSpace.DataLoaders</code></a></td><td>
-       <em></em></td></tr>
-   </table>
+  <section id="limitations">
+<h1>Limitations<a class="headerlink" href="#limitations" title="Permalink to this heading"></a></h1>
+<p>The major limitation of this code at the time of writing is that it can only easily handle data that fits inside memory. This is partially a result of the choice of pandas as the backend - <a class="reference external" href="https://pandas.pydata.org/docs/user_guide/scale.html">this page</a> describes some difficulties and solutions of handling large data with pandas.</p>
+<p>As is discussed in the above link: if your data is too big to fit inside RAM, it should be possible to read and process your data in ‘chunks’ where each chunk can fit inside memory. This is not supported in most data loaders, but should be possible with minimal extensions - open an issue and we can talk about it!</p>
+<p>Beyond this, libraries such as <a class="reference external" href="https://www.dask.org/">DASK</a> may enable using this library of distributed resources. This is discussed a little bit in <a class="reference external" href="https://github.com/bwheelz36/ParticlePhaseSpace/issues/158">this issue</a>, with an example of utilising DASK on an OpenPMD dataset.</p>
+</section>
 
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="supported_particles.html" class="btn btn-neutral float-left" title="Supported particles" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="code_docs.html" class="btn btn-neutral float-right" title="Code Documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 
