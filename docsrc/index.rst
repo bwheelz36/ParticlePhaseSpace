@@ -21,6 +21,7 @@ If you want to develop the code, there are some additional dependencies which ar
    /examples
    /phase_space_format
    /supported_particles
+   /limitations
    /code_docs
 
 Indices and tables
