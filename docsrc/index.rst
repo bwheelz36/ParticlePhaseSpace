@@ -15,6 +15,7 @@ aims to serve as a general purpose python library for importing, analysing, mani
    /examples
    /phase_space_format
    /supported_particles
+   /limitations
    /code_docs
 
 Indices and tables
