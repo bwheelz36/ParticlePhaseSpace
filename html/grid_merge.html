@@ -12,11 +12,11 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
         <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
         <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -98,7 +98,7 @@
            <div itemprop="articleBody">
              
   <section id="Compress-phase-space-via-regrid/merge-operations">
-<h1>Compress phase space via regrid/merge operations<a class="headerlink" href="#Compress-phase-space-via-regrid/merge-operations" title="Permalink to this heading"></a></h1>
+<h1>Compress phase space via regrid/merge operations<a class="headerlink" href="#Compress-phase-space-via-regrid/merge-operations" title="Link to this heading"></a></h1>
 <p>A simple mechanism to reduce the size of phase space data is to merge identical particles while adding their weights. In practice, this doesn’t tend to be that useful, because even in a large data set, there are quite few truly identical particles. What there <strong>are</strong> however, are many particles which are close together.</p>
 <p>This tutorial demonstrates how to explot this fact by first regridding phase space data (which in effect ‘nudges’ particles which are close together in 7-D space into the same bin) followed by merging the phase space. This algorithm is based on work originally developed by Leo Esnault for the <a class="reference external" href="https://github.com/lesnat/p2sat">p2sat</a> code.</p>
 <div class="nbinput nblast docutils container">
@@ -206,7 +206,7 @@ merge operation took  0.1 s
 </div>
 <p>The obvious question is: how have these operations effected the data set, so let’s check:</p>
 <section id="Particle-Positions">
-<h2>Particle Positions<a class="headerlink" href="#Particle-Positions" title="Permalink to this heading"></a></h2>
+<h2>Particle Positions<a class="headerlink" href="#Particle-Positions" title="Link to this heading"></a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
@@ -255,7 +255,7 @@ merge operation took  0.1 s
 </div>
 </section>
 <section id="Energy">
-<h2>Energy<a class="headerlink" href="#Energy" title="Permalink to this heading"></a></h2>
+<h2>Energy<a class="headerlink" href="#Energy" title="Link to this heading"></a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
@@ -343,7 +343,7 @@ number of unique particle species:  3
 </div>
 </section>
 <section id="Momentum">
-<h2>Momentum<a class="headerlink" href="#Momentum" title="Permalink to this heading"></a></h2>
+<h2>Momentum<a class="headerlink" href="#Momentum" title="Link to this heading"></a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
@@ -369,7 +369,7 @@ number of unique particle species:  3
 </div>
 </section>
 <section id="Trace-Space">
-<h2>Trace Space<a class="headerlink" href="#Trace-Space" title="Permalink to this heading"></a></h2>
+<h2>Trace Space<a class="headerlink" href="#Trace-Space" title="Link to this heading"></a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
@@ -459,7 +459,7 @@ gamma    0.591994  1.094013
 </div>
 </section>
 <section id="Notes/-Conclusions">
-<h2>Notes/ Conclusions<a class="headerlink" href="#Notes/-Conclusions" title="Permalink to this heading"></a></h2>
+<h2>Notes/ Conclusions<a class="headerlink" href="#Notes/-Conclusions" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>If you want to not include some data in the regridding process, you need to do it before regridding as we did in this example. The regrid bins are always based on the min/max range of the input data, since not doing this could result in many particles being ‘stacked’ around the edge bins</p></li>
 <li><p>The most strongly affected quantity in this case appeared to be the twiss parameters/ trace space = however, even here, the RMS ellipse is quite close.</p></li>

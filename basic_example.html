@@ -12,11 +12,11 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
         <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
         <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -100,9 +100,9 @@
            <div itemprop="articleBody">
              
   <section id="Basic-Example">
-<h1>Basic Example<a class="headerlink" href="#Basic-Example" title="Permalink to this heading"></a></h1>
+<h1>Basic Example<a class="headerlink" href="#Basic-Example" title="Link to this heading"></a></h1>
 <section id="Data-import">
-<h2>Data import<a class="headerlink" href="#Data-import" title="Permalink to this heading"></a></h2>
+<h2>Data import<a class="headerlink" href="#Data-import" title="Link to this heading"></a></h2>
 <p>The first step of data analysis is import data. In this code, data import is always handled through an instance of the <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/code_docs.html#module-ParticlePhaseSpace.DataLoaders">DataLoaders</a> class. In this example, we will work with topas data. For a list of all currently available data importers, see <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/code_docs.html#module-ParticlePhaseSpace.DataLoaders">here</a>; for instructions on writing new data
 importers see <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/new_data_loader.html">here</a></p>
 <div class="nbinput nblast docutils container">
@@ -245,7 +245,7 @@ importers see <a class="reference external" href="https://bwheelz36.github.io/Pa
 </div>
 </section>
 <section id="Calculation-of-additional-quantities">
-<h2>Calculation of additional quantities<a class="headerlink" href="#Calculation-of-additional-quantities" title="Permalink to this heading"></a></h2>
+<h2>Calculation of additional quantities<a class="headerlink" href="#Calculation-of-additional-quantities" title="Link to this heading"></a></h2>
 <p>The data show here consists of the <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/phase_space_format.html#required-columns">required columns</a> - that is, the minimum data required to define a phase space. <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/phase_space_format.html#required-columns">Many other quantaties</a> can be calculated from this data using various <code class="docutils literal notranslate"><span class="pre">fill</span></code> methods. For example, to add in Kinetic Energy:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
@@ -424,7 +424,7 @@ velocity
 <p>Note that the second method will work regardless of what units the data is in.</p>
 </section>
 <section id="Reset-the-phase-space-to-required-columns">
-<h2>Reset the phase space to required columns<a class="headerlink" href="#Reset-the-phase-space-to-required-columns" title="Permalink to this heading"></a></h2>
+<h2>Reset the phase space to required columns<a class="headerlink" href="#Reset-the-phase-space-to-required-columns" title="Link to this heading"></a></h2>
 <p>In some situations, you may wish to remove all ‘derived’ quantities from the data, and have only the <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/phase_space_format.html#required-columns">required columns</a>. You may wish to do this to minimise the memory footpring, or because you have carried out some operation that potentially invalidated the calculated quantities (more on that below!) In such situations, you can use <code class="docutils literal notranslate"><span class="pre">reset_phase_space</span></code>:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
@@ -542,7 +542,7 @@ velocity
 </div>
 </section>
 <section id="Basic-analytics">
-<h2>Basic analytics<a class="headerlink" href="#Basic-analytics" title="Permalink to this heading"></a></h2>
+<h2>Basic analytics<a class="headerlink" href="#Basic-analytics" title="Link to this heading"></a></h2>
 <p>Once we have an instance of ParticlePhaseSpace, we can perform some analysis.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
@@ -671,7 +671,7 @@ transverse_trace_space_scatter_2D
 </div>
 </section>
 <section id="Seperating,-adding,-and-subtracting-phase-space-objects">
-<h2>Seperating, adding, and subtracting phase space objects<a class="headerlink" href="#Seperating,-adding,-and-subtracting-phase-space-objects" title="Permalink to this heading"></a></h2>
+<h2>Seperating, adding, and subtracting phase space objects<a class="headerlink" href="#Seperating,-adding,-and-subtracting-phase-space-objects" title="Link to this heading"></a></h2>
 <p>You can easily add, subtract, and seperate phase space objects:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
@@ -737,7 +737,7 @@ transverse_trace_space_scatter_2D
 <p>However: you cannot add identical particles into an existing phase space. If you really want to do this, you will need to update the particle_ID field first.</p>
 </section>
 <section id="Twiss-parameters">
-<h2>Twiss parameters<a class="headerlink" href="#Twiss-parameters" title="Permalink to this heading"></a></h2>
+<h2>Twiss parameters<a class="headerlink" href="#Twiss-parameters" title="Link to this heading"></a></h2>
 <p><a class="reference external" href="https://en.wikipedia.org/wiki/Courant%E2%80%93Snyder_parameters">Twiss parameters</a> or courant-snyder parameters are commonly used to describe the distribution of particles in a transverse phase space. You can calculate, save, and plot the twiss parameters:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
@@ -812,7 +812,7 @@ gamma    0.591913  1.095932
 <p>Again, this is quite illuminating; it shows that the gamma particles are fairly evenly distributed spread between -1 and 1 mm, have almost no divergence (note the highly intesense line in the middle, and the use og a log scale). Again, since this data is from an x-ray collimator, this makes a lot of sense!</p>
 </section>
 <section id="Exporting-the-data">
-<h2>Exporting the data<a class="headerlink" href="#Exporting-the-data" title="Permalink to this heading"></a></h2>
+<h2>Exporting the data<a class="headerlink" href="#Exporting-the-data" title="Link to this heading"></a></h2>
 <p>Similarly to the data import stage we use an instance of <code class="docutils literal notranslate"><span class="pre">ParticlePhaseSpace.DataLoaders</span></code> to export the data. You can see the currently available data exporters <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/code_docs.html#module-ParticlePhaseSpace.DataExporters">here</a>, and you see a demonstration of writing a new data exporter <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/new_data_exporter.html">here</a>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:

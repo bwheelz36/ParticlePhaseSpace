@@ -12,11 +12,11 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
         <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
         <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -99,7 +99,7 @@
            <div itemprop="articleBody">
              
   <section id="Transformation-of-phase-space-data">
-<h1>Transformation of phase space data<a class="headerlink" href="#Transformation-of-phase-space-data" title="Permalink to this heading"></a></h1>
+<h1>Transformation of phase space data<a class="headerlink" href="#Transformation-of-phase-space-data" title="Link to this heading"></a></h1>
 <p>For some research purposes you may wish to manipulate the data in the phase space - for instance, rotate the data around an axis because different simulation codes are using different coordinate systems. This example shows how you can use this code to translate, rotate, and re-grid the phase space data. All these operations occur using the <code class="docutils literal notranslate"><span class="pre">transform</span></code> module.</p>
 <p>First, we will start by reading in our example data:</p>
 <div class="nbinput nblast docutils container">
@@ -139,7 +139,7 @@ translate
 </pre></div></div>
 </div>
 <section id="Translations">
-<h2>Translations<a class="headerlink" href="#Translations" title="Permalink to this heading"></a></h2>
+<h2>Translations<a class="headerlink" href="#Translations" title="Link to this heading"></a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
@@ -167,7 +167,7 @@ translate
 <p>you can see that the data has been translated 100 mm forward in the z direction; you can also translate in x or y.</p>
 </section>
 <section id="Rotations">
-<h2>Rotations<a class="headerlink" href="#Rotations" title="Permalink to this heading"></a></h2>
+<h2>Rotations<a class="headerlink" href="#Rotations" title="Link to this heading"></a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
@@ -195,7 +195,7 @@ translate
 <p>Looking at the gamma plot in particular, it is clear that the requested transformation was succesful; the particle positions are rotated around the z-axis by 45 degrees.</p>
 </section>
 <section id="Rotation-of-momentum">
-<h2>Rotation of momentum<a class="headerlink" href="#Rotation-of-momentum" title="Permalink to this heading"></a></h2>
+<h2>Rotation of momentum<a class="headerlink" href="#Rotation-of-momentum" title="Link to this heading"></a></h2>
 <p>When rotating the data, you may also wish to rotate the momentum vector as well. In this case, you only have to pass an additional keyword:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
@@ -224,7 +224,7 @@ translate
 <p>note in this case, the momentum which was nearly entirely z directed is now split evenly into y and z, as you would expect after a rotation around the x axis!</p>
 </section>
 <section id="Projection">
-<h2>Projection<a class="headerlink" href="#Projection" title="Permalink to this heading"></a></h2>
+<h2>Projection<a class="headerlink" href="#Projection" title="Link to this heading"></a></h2>
 <p>Another transformation one can carry out it to project the particles in some direction. This operation will update all particle positions accordingly. This is a valid approach under the assumption that the particles do not experience any forces.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
@@ -253,11 +253,11 @@ translate
 <p>Note that the z coordinate has been updated exactly the same way as in the translate case. However, the x and y values are significantly different; whereas they aren’t changed by a translation operation, for the projection operation they exhibit substantial broadening as the beam diverges travelling forward (note the x and y limits on the axes!).</p>
 </section>
 <section id="Regridding">
-<h2>Regridding<a class="headerlink" href="#Regridding" title="Permalink to this heading"></a></h2>
+<h2>Regridding<a class="headerlink" href="#Regridding" title="Link to this heading"></a></h2>
 <p>It is also possible to transform the phase space data by regridding it; however, this is somewhat complex and is therefore covered in a <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/grid_merge.html">dedicated tutorial</a>.</p>
 </section>
 <section id="Other-(less-supported!)-transformations">
-<h2>Other (less supported!) transformations<a class="headerlink" href="#Other-(less-supported!)-transformations" title="Permalink to this heading"></a></h2>
+<h2>Other (less supported!) transformations<a class="headerlink" href="#Other-(less-supported!)-transformations" title="Link to this heading"></a></h2>
 <p>Finally, it may be the case that you wish to transform your data in some way we have not listed here. This is very possible with this code; you can directly change all data fields by directly interacting with the pandas data stored at <code class="docutils literal notranslate"><span class="pre">PhaseSpace.ps_data</span></code>.</p>
 <p><strong>HOWEVER!</strong> - you do this at your own risk, since there is no way for us to check the validity of any operations you make - following any edits to the underling data, you should manually <code class="docutils literal notranslate"><span class="pre">reset_phase_space</span></code>, because you have quite likely invalidated any previously calculated quantities. <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/code_docs.html#ParticlePhaseSpace._ParticlePhaseSpace.PhaseSpace.reset_phase_space">reset_phase_space</a> removes any calculated data from the phase space,
 reducing it to just the <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/phase_space_format.html">required columns</a></p>

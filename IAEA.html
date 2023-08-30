@@ -12,11 +12,11 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
         <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
         <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -97,12 +97,12 @@
            <div itemprop="articleBody">
              
   <section id="Reading-IAEA-phase-space">
-<h1>Reading IAEA phase space<a class="headerlink" href="#Reading-IAEA-phase-space" title="Permalink to this heading"></a></h1>
+<h1>Reading IAEA phase space<a class="headerlink" href="#Reading-IAEA-phase-space" title="Link to this heading"></a></h1>
 <p>The international Atomic Energy Agency (IAEA) maintains a <a class="reference external" href="https://www-nds.iaea.org/phsp/photon1/">database of phase spaces</a> from different medical accelerators, as described in <a class="reference external" href="https://inis.iaea.org/collection/NCLCollectionStore/_Public/37/073/37073778.pdf?r=1">this report</a>.</p>
 <p>In principle, this is great: a standardised phase space format that everyone can adhere to! In reality, this is not so much a format as a loose fraternity of data. This mean it is very difficult to provide standardised methods to read these files; although we provide a DataLoader <code class="docutils literal notranslate"><span class="pre">Load_IAEA</span></code>, it is very likely that this will not work ‘out of the box’ for arbitrary data, and will require some fine tuning. Therefore, the point of this example is to demonstrate the process you would go through to
 read an IAEA phase space file into this code.</p>
 <section id="The-IAEA-format">
-<h2>The IAEA format<a class="headerlink" href="#The-IAEA-format" title="Permalink to this heading"></a></h2>
+<h2>The IAEA format<a class="headerlink" href="#The-IAEA-format" title="Link to this heading"></a></h2>
 <p>All IAEA phase spaces consist of two files:</p>
 <ol class="arabic simple">
 <li><p>A header file, which is ASCII (human readable) encoded. This contains a lot of information, some of which is essential to how to read the second file:</p></li>
@@ -113,7 +113,7 @@ read an IAEA phase space file into this code.</p>
 <p>However, any of these quantities can also be described as constants, which means that the byte order of an IAEA file is essentially arbitrary. In principle, it should be possible to dervice this information from the header file, but it’s not yet clear to me whether they are consistent enough to always allow that in practice.</p>
 </section>
 <section id="Reading-an-IAEA-phase-space-file">
-<h2>Reading an IAEA phase space file<a class="headerlink" href="#Reading-an-IAEA-phase-space-file" title="Permalink to this heading"></a></h2>
+<h2>Reading an IAEA phase space file<a class="headerlink" href="#Reading-an-IAEA-phase-space-file" title="Link to this heading"></a></h2>
 <p>With all this said, how does one actually go about reading an IAEA phase space? In this case, I will read in a small section of a varian phase space file which contained the following information in the header:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Format of the phase space file:
 Type (1 byte); Energy (4 bytes); X position (4); Y position (4); Component of
@@ -240,7 +240,7 @@ momentum direction in X (4); Component of momentum direction vector in Y (4)
 </div>
 </section>
 <section id="When-things-don't-work-quite-so-well...">
-<h2>When things don’t work quite so well…<a class="headerlink" href="#When-things-don't-work-quite-so-well..." title="Permalink to this heading"></a></h2>
+<h2>When things don’t work quite so well…<a class="headerlink" href="#When-things-don't-work-quite-so-well..." title="Link to this heading"></a></h2>
 <p>To take another example; look at the TrueBeam data available on <a class="reference external" href="https://www-nds.iaea.org/phsp/photon1/">this database</a>.</p>
 <p>In this instance, the header does not nicely specify what is in the the phase space data, so we have to guess. This is what the header does tell us:</p>
 <div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="nv">$RECORD_CONTENTS:</span>
@@ -536,7 +536,7 @@ File <span class="ansi-green-fg">~/Documents/python/ParticlePhaseSpace/examples/
 <p>OK, so this read in appears to have worked; all the consistency checks are passing and the data all looks as expected for a 6MV beam. Note however, that the units look incorrect</p>
 </section>
 <section id="Next-steps">
-<h2>Next steps<a class="headerlink" href="#Next-steps" title="Permalink to this heading"></a></h2>
+<h2>Next steps<a class="headerlink" href="#Next-steps" title="Link to this heading"></a></h2>
 <p>What would be nice is to be able to develop an automated IAEA phase space reader. However, at this point it appears that the information is frequently ordered in arbitrary ways that are not actually explained in the header. For the most recent data, I only managed to figure out how to read it after a period of trial and error. It really does not appear that files in the IAEA database are following the IAEA format at all…</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:

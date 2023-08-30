@@ -12,11 +12,11 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
         <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
         <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -94,7 +94,7 @@
            <div itemprop="articleBody">
              
   <section id="Writing-a-new-data-exporter">
-<h1>Writing a new data exporter<a class="headerlink" href="#Writing-a-new-data-exporter" title="Permalink to this heading"></a></h1>
+<h1>Writing a new data exporter<a class="headerlink" href="#Writing-a-new-data-exporter" title="Link to this heading"></a></h1>
 <p>Writing a new DataExporter is very similar process to <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/new_data_loader.html#">writing a new DataLoader</a>. As an example: lets say that I want to export some topas to the same format used in the <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/new_data_loader.html#">data import example</a>:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>x (mm)  y (mm)  z (mm)  px (MeV/c)  py (MeV/c)  pz (MeV/c)  E (MeV)
 </pre></div>
@@ -170,7 +170,7 @@
 </div>
 </div>
 <section id="Testing-the-data-export">
-<h2>Testing the data export<a class="headerlink" href="#Testing-the-data-export" title="Permalink to this heading"></a></h2>
+<h2>Testing the data export<a class="headerlink" href="#Testing-the-data-export" title="Link to this heading"></a></h2>
 <p>Let’s test the use case of loading in some topas data, and exporting it with this data exporter:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:

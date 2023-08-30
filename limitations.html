@@ -11,11 +11,11 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -77,7 +77,7 @@
            <div itemprop="articleBody">
              
   <section id="limitations">
-<h1>Limitations<a class="headerlink" href="#limitations" title="Permalink to this heading"></a></h1>
+<h1>Limitations<a class="headerlink" href="#limitations" title="Link to this heading"></a></h1>
 <p>The major limitation of this code at the time of writing is that it can only easily handle data that fits inside memory. This is partially a result of the choice of pandas as the backend - <a class="reference external" href="https://pandas.pydata.org/docs/user_guide/scale.html">this page</a> describes some difficulties and solutions of handling large data with pandas.</p>
 <p>As is discussed in the above link: if your data is too big to fit inside RAM, it should be possible to read and process your data in ‘chunks’ where each chunk can fit inside memory. This is not supported in most data loaders, but should be possible with minimal extensions - open an issue and we can talk about it!</p>
 <p>Beyond this, libraries such as <a class="reference external" href="https://www.dask.org/">DASK</a> may enable using this library of distributed resources. This is discussed a little bit in <a class="reference external" href="https://github.com/bwheelz36/ParticlePhaseSpace/issues/158">this issue</a>, with an example of utilising DASK on an OpenPMD dataset.</p>

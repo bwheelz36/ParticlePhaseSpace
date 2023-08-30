@@ -12,11 +12,11 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
         <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
         <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -97,10 +97,10 @@
            <div itemprop="articleBody">
              
   <section id="Working-with-different-units">
-<h1>Working with different units<a class="headerlink" href="#Working-with-different-units" title="Permalink to this heading"></a></h1>
+<h1>Working with different units<a class="headerlink" href="#Working-with-different-units" title="Link to this heading"></a></h1>
 <p>You can use a variety of different unit conventions in <code class="docutils literal notranslate"><span class="pre">ParticlePhaseSpace</span></code>. There are a number of unit sets pre programmed, and it’s also easy to create your own.</p>
 <section id="Available-units">
-<h2>Available units<a class="headerlink" href="#Available-units" title="Permalink to this heading"></a></h2>
+<h2>Available units<a class="headerlink" href="#Available-units" title="Link to this heading"></a></h2>
 <p>First let’s look at what units are currently available:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
@@ -185,7 +185,7 @@ Mass: keV/c^2
 <p>You can also easily define new units sets, but we will come to that later.</p>
 </section>
 <section id="Setting-units-at-data-read-in">
-<h2>Setting units at data read in<a class="headerlink" href="#Setting-units-at-data-read-in" title="Permalink to this heading"></a></h2>
+<h2>Setting units at data read in<a class="headerlink" href="#Setting-units-at-data-read-in" title="Link to this heading"></a></h2>
 <p>By default, <code class="docutils literal notranslate"><span class="pre">DataLoaders</span></code> use <code class="docutils literal notranslate"><span class="pre">mm_MeV</span></code> as the unit set. If you are reading in data with different untis, you just have to pass a unit set:</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
@@ -450,7 +450,7 @@ Mass: keV/c^2
 </div>
 </section>
 <section id="Changing-units-after-read-in">
-<h2>Changing units after read in<a class="headerlink" href="#Changing-units-after-read-in" title="Permalink to this heading"></a></h2>
+<h2>Changing units after read in<a class="headerlink" href="#Changing-units-after-read-in" title="Link to this heading"></a></h2>
 <p>Let’read in the data again, this time with the correct unit set (<code class="docutils literal notranslate"><span class="pre">mm_MeV</span></code>):</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
@@ -634,7 +634,7 @@ Mass: keV/c^2
 <p>Whenever you use the <code class="docutils literal notranslate"><span class="pre">set_units</span></code> method, the data will be reset using the <code class="docutils literal notranslate"><span class="pre">reset_phase_space</span></code> method. This means the data is reduced to only the <a class="reference external" href="https://bwheelz36.github.io/ParticlePhaseSpace/phase_space_format.html">required columns</a>, so that any other quantities must be recalculated following a unit change</p>
 </section>
 <section id="Defining-new-unit-sets">
-<h2>Defining new unit sets<a class="headerlink" href="#Defining-new-unit-sets" title="Permalink to this heading"></a></h2>
+<h2>Defining new unit sets<a class="headerlink" href="#Defining-new-unit-sets" title="Link to this heading"></a></h2>
 <p>If the unit set you want to work with is not already listed in the <code class="docutils literal notranslate"><span class="pre">available_units</span></code> above, you can easily create new unit sets. The <strong>highly</strong> advised way to do this is to add your new unit set to the <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method of <code class="docutils literal notranslate"><span class="pre">ParticlePhaseSpace.__unit_config__.ParticlePhaseSpaceUnits</span></code> by copying then updating the definition of the existing unit_sets. This is because unit sets defined in this way are subject to automatic testing to ensure for instance consistency between dimensionless
 quantities. However, if you really want you can also do it manually as below. Note that this is not the preferred method but it will work!</p>
 <div class="nbinput docutils container">
