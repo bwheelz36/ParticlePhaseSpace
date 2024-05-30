@@ -187,36 +187,36 @@ class Topas_Exporter(_DataExportersBase):
                 electron_PS = self._PS('electrons')
                 electron_PS.fill.kinetic_E()
                 particle_number_string.append('Number of e-: ' + str(len(electron_PS.ps_data['x [mm]'])) )
-                minimum_Ek_string.append('Minimum Kinetic Energy of e-: ' + str(min(electron_PS.ps_data['Ek [MeV]'])) + ' MeV')
-                maximum_Ek_string.append('Maximum Kinetic Energy of e-: ' + str(max(electron_PS.ps_data['Ek [MeV]'])) + ' MeV')
+                minimum_Ek_string.append('Minimum Kinetic Energy of e-: ' + str(min(electron_PS.ps_data['Ek [MeV]'], default=electron_PS.ps_data['Ek [MeV]'].average)) + ' MeV')
+                maximum_Ek_string.append('Maximum Kinetic Energy of e-: ' + str(max(electron_PS.ps_data['Ek [MeV]'], default=electron_PS.ps_data['Ek [MeV]'].average)) + ' MeV')
             elif particle_cfg.particle_properties[particle]['name'] == 'positrons':
                 positron_PS = self._PS('positrons')
                 positron_PS.fill.kinetic_E()
                 particle_number_string.append('Number of e+: ' + str(len(positron_PS.ps_data['x [mm]'])))
-                minimum_Ek_string.append('Minimum Kinetic Energy of e+: ' + str(min(positron_PS.ps_data['Ek [MeV]'])) + ' MeV')
-                maximum_Ek_string.append('Maximum Kinetic Energy of e+: ' + str(max(positron_PS.ps_data['Ek [MeV]'])) + ' MeV')
+                minimum_Ek_string.append('Minimum Kinetic Energy of e+: ' + str(min(positron_PS.ps_data['Ek [MeV]'], default=positron_PS.ps_data['Ek [MeV]'].average)) + ' MeV')
+                maximum_Ek_string.append('Maximum Kinetic Energy of e+: ' + str(max(positron_PS.ps_data['Ek [MeV]'], default=positron_PS.ps_data['Ek [MeV]'].average)) + ' MeV')
             elif particle_cfg.particle_properties[particle]['name'] == 'gammas':
                 gamma_PS = self._PS('gammas')
                 gamma_PS.fill.kinetic_E()
                 particle_number_string.append('Number of gamma: ' + str(len(gamma_PS.ps_data['x [mm]'])))
-                minimum_Ek_string.append('Minimum Kinetic Energy of gamma: ' + str(min(gamma_PS.ps_data['Ek [MeV]'])) + ' MeV')
-                maximum_Ek_string.append('Maximum Kinetic Energy of gamma: ' + str(max(gamma_PS.ps_data['Ek [MeV]'])) + ' MeV')
+                minimum_Ek_string.append('Minimum Kinetic Energy of gamma: ' + str(min(gamma_PS.ps_data['Ek [MeV]'], default=gamma_PS.ps_data['Ek [MeV]'].average)) + ' MeV')
+                maximum_Ek_string.append('Maximum Kinetic Energy of gamma: ' + str(max(gamma_PS.ps_data['Ek [MeV]'], default=gamma_PS.ps_data['Ek [MeV]'].average)) + ' MeV')
             elif particle_cfg.particle_properties[particle]['name'] == 'neutrons':
                 neutrons_PS = self._PS('neutrons')
                 neutrons_PS.fill.kinetic_E()
                 particle_number_string.append('Number of neutrons: ' + str(len(neutrons_PS.ps_data['x [mm]'])))
                 minimum_Ek_string.append(
-                    'Minimum Kinetic Energy of neutron: ' + str(min(neutrons_PS.ps_data['Ek [MeV]'])) + ' MeV')
+                    'Minimum Kinetic Energy of neutron: ' + str(min(neutrons_PS.ps_data['Ek [MeV]'], default=neutrons_PS.ps_data['Ek [MeV]'].average)) + ' MeV')
                 maximum_Ek_string.append(
-                    'Maximum Kinetic Energy of neutron: ' + str(max(neutrons_PS.ps_data['Ek [MeV]'])) + ' MeV')
+                    'Maximum Kinetic Energy of neutron: ' + str(max(neutrons_PS.ps_data['Ek [MeV]'], default=neutrons_PS.ps_data['Ek [MeV]'].average)) + ' MeV')
             elif particle_cfg.particle_properties[particle]['name'] == 'protons':
                 protons_PS = self._PS('protons')
                 protons_PS.fill.kinetic_E()
                 particle_number_string.append('Number of protons: ' + str(len(protons_PS.ps_data['x [mm]'])))
                 minimum_Ek_string.append(
-                    'Minimum Kinetic Energy of proton: ' + str(min(protons_PS.ps_data['Ek [MeV]'])) + ' MeV')
+                    'Minimum Kinetic Energy of proton: ' + str(min(protons_PS.ps_data['Ek [MeV]'], default=protons_PS.ps_data['Ek [MeV]'].average)) + ' MeV')
                 maximum_Ek_string.append(
-                    'Maximum Kinetic Energy of proton: ' + str(max(protons_PS.ps_data['Ek [MeV]'])) + ' MeV')
+                    'Maximum Kinetic Energy of proton: ' + str(max(protons_PS.ps_data['Ek [MeV]'], default=protons_PS.ps_data['Ek [MeV]'].average)) + ' MeV')
             else:
                 raise NotImplementedError(f'cannot currently export particle type {particle_cfg.particle_properties[particle]["name"]}.'
                                           f'\nneed to update header writer')
