@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Writing a new data loader &mdash; Particle Phase Space  documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/nbsphinx-code-cells.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/nbsphinx-code-cells.css" />
+
+  
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -15,7 +17,7 @@
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
         <script src="_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
         <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
@@ -138,7 +140,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns</span><span class="p">[</span><span class="s1">&#39;px&#39;</span><span class="p">]]</span>  <span class="o">=</span> <span class="n">Data</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns</span><span class="p">[</span><span class="s1">&#39;py&#39;</span><span class="p">]]</span>  <span class="o">=</span> <span class="n">Data</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns</span><span class="p">[</span><span class="s1">&#39;pz&#39;</span><span class="p">]]</span>  <span class="o">=</span> <span class="n">Data</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns</span><span class="p">[</span><span class="s1">&#39;particle type&#39;</span><span class="p">]]</span><span class="o">=</span> <span class="n">particle_cfg</span><span class="o">.</span><span class="n">particle_properties</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_particle_type</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns</span><span class="p">[</span><span class="s1">&#39;particle type&#39;</span><span class="p">]]</span><span class="o">=</span> <span class="n">particle_cfg</span><span class="o">.</span><span class="n">particle_properties</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_particle_type</span><span class="p">][</span><span class="s1">&#39;pdg_code&#39;</span><span class="p">]</span>
         <span class="c1"># we also need to fill in weight, particle id, and time; since none of these are specified we just use all</span>
         <span class="c1"># ones for weight, 1,2,3... for particle id, and all zeros for time:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">Data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
