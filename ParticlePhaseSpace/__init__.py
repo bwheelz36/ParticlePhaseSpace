@@ -1,4 +1,4 @@
-__version__ = '0.5.5'
+__version__ = '0.6.5'
 
 # from ParticlePhaseSpace._ParticlePhaseSpace import PhaseSpace
 from ParticlePhaseSpace.__unit_config__ import ParticlePhaseSpaceUnits, UnitSet
