@@ -3,13 +3,18 @@ import ParticlePhaseSpace.__phase_space_config__ as ps_cfg
 import ParticlePhaseSpace.__particle_config__ as particle_cfg
 from ParticlePhaseSpace import ParticlePhaseSpaceUnits
 from ParticlePhaseSpace import UnitSet
+import numpy as np
 
 def _check_particle_types(pdg_codes):
     """
     check that the particle types in the phase space are known particle types
     """
+
+
     for code in pdg_codes:
+
         try:
+            assert isinstance(code, (int, np.integer))
             test = particle_cfg.particle_properties[code]
         except:
             raise AttributeError(f'unknown particle type {particle_cfg.particle_properties[code]["name"]}')

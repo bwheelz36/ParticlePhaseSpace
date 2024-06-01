@@ -24,7 +24,7 @@ class _DataLoadersBase(ABC):
     :param units:  optionally specify units by passing a unit set
     """
 
-    def __init__(self, input_data: (str, Path), particle_type:str=None, units:UnitSet=units('mm_MeV')):
+    def __init__(self, input_data: (str, Path), particle_type:(str, None)=None, units:UnitSet=units('mm_MeV')):
 
         self.data = pd.DataFrame()
         if not isinstance(units, UnitSet):
