@@ -40,7 +40,7 @@ def test_topas_ascii_export():
     PS2 = PhaseSpace(data)
     PS.reset_phase_space()
     gah = PS.ps_data - PS2.ps_data
-    return all(gah.max() < 1e-5)
+    assert all(gah.max() < 1e-5)
 
 def test_topas_binary_export():
     data = DataLoaders.Load_PandasData(get_demo_data())
@@ -54,7 +54,7 @@ def test_topas_binary_export():
     PS2 = PhaseSpace(data)
     PS.reset_phase_space()
     gah = PS.ps_data - PS2.ps_data
-    return all(gah.max() < 1e-5)
+    assert all(gah.max() < 1e-5)
 
 
 def test_export_with_different_units():
