@@ -12,10 +12,10 @@ import ParticlePhaseSpace.__phase_space_config__ as ps_cfg
 from ParticlePhaseSpace import ParticlePhaseSpaceUnits
 import pytest
 
-def test_topas_export():
-
+def get_demo_data():
     units = ParticlePhaseSpaceUnits()('mm_MeV')
     all_allowed_columns = ps_cfg.get_all_column_names(units)
+
     demo_data = pd.DataFrame(
                     {all_allowed_columns['x']: [0, 1, 2, 1, 1],
                      all_allowed_columns['y']: [0, 1, 2, 1, 1],
@@ -27,17 +27,35 @@ def test_topas_export():
                      all_allowed_columns['weight']: [2, 1, 2, 1, 1],
                      all_allowed_columns['particle id']: [0, 1, 2, 3, 4],
                      all_allowed_columns['time']: [0, 0, 0, 0, 0]})
+    return demo_data
 
-    data = DataLoaders.Load_PandasData(demo_data)
+def test_topas_ascii_export():
+    data = DataLoaders.Load_PandasData(get_demo_data())
     PS = PhaseSpace(data)
-    # ok: can we export this data:
-    DataExporters.Topas_Exporter(PS, output_location='.', output_name='test.phsp')
-    # now check we can read it back in:
-    data = DataLoaders.Load_TopasData('test.phsp')
+
+    # Check ASCII export
+    DataExporters.Topas_Exporter(PS, output_location='.', output_name='test_ascii.phsp')
+    # Check import of exported data
+    data = DataLoaders.Load_TopasData('test_ascii.phsp')
     PS2 = PhaseSpace(data)
     PS.reset_phase_space()
     gah = PS.ps_data - PS2.ps_data
-    assert all(gah.max() < 1e-5)
+    return all(gah.max() < 1e-5)
+
+def test_topas_binary_export():
+    data = DataLoaders.Load_PandasData(get_demo_data())
+    PS = PhaseSpace(data)
+
+    # Binary
+    # Check binary export
+    DataExporters.Topas_Exporter(PS, output_location='.', output_name='test_binary.phsp', binary=True)
+    # Check import of exported data
+    data = DataLoaders.Load_TopasData('test_binary.phsp')
+    PS2 = PhaseSpace(data)
+    PS.reset_phase_space()
+    gah = PS.ps_data - PS2.ps_data
+    return all(gah.max() < 1e-5)
+
 
 def test_export_with_different_units():
     """
