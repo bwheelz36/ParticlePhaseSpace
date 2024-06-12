@@ -129,6 +129,8 @@ class Topas_Exporter(_DataExportersBase):
 
         if 'windows' in platform.system().lower():
             warnings.warn('to generate a valid file, please use a unix-based system')
+        if self._binary:
+            warnings.warn('binary exports are platform dependent, please use ascii files for cross-platform compatibility')
         print('generating topas data file')
 
         self._generate_topas_header_file()
