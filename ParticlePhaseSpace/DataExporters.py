@@ -102,6 +102,7 @@ class _DataExportersBase(ABC):
 class Topas_Exporter(_DataExportersBase):
     """
     output the phase space to `topas ascii or binary format <https://topas.readthedocs.io/en/latest/parameters/source/phasespace.html>`_.
+    the default output is ascii, the user can output binary by passing the flag `binary` as a boolean e.g. `binary=True`
 
     Note:
         - we do not handle any time features
