@@ -1,5 +1,6 @@
 import platform
 import numpy as np
+from numpy.lib import recfunctions
 from ParticlePhaseSpace import PhaseSpace
 from pathlib import Path
 from abc import ABC, abstractmethod
@@ -100,12 +101,19 @@ class _DataExportersBase(ABC):
 
 class Topas_Exporter(_DataExportersBase):
     """
-    output the phase space to `topas ascii format <https://topas.readthedocs.io/en/latest/parameters/source/phasespace.html>`_.
+    output the phase space to `topas ascii or binary format <https://topas.readthedocs.io/en/latest/parameters/source/phasespace.html>`_.
+    the default output is ascii, the user can output binary by passing the flag `binary` as a boolean e.g. `binary=True`
 
     Note:
         - we do not handle any time features
         - every particle in the phase space is flagged as being a new history.
     """
+
+    def __init__(self, PhaseSpaceInstance: PhaseSpace, output_location: (str, Path), output_name: str,
+                 binary: bool = False):
+        self._binary = binary
+        super().__init__(PhaseSpaceInstance, output_location, output_name)
+
 
     def _define_required_columns(self):
         self._required_columns = ['x', 'y', 'z', 'Direction Cosine X', 'Direction Cosine Y',
@@ -121,6 +129,8 @@ class Topas_Exporter(_DataExportersBase):
 
         if 'windows' in platform.system().lower():
             warnings.warn('to generate a valid file, please use a unix-based system')
+        if self._binary:
+            warnings.warn('binary exports are platform dependent, please use ascii files for cross-platform compatibility')
         print('generating topas data file')
 
         self._generate_topas_header_file()
@@ -142,11 +152,18 @@ class Topas_Exporter(_DataExportersBase):
                 self._PS.ps_data['particle type [pdg_code]'].to_numpy(),
                 third_direction_flag, first_particle_flag]
 
-        # write the data to a text file
-        Data = np.transpose(Data)
-        FormatSpec = ['%11.5f', '%11.5f', '%11.5f', '%11.5f', '%11.5f', '%11.5f', '%11.5f', '%2d', '%2d', '%2d']
-        np.savetxt(WritefilePath, Data, fmt=FormatSpec, delimiter='      ')
-        print('success')
+        # write the data to file
+        if self._binary:
+            dtype_strings = ['f4', 'f4', 'f4', 'f4', 'f4', 'f4', 'f4', 'i4', 'b1', 'b1']
+            Data = [d.astype(dt) for d, dt in zip(Data, dtype_strings)]
+            Data = recfunctions.merge_arrays(Data)
+            with open(WritefilePath, 'wb') as f:
+                Data.tofile(f)
+        else:
+            Data = np.transpose(Data)
+            FormatSpec = ['%11.5f', '%11.5f', '%11.5f', '%11.5f', '%11.5f', '%11.5f', '%11.5f', '%2d', '%2d', '%2d']
+            np.savetxt(WritefilePath, Data, fmt=FormatSpec, delimiter='      ')
+            print('success')
 
     def _generate_topas_header_file(self):
         """
@@ -164,21 +181,39 @@ class Topas_Exporter(_DataExportersBase):
         ParticlesInPhaseSpace = str(len(self._PS.ps_data['x [mm]'] ))
         TopasHeader = []
 
-        TopasHeader.append('TOPAS ASCII Phase Space\n')
+        format_name = 'Binary' if self._binary else 'ASCII'
+        TopasHeader.append('TOPAS {:s} Phase Space\n'.format(format_name))
         TopasHeader.append('Number of Original Histories: ' + ParticlesInPhaseSpace)
         TopasHeader.append('Number of Original Histories that Reached Phase Space: ' + ParticlesInPhaseSpace)
-        TopasHeader.append('Number of Scored Particles: ' + ParticlesInPhaseSpace + '\n')
-        TopasHeader.append('Columns of data are as follows:')
-        TopasHeader.append(' 1: Position X [cm]')
-        TopasHeader.append(' 2: Position Y [cm]')
-        TopasHeader.append(' 3: Position Z [cm]')
-        TopasHeader.append(' 4: Direction Cosine X')
-        TopasHeader.append(' 5: Direction Cosine Y')
-        TopasHeader.append(' 6: Energy [MeV]')
-        TopasHeader.append(' 7: Weight')
-        TopasHeader.append(' 8: Particle Type (in PDG Format)')
-        TopasHeader.append(' 9: Flag to tell if Third Direction Cosine is Negative (1 means true)')
-        TopasHeader.append(' 10: Flag to tell if this is the First Scored Particle from this History (1 means true)\n')
+        TopasHeader.append('Number of Scored Particles: ' + ParticlesInPhaseSpace)
+
+        if self._binary:
+            TopasHeader.append('Number of Bytes per Particle: 34' + '\n')
+            TopasHeader.append('Byte order of each record is as follows:')
+            TopasHeader.append('f4: Position X [cm]')
+            TopasHeader.append('f4: Position Y [cm]')
+            TopasHeader.append('f4: Position Z [cm]')
+            TopasHeader.append('f4: Direction Cosine X')
+            TopasHeader.append('f4: Direction Cosine Y')
+            TopasHeader.append('f4: Energy [MeV]')
+            TopasHeader.append('f4: Weight')
+            TopasHeader.append('i4: Particle Type (in PDG Format)')
+            TopasHeader.append('b1: Flag to tell if Third Direction Cosine is Negative (1 means true)')
+            TopasHeader.append('b1: Flag to tell if this is the First Scored Particle from this History (1 means true)\n')
+        else:
+            TopasHeader.append('')
+            TopasHeader.append('Columns of data are as follows:')
+            TopasHeader.append(' 1: Position X [cm]')
+            TopasHeader.append(' 2: Position Y [cm]')
+            TopasHeader.append(' 3: Position Z [cm]')
+            TopasHeader.append(' 4: Direction Cosine X')
+            TopasHeader.append(' 5: Direction Cosine Y')
+            TopasHeader.append(' 6: Energy [MeV]')
+            TopasHeader.append(' 7: Weight')
+            TopasHeader.append(' 8: Particle Type (in PDG Format)')
+            TopasHeader.append(' 9: Flag to tell if Third Direction Cosine is Negative (1 means true)')
+            TopasHeader.append('10: Flag to tell if this is the First Scored Particle from this History (1 means true)\n')
+
         particle_number_string = []
         minimum_Ek_string = []
         maximum_Ek_string = []
