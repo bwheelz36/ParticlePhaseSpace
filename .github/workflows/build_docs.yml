@@ -26,7 +26,7 @@ jobs:
         uses: snok/install-poetry@v1
       - name: Install package and test dependencies
         run: |
-          poetry install --with dev,nbtools
+          poetry install --with dev
       - name: build sphinx docs
         run: |
           cd docsrc
