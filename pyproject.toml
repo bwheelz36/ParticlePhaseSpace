@@ -1,3 +1,41 @@
+[tool.poetry]
+name = "particlephasespace"
+version = "0.6.0"
+description = "Import, analysis, and export of particle phase space data"
+authors = ["Brendan <bwheelz360@gmail.com>"]
+readme = "README.md"
+license = "GPL3"
+packages = [{include = "ParticlePhaseSpace"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+numpy = "^2.0.0"
+pandas = "^2.2.2"
+matplotlib = "^3.9.0"
+scipy = "^1.13.0"
+topas2numpy = "^0.2.0"
+
+
+[tool.poetry.group.dev]  # for testing/developing
+optional = true
+[tool.poetry.group.dev.dependencies]
+sphinx = "^7.3.7"
+pytest = "^8.2.2"
+coverage = "^7.5.4"
+interrogate = "^1.7.0"
+coverage-badge = "^1.1.1"
+myst-parser = "^3.0.1"
+build = "^1.2.1"
+twine = "^5.1.0"
+pytest-cov = "^5.0.0"
+sphinx-rtd-theme = "^2.0.0"
+nbsphinx = "^0.9.4"
+nbformat = "^5.10.4"
+nbconvert = "^7.16.4"
+jupyter = "^1.0.0"
+ipython = "^8.8.0"
+
+
 [build-system]
-requires = ["setuptools>=42", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
