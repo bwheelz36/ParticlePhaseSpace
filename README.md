@@ -1,6 +1,7 @@
 # ParticlePhaseSpace
 
-![tests](https://github.com/bwheelz36/ParticlePhaseSpace/actions/workflows/run_tests.yml/badge.svg)[![codecov](https://codecov.io/gh/bwheelz36/ParticlePhaseSpace/branch/main/graph/badge.svg?token=T44KBJ7INR)](https://codecov.io/gh/bwheelz36/ParticlePhaseSpace)[![PyPI version](https://badge.fury.io/py/ParticlePhaseSpace.svg)](https://badge.fury.io/py/ParticlePhaseSpace)
+![tests](https://github.com/bwheelz36/ParticlePhaseSpace/actions/workflows/run_tests.yml/badge.svg)[![codecov](https://codecov.io/gh/bwheelz36/ParticlePhaseSpace/branch/main/graph/badge.svg?token=T44KBJ7INR)](https://codecov.io/gh/bwheelz36/ParticlePhaseSpace)[![PyPI version](https://badge.fury.io/py/ParticlePhaseSpace.svg)](https://badge.fury.io/py/ParticlePhaseSpace)![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ParticlePhaseSpace)
+
 
 Common library for dealing with particle phase spaces, revolving around the simple workflow of `import`, `analyse`, `export`. If you have a data format that we can't already work with, extension mechanisms are provided for writing new `DataLoaders` and `DataExporters`.
 
