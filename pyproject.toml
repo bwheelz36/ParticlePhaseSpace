@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "particlephasespace"
-version = "0.6.0"
+version = "0.7.1"
 description = "Import, analysis, and export of particle phase space data"
 authors = ["Brendan <bwheelz360@gmail.com>"]
 readme = "README.md"
