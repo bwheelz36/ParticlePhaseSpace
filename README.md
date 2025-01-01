@@ -9,7 +9,7 @@ Common library for dealing with particle phase spaces, revolving around the simp
 
 To install: ```pip install ParticlePhaseSpace```
 
-If you want to develop the code, there are some additional requirements, listed in `dev_requirements.txt`
+If you want to develop the code, there are some additional requirements. The easiest way to install these is using [poetry](https://python-poetry.org/) and running `poetry install --with dev`
 
 ## Usage and Documentation
 
