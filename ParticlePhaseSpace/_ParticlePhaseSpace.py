@@ -1512,6 +1512,7 @@ class PhaseSpace:
                                       self.ps_data[self.columns['py']],
                                       self.ps_data[self.columns['pz']],
                                       self.ps_data[self.columns['weight']]])
+            xyz_pxpypz_w += np.random.normal(0, 1e-8, xyz_pxpypz_w.shape)
             k = gaussian_kde(xyz_pxpypz_w)
             new_points = k.resample(n_new_particles)
         else:
@@ -1522,6 +1523,7 @@ class PhaseSpace:
                                     self.ps_data[self.columns['px']],
                                     self.ps_data[self.columns['py']],
                                     self.ps_data[self.columns['pz']]])
+            xyz_pxpypz += np.random.normal(0, 1e-8, xyz_pxpypz.shape)
             k = gaussian_kde(xyz_pxpypz, weights=self._ps_data[self.columns['weight']])
             new_points = k.resample(n_new_particles)
             _new_weights = np.ones(new_points.shape[1]) * np.mean(self._ps_data[self.columns['weight']])
