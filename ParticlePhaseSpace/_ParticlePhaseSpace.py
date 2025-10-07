@@ -540,6 +540,180 @@ class _Plots(_PhaseSpace_MethodHolder):
             plt.grid()
         plt.tight_layout()
 
+    def radial_energy_boxplot(self, n_bins=10, beam_direction='z', show=True, rlim=None):
+        """
+        Plots boxplots of kinetic energy distribution per radial bin.
+
+        :param n_bins: Number of radial bins (boxplots)
+        :param beam_direction: Direction of beam ('z', 'x', or 'y'); default 'z'
+        :param show: If True, display the plot
+        :param rlim: Tuple (r_min, r_max); if None, uses full range
+        """
+        ps_data = self._PS._ps_data
+
+        # Compute radial coordinate
+        if beam_direction == 'z':
+            x = ps_data[self._PS.columns['x']]
+            y = ps_data[self._PS.columns['y']]
+            r = np.sqrt(x ** 2 + y ** 2)
+        elif beam_direction == 'x':
+            y = ps_data[self._PS.columns['y']]
+            z = ps_data[self._PS.columns['z']]
+            r = np.sqrt(y ** 2 + z ** 2)
+        elif beam_direction == 'y':
+            x = ps_data[self._PS.columns['x']]
+            z = ps_data[self._PS.columns['z']]
+            r = np.sqrt(x ** 2 + z ** 2)
+        else:
+            raise ValueError("beam_direction must be 'x', 'y', or 'z'")
+
+        # Set r limits
+        if rlim is None:
+            r_min, r_max = r.min(), r.max()
+        else:
+            r_min, r_max = rlim
+
+        # Bin edges and bin centers
+        r_edges = np.linspace(r_min, r_max, n_bins + 1)
+        r_centers = 0.5 * (r_edges[:-1] + r_edges[1:])
+
+        # Get kinetic energy
+        if not self._PS.columns['Ek'] in ps_data.columns:
+            self._PS.fill.kinetic_E()
+            ps_data = self._PS._ps_data
+        ek = ps_data[self._PS.columns['Ek']]
+
+        # Collect energy per bin
+        energy_bins = []
+        for i in range(n_bins):
+            in_bin = (r >= r_edges[i]) & (r < r_edges[i + 1])
+            energy_bins.append(ek[in_bin])
+
+        # Prepare boxplot data (remove empty bins)
+        boxplot_data = [eb.values for eb in energy_bins if len(eb) > 0]
+        r_centers_plot = [r_centers[i] for i, eb in enumerate(energy_bins) if len(eb) > 0]
+
+        # Plot
+        fig, ax = plt.subplots(figsize=(10, 6))
+        bp = ax.boxplot(boxplot_data, positions=r_centers_plot, widths=(r_edges[1] - r_edges[0]) * 0.8,
+                        patch_artist=True)
+        ax.set_xlabel(f"r [{self._PS._units.length.label}]")
+        ax.set_ylabel(f"Kinetic Energy [{self._PS._units.energy.label}]")
+        ax.set_title("Radial Energy Distribution (Boxplot)")
+        ax.set_xlim(r_min, r_max)
+        plt.tight_layout()
+        if show:
+            plt.show()
+        return fig, ax, r_centers_plot, boxplot_data
+
+    def fluence_map_2D(self, beam_direction: str = 'z', at: float = 0.0, quantity: str = 'energy',
+                       bins: int = 100, normalize: bool = True, show: bool = True,
+                       xlim=None, ylim=None):
+        """
+        Plot fluence (particle or energy per unit area) as a 2D map in the plane orthogonal to beam_direction.
+
+        :param beam_direction: Direction of beam travel ('x', 'y', or 'z')
+        :type beam_direction: str, optional
+        :param at: Position of plane along beam direction
+        :type at: float, optional
+        :param quantity: 'particle' for particle fluence, 'energy' for energy fluence
+        :type quantity: str, optional
+        :param bins: Number of bins per axis
+        :type bins: int, optional
+        :param normalize: If True, normalize fluence map to max value
+        :type normalize: bool, optional
+        :param show: If True, display the plot
+        :type show: bool, optional
+        :param xlim: x-axis limits (tuple or list)
+        :type xlim: tuple or list, optional
+        :param ylim: y-axis limits (tuple or list)
+        :type ylim: tuple or list, optional
+        :return: fluence_map (2D numpy array), (xedges, yedges)
+        """
+
+        # Project all particles to the plane
+        plot_ps = self._PS.transform.project_to_plane(beam_direction=beam_direction, at=at)
+        ps_data = plot_ps._ps_data
+        # filter any particles not at the requested plane (travelling in wrong direction)
+        if beam_direction == 'x':
+            coord = ps_data[plot_ps.columns['x']]
+        elif beam_direction == 'y':
+            coord = ps_data[plot_ps.columns['y']]
+        elif beam_direction == 'z':
+            coord = ps_data[plot_ps.columns['z']]
+        else:
+            raise ValueError(f"beam direction: {beam_direction} is not supported.")
+
+        tol = 1e-6
+        mask = np.abs(coord - at) < tol
+        # Filter for particles actually "on" the plane
+        ps_data = ps_data[mask]
+        columns = plot_ps.columns
+        units = plot_ps._units
+
+        # Determine orthogonal axes
+        if beam_direction == 'x':
+            axis1, axis2 = columns['y'], columns['z']
+        elif beam_direction == 'y':
+            axis1, axis2 = columns['x'], columns['z']
+        elif beam_direction == 'z':
+            axis1, axis2 = columns['x'], columns['y']
+        else:
+            raise ValueError("beam_direction must be one of 'x', 'y', or 'z'")
+
+        x = ps_data[axis1]
+        y = ps_data[axis2]
+
+        # Set limits if not specified
+        if xlim is None:
+            # Default to percentiles to avoid extreme outliers
+            xlim = (np.percentile(x, 1), np.percentile(x, 99))
+        if ylim is None:
+            ylim = (np.percentile(y, 1), np.percentile(y, 99))
+
+        xedges = np.linspace(xlim[0], xlim[1], bins + 1)
+        yedges = np.linspace(ylim[0], ylim[1], bins + 1)
+
+        # Mask out particles outside bounds to avoid weird bins
+        mask = (x >= xlim[0]) & (x <= xlim[1]) & (y >= ylim[0]) & (y <= ylim[1])
+        x = x[mask]
+        y = y[mask]
+        weights = ps_data['weight'][mask]
+
+        if quantity == 'energy':
+            if not columns['Ek'] in ps_data.columns:
+                plot_ps.fill.kinetic_E()  # Fill on projected phase space
+                ps_data = plot_ps._ps_data
+            if isinstance(weights.dtype, pd.CategoricalDtype):
+                weights = weights.astype(float)
+            weights = weights * ps_data[columns['Ek']][mask]
+        elif quantity != 'particle':
+            raise ValueError("quantity must be 'particle' or 'energy'")
+
+        H, _, _ = np.histogram2d(x, y, bins=[xedges, yedges], weights=weights)
+        bin_area = (xedges[1] - xedges[0]) * (yedges[1] - yedges[0])
+        fluence_map = H / bin_area
+
+        if normalize and fluence_map.max() > 0:
+            fluence_map = fluence_map / fluence_map.max()
+
+        if show:
+            plt.figure(figsize=(8, 6))
+            plt.imshow(fluence_map.T, origin='lower', aspect='auto',
+                       extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]],
+                       cmap='inferno')
+            plt.colorbar(label=f"{quantity.capitalize()} fluence per {units.length.label}$^2$")
+            plt.xlabel(axis1)
+            plt.ylabel(axis2)
+            plt.title(
+                f"{quantity.capitalize()} fluence map in plane orthogonal to {beam_direction} @ {at}")
+            plt.xlim(xlim)
+            plt.ylim(ylim)
+            plt.tight_layout()
+            plt.show()
+
+        return fluence_map, (xedges, yedges)
+
 
 class _Transform(_PhaseSpace_MethodHolder):
     """
@@ -686,6 +860,59 @@ class _Transform(_PhaseSpace_MethodHolder):
 
         new_instance = self._return_position_update(new_x, new_y, new_z, in_place)
         return new_instance  # nb: None if in_place = True
+
+    def project_to_plane(self, beam_direction: str = 'z', at: float = 0.0, in_place: bool = False):
+        """
+        Projects all particles to the specified plane (e.g., z=at, y=at, x=at) along their trajectories.
+        Assumes straight-line motion.
+        If a particle would NEVER reach the requested plane, it will keep it's oroginal positions.
+
+        :param beam_direction: Direction normal to the plane ('x', 'y', or 'z')
+        :type beam_direction: str
+        :param at: Position of plane along beam_direction
+        :type at: float
+        :param in_place: If True, modify in place. If False, return new PhaseSpace
+        :type in_place: bool
+        :return: new PhaseSpace object with all particles on the plane
+        """
+        # Get required columns
+        col = self._PS.columns
+        psd = self._PS._ps_data
+
+        for axis in [col['x'], col['y'], col['z'], col['px'], col['py'], col['pz']]:
+            if isinstance(psd[axis].dtype, pd.CategoricalDtype):
+                psd[axis] = psd[axis].cat.codes.astype(float)
+
+        # Calculate displacement needed to bring each particle to the plane
+        if beam_direction == 'x':
+            d = at - psd[col['x']]
+            # Avoid divide by zero
+            px = psd[col['px']].replace(0, np.nan)
+            new_y = psd[col['y']] + d * psd[col['py']] / px
+            new_z = psd[col['z']] + d * psd[col['pz']] / px
+            new_x = np.full_like(psd[col['x']], at)
+        elif beam_direction == 'y':
+            d = at - psd[col['y']]
+            py = psd[col['py']].replace(0, np.nan)
+            new_x = psd[col['x']] + d * psd[col['px']] / py
+            new_z = psd[col['z']] + d * psd[col['pz']] / py
+            new_y = np.full_like(psd[col['y']], at)
+        elif beam_direction == 'z':
+            d = at - psd[col['z']]  # projection amount
+            pz = psd[col['pz']].replace(0, np.nan)
+            new_x = psd[col['x']] + d * psd[col['px']] / pz
+            new_y = psd[col['y']] + d * psd[col['py']] / pz
+            new_z = np.full_like(psd[col['z']], at)
+        else:
+            raise ValueError("beam_direction must be one of 'x', 'y', or 'z'")
+
+        # Replace any nan (from divide by zero) with current position
+        new_x = np.where(np.isnan(new_x), psd[col['x']], new_x)
+        new_y = np.where(np.isnan(new_y), psd[col['y']], new_y)
+        new_z = np.where(np.isnan(new_z), psd[col['z']], new_z)
+
+        # Use existing _return_position_update for in_place or return new
+        return self._return_position_update(new_x, new_y, new_z, in_place)  # nb: None if in_place = True
 
     def regrid(self, quantities: (list, None) = None, n_bins: (int, list) = 10, in_place=False):
         """
