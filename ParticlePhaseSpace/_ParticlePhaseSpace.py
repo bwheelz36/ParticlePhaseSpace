@@ -303,6 +303,11 @@ class _Plots(_PhaseSpace_MethodHolder):
         for particle in self._PS._unique_particles:
             ind = self._PS._ps_data['particle type [pdg_code]'] == particle
             ps_data = self._PS._ps_data.loc[ind]
+            if len(ps_data) < 2:
+                print(f"Not enough data to plot histogram for particle {particle}")
+
+                continue
+
             if beam_direction == 'x':
                 x_data = ps_data[self._PS.columns['y']]
                 y_data = ps_data[self._PS.columns['z']]
@@ -345,7 +350,7 @@ class _Plots(_PhaseSpace_MethodHolder):
             if normalize:
                 try:
                     h = h * 100 / h.max()
-                except ValueError:
+                except (ValueError, RuntimeError):
                     pass
             _im1 = axs[0, n_axs].pcolormesh(xedges, yedges, h.T, cmap='inferno',
                                             norm=_scale, rasterized=False, vmin=vmin, vmax=vmax)
