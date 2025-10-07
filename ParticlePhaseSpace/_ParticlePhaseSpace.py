@@ -303,6 +303,11 @@ class _Plots(_PhaseSpace_MethodHolder):
         for particle in self._PS._unique_particles:
             ind = self._PS._ps_data['particle type [pdg_code]'] == particle
             ps_data = self._PS._ps_data.loc[ind]
+            if len(ps_data) < 2:
+                print(f"Not enough data to plot histogram for particle {particle}")
+
+                continue
+
             if beam_direction == 'x':
                 x_data = ps_data[self._PS.columns['y']]
                 y_data = ps_data[self._PS.columns['z']]
@@ -345,7 +350,7 @@ class _Plots(_PhaseSpace_MethodHolder):
             if normalize:
                 try:
                     h = h * 100 / h.max()
-                except ValueError:
+                except (ValueError, RuntimeError):
                     pass
             _im1 = axs[0, n_axs].pcolormesh(xedges, yedges, h.T, cmap='inferno',
                                             norm=_scale, rasterized=False, vmin=vmin, vmax=vmax)
@@ -1507,6 +1512,7 @@ class PhaseSpace:
                                       self.ps_data[self.columns['py']],
                                       self.ps_data[self.columns['pz']],
                                       self.ps_data[self.columns['weight']]])
+            xyz_pxpypz_w += np.random.normal(0, 1e-8, xyz_pxpypz_w.shape)
             k = gaussian_kde(xyz_pxpypz_w)
             new_points = k.resample(n_new_particles)
         else:
@@ -1517,6 +1523,7 @@ class PhaseSpace:
                                     self.ps_data[self.columns['px']],
                                     self.ps_data[self.columns['py']],
                                     self.ps_data[self.columns['pz']]])
+            xyz_pxpypz += np.random.normal(0, 1e-8, xyz_pxpypz.shape)
             k = gaussian_kde(xyz_pxpypz, weights=self._ps_data[self.columns['weight']])
             new_points = k.resample(n_new_particles)
             _new_weights = np.ones(new_points.shape[1]) * np.mean(self._ps_data[self.columns['weight']])

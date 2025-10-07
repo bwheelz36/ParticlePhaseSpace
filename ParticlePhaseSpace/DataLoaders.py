@@ -405,7 +405,7 @@ class Load_IAEA(_DataLoadersBase):
     def _check_input_data(self):
         if not Path(self._input_data).is_file():
             raise FileNotFoundError(f'input data file {self._import_data()} does not exist')
-        if not Path(self._input_data).suffix == '.phsp' or Path(self._input_data).suffix == '.IAEAphsp':
+        if not Path(self._input_data).suffix in ['.phsp', '.IAEAphsp']:
             raise Exception('This data loader reads in files of extension *.phsp or *.IAEAphsp')
         if self._particle_type:
             warnings.warn('particle type is ignored in IAEA read in')
