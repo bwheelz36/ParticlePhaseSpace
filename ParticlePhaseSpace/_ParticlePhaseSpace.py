@@ -540,15 +540,20 @@ class _Plots(_PhaseSpace_MethodHolder):
             plt.grid()
         plt.tight_layout()
 
-    def radial_energy_boxplot(self, n_bins=10, beam_direction='z', show=True, rlim=None):
+    def radial_energy_boxplot(self, n_bins=5, beam_direction='z', rlim=None):
         """
-        Plots boxplots of kinetic energy distribution per radial bin.
+        Plots boxplots of kinetic energy distribution per radial bin
 
         :param n_bins: Number of radial bins (boxplots)
+        :type n_bins: int
         :param beam_direction: Direction of beam ('z', 'x', or 'y'); default 'z'
-        :param show: If True, display the plot
+        :type beam_direction: str
         :param rlim: Tuple (r_min, r_max); if None, uses full range
+        :type rlim: list or None
         """
+        box_alpha = 0.7
+        box_color = 'dodgerblue'
+
         ps_data = self._PS._ps_data
 
         # Compute radial coordinate
@@ -593,24 +598,34 @@ class _Plots(_PhaseSpace_MethodHolder):
         boxplot_data = [eb.values for eb in energy_bins if len(eb) > 0]
         r_centers_plot = [r_centers[i] for i, eb in enumerate(energy_bins) if len(eb) > 0]
 
-        # Plot
         fig, ax = plt.subplots(figsize=(10, 6))
-        bp = ax.boxplot(boxplot_data, positions=r_centers_plot, widths=(r_edges[1] - r_edges[0]) * 0.8,
-                        patch_artist=True)
-        ax.set_xlabel(f"r [{self._PS._units.length.label}]")
-        ax.set_ylabel(f"Kinetic Energy [{self._PS._units.energy.label}]")
-        ax.set_title("Radial Energy Distribution (Boxplot)")
+        bp = ax.boxplot(
+            boxplot_data,
+            positions=r_centers_plot,
+            widths=(r_edges[1] - r_edges[0]) * 0.7,
+            patch_artist=True,
+            showfliers=False,  # Hide outliers for cleaner look
+            boxprops=dict(facecolor=box_color, color='navy', alpha=box_alpha, linewidth=1.5),
+            whiskerprops=dict(color='navy', linewidth=1.5),
+            capprops=dict(color='navy', linewidth=1.5),
+            medianprops=dict(color='orange', linewidth=2)
+        )
+
+        ax.set_xlabel(f"r [{self._PS._units.length.label}]", fontsize=14)
+        ax.set_ylabel(f"Kinetic Energy [{self._PS._units.energy.label}]", fontsize=14)
+        ax.set_title("Energy Distribution In Radial Bins", fontsize=16)
         ax.set_xlim(r_min, r_max)
+        ax.grid(True, linestyle='--', alpha=0.5)
         plt.tight_layout()
-        if show:
-            plt.show()
-        return fig, ax, r_centers_plot, boxplot_data
+        plt.show()
 
     def fluence_map_2D(self, beam_direction: str = 'z', at: float = 0.0, quantity: str = 'energy',
-                       bins: int = 100, normalize: bool = True, show: bool = True,
+                       bins: int = 100, normalize: bool = False,
                        xlim=None, ylim=None):
         """
         Plot fluence (particle or energy per unit area) as a 2D map in the plane orthogonal to beam_direction.
+
+        The phase space data is firt projected to the "at" coordinate. any data which would never make it there is discarded.
 
         :param beam_direction: Direction of beam travel ('x', 'y', or 'z')
         :type beam_direction: str, optional
@@ -622,8 +637,6 @@ class _Plots(_PhaseSpace_MethodHolder):
         :type bins: int, optional
         :param normalize: If True, normalize fluence map to max value
         :type normalize: bool, optional
-        :param show: If True, display the plot
-        :type show: bool, optional
         :param xlim: x-axis limits (tuple or list)
         :type xlim: tuple or list, optional
         :param ylim: y-axis limits (tuple or list)
@@ -681,9 +694,8 @@ class _Plots(_PhaseSpace_MethodHolder):
         weights = ps_data['weight'][mask]
 
         if quantity == 'energy':
-            if not columns['Ek'] in ps_data.columns:
-                plot_ps.fill.kinetic_E()  # Fill on projected phase space
-                ps_data = plot_ps._ps_data
+            plot_ps.fill.kinetic_E()  # Fill on projected phase space
+            ps_data = plot_ps._ps_data
             if isinstance(weights.dtype, pd.CategoricalDtype):
                 weights = weights.astype(float)
             weights = weights * ps_data[columns['Ek']][mask]
@@ -697,22 +709,23 @@ class _Plots(_PhaseSpace_MethodHolder):
         if normalize and fluence_map.max() > 0:
             fluence_map = fluence_map / fluence_map.max()
 
-        if show:
-            plt.figure(figsize=(8, 6))
-            plt.imshow(fluence_map.T, origin='lower', aspect='auto',
-                       extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]],
-                       cmap='inferno')
-            plt.colorbar(label=f"{quantity.capitalize()} fluence per {units.length.label}$^2$")
-            plt.xlabel(axis1)
-            plt.ylabel(axis2)
-            plt.title(
-                f"{quantity.capitalize()} fluence map in plane orthogonal to {beam_direction} @ {at}")
-            plt.xlim(xlim)
-            plt.ylim(ylim)
-            plt.tight_layout()
-            plt.show()
+        plt.figure(figsize=(8, 6))
+        plt.imshow(fluence_map.T, origin='lower', aspect='auto',
+                   extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]],
+                   cmap='inferno')
+        if quantity == "energy":
+            plt.colorbar(label=f"Energy fluence [{units.energy.label}/{units.length.label}$^2$]")
+        else:
+            plt.colorbar(label=f"Particle fluence [particles/{units.length.label}$^2$]")
+        plt.xlabel(axis1)
+        plt.ylabel(axis2)
+        plt.title(
+            f"{quantity.capitalize()} fluence map in plane orthogonal to {beam_direction} @ {at}")
+        plt.xlim(xlim)
+        plt.ylim(ylim)
+        plt.tight_layout()
+        plt.show()
 
-        return fluence_map, (xedges, yedges)
 
 
 class _Transform(_PhaseSpace_MethodHolder):

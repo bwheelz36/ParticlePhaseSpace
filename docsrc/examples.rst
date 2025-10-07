@@ -9,6 +9,7 @@ Examples
    /new_data_loader
    /IAEA
    /new_data_exporter
+   /plotting
    /transform
    /units
    /grid_merge
