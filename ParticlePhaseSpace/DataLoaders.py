@@ -477,6 +477,9 @@ class Load_IAEA(_DataLoadersBase):
         :param varian_types:
         :return:
         """
+        if np.min(varian_types) < 0:
+            warnings.warn("negative particle types detected in phase space. I have no idea what this means: converting to postiive and continuing")
+            varian_types = np.abs(varian_types)
         pdg_types = np.zeros(varian_types.shape, dtype=np.int32)
         for type in np.unique(varian_types):
             if not type in [1, 2, 3, 4, 5]:
