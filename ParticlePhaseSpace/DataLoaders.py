@@ -437,7 +437,7 @@ class Load_IAEA(_DataLoadersBase):
         self.data[self._columns['particle type']] = particle_types_pdg
         self.data[self._columns['particle id']] = np.arange(
             len(self.data))  # may want to replace with track ID if available?
-        self.data[self._columns['time']] = pd.Series(0 * np.ones(self.data.shape[0]), dtype="category")  # may want to replace with time feature if available?
+        self.data[self._columns['time']] = pd.Series(0 * np.ones(self.data.shape[0]))
         # figure out the momentums:
         DirCosineX = data['Cosine X']
         DirCosineY = data['Cosine Y']
