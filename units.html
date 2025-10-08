@@ -5,9 +5,9 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Working with different units &mdash; Particle Phase Space  documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
-      <link rel="stylesheet" type="text/css" href="_static/nbsphinx-code-cells.css" />
+      <link rel="stylesheet" type="text/css" href="_static/nbsphinx-code-cells.css?v=2aa19091" />
 
   
   <!--[if lt IE 9]>
@@ -55,6 +55,17 @@
 <li class="toctree-l2"><a class="reference internal" href="new_data_loader.html">Writing a new data loader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IAEA.html">Reading IAEA phase space</a></li>
 <li class="toctree-l2"><a class="reference internal" href="new_data_exporter.html">Writing a new data exporter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html">Plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#energy_hist_1D">energy_hist_1D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#position_hist_1D">position_hist_1D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#momentum_hist_1D">momentum_hist_1D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#particle_positions_scatter_2D">particle_positions_scatter_2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#particle_positions_hist_2D">particle_positions_hist_2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#transverse_trace_space_scatter_2D">transverse_trace_space_scatter_2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#transverse_trace_space_hist_2D">transverse_trace_space_hist_2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#n_particles_v_time">n_particles_v_time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#radial_energy_boxplot">radial_energy_boxplot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#fluence_map_2D">fluence_map_2D</a></li>
 <li class="toctree-l2"><a class="reference internal" href="transform.html">Transformation of phase space data</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Working with different units</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Available-units">Available units</a></li>
@@ -108,12 +119,12 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;../&#39;</span><span class="p">)</span>  <span class="c1"># not necessary when the library is installed</span>
-<span class="kn">from</span> <span class="nn">ParticlePhaseSpace</span> <span class="kn">import</span> <span class="n">ParticlePhaseSpaceUnits</span>
-<span class="kn">from</span> <span class="nn">ParticlePhaseSpace</span> <span class="kn">import</span> <span class="n">DataLoaders</span>
-<span class="kn">from</span> <span class="nn">ParticlePhaseSpace</span> <span class="kn">import</span> <span class="n">PhaseSpace</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ParticlePhaseSpace</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParticlePhaseSpaceUnits</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ParticlePhaseSpace</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoaders</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ParticlePhaseSpace</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhaseSpace</span>
 
 
 <span class="n">available_units</span> <span class="o">=</span> <span class="n">ParticlePhaseSpaceUnits</span><span class="p">()</span>
@@ -643,7 +654,7 @@ quantities. However, if you really want you can also do it manually as below. No
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ParticlePhaseSpace.__unit_config__</span> <span class="kn">import</span> <span class="n">UnitSet</span><span class="p">,</span> <span class="n">_unit</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ParticlePhaseSpace.__unit_config__</span><span class="w"> </span><span class="kn">import</span> <span class="n">UnitSet</span><span class="p">,</span> <span class="n">_unit</span>
 <span class="n">cm_keV</span> <span class="o">=</span> <span class="n">UnitSet</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;cm_keV&#39;</span><span class="p">,</span>
                               <span class="n">length_units</span><span class="o">=</span><span class="n">_unit</span><span class="p">(</span><span class="s1">&#39;cm&#39;</span><span class="p">,</span> <span class="mf">1e-1</span><span class="p">),</span>
                               <span class="n">energy_units</span><span class="o">=</span><span class="n">_unit</span><span class="p">(</span><span class="s1">&#39;keV&#39;</span><span class="p">,</span> <span class="mf">1e3</span><span class="p">),</span>

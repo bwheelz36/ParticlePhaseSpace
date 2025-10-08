@@ -5,7 +5,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Code Documentation &mdash; Particle Phase Space  documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
   
@@ -80,11 +80,13 @@
 <li class="toctree-l2"><a class="reference internal" href="#phasespace-plot">PhaseSpace.plot</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace._Plots"><code class="docutils literal notranslate"><span class="pre">_Plots</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace._Plots.energy_hist_1D"><code class="docutils literal notranslate"><span class="pre">_Plots.energy_hist_1D()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace._Plots.fluence_map_2D"><code class="docutils literal notranslate"><span class="pre">_Plots.fluence_map_2D()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace._Plots.momentum_hist_1D"><code class="docutils literal notranslate"><span class="pre">_Plots.momentum_hist_1D()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace._Plots.n_particles_v_time"><code class="docutils literal notranslate"><span class="pre">_Plots.n_particles_v_time()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace._Plots.particle_positions_hist_2D"><code class="docutils literal notranslate"><span class="pre">_Plots.particle_positions_hist_2D()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace._Plots.particle_positions_scatter_2D"><code class="docutils literal notranslate"><span class="pre">_Plots.particle_positions_scatter_2D()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace._Plots.position_hist_1D"><code class="docutils literal notranslate"><span class="pre">_Plots.position_hist_1D()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace._Plots.radial_energy_boxplot"><code class="docutils literal notranslate"><span class="pre">_Plots.radial_energy_boxplot()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace._Plots.transverse_trace_space_hist_2D"><code class="docutils literal notranslate"><span class="pre">_Plots.transverse_trace_space_hist_2D()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ParticlePhaseSpace._ParticlePhaseSpace._Plots.transverse_trace_space_scatter_2D"><code class="docutils literal notranslate"><span class="pre">_Plots.transverse_trace_space_scatter_2D()</span></code></a></li>
 </ul>
@@ -163,9 +165,9 @@ to read a large file in a series of small chunks</p></li>
 </dd>
 </dl>
 <p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ParticlePhaseSpace</span> <span class="kn">import</span> <span class="n">PhaseSpace</span><span class="p">,</span> <span class="n">DataLoaders</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ParticlePhaseSpace</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhaseSpace</span><span class="p">,</span> <span class="n">DataLoaders</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="n">file_name</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;/home/brendan/Downloads/Varian_TrueBeam6MV_01.phsp&#39;</span><span class="p">)</span>
 <span class="n">data_schema</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">([</span>
@@ -189,8 +191,8 @@ to read a large file in a series of small chunks</p></li>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ParticlePhaseSpace.DataLoaders.</span></span><span class="sig-name descname"><span class="pre">Load_PandasData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data:</span> <span class="pre">(&lt;class</span> <span class="pre">'str'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">&lt;class</span> <span class="pre">'pathlib.Path'&gt;)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_type:</span> <span class="pre">(&lt;class</span> <span class="pre">'str'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">None)</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units:</span> <span class="pre">~ParticlePhaseSpace.__unit_config__.UnitSet</span> <span class="pre">=</span> <span class="pre">&lt;ParticlePhaseSpace.__unit_config__.UnitSet</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace.DataLoaders.Load_PandasData" title="Link to this definition"></a></dt>
 <dd><p>loads in pandas data of the format. This is used internally by ParticlePhaseSpace, and can also be used
 externally in cases where it is not desired to write a dedicated new data loader:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ParticlePhaseSpace</span> <span class="kn">import</span> <span class="n">DataLoaders</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ParticlePhaseSpace</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoaders</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
 <span class="n">demo_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
     <span class="p">{</span><span class="s1">&#39;x [mm]&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
@@ -228,9 +230,9 @@ externally in cases where it is not desired to write a dedicated new data loader
 This data loader will read in both ascii and binary topas phase space (phsp) files.
 At present, we do not handle time or particle-id fields which may or may not be present in topas data.
 Behind the scenes, it relies on <a class="reference external" href="https://github.com/davidchall/topas2numpy">topas2numpy</a>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ParticlePhaseSpace</span> <span class="kn">import</span> <span class="n">DataLoaders</span>
-<span class="kn">from</span> <span class="nn">ParticlePhaseSpace</span> <span class="kn">import</span> <span class="n">PhaseSpace</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ParticlePhaseSpace</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoaders</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ParticlePhaseSpace</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhaseSpace</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
 <span class="n">data_loc</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;../tests/test_data/coll_PhaseSpace_xAng_0.00_yAng_0.00_angular_error_0.0.phsp&#39;</span><span class="p">)</span>
 
@@ -479,6 +481,29 @@ Each particle spcies present in the phase space is overlaid  on the same plot.</
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace._Plots.fluence_map_2D">
+<span class="sig-name descname"><span class="pre">fluence_map_2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beam_direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'z'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">at</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'energy'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace._Plots.fluence_map_2D" title="Link to this definition"></a></dt>
+<dd><p>Plot fluence (particle or energy per unit area) as a 2D map in the plane orthogonal to beam_direction.</p>
+<p>The phase space data is firt projected to the “at” coordinate. any data which would never make it there is discarded.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>beam_direction</strong> (<em>str</em><em>, </em><em>optional</em>) – Direction of beam travel (‘x’, ‘y’, or ‘z’)</p></li>
+<li><p><strong>at</strong> (<em>float</em><em>, </em><em>optional</em>) – Position of plane along beam direction</p></li>
+<li><p><strong>quantity</strong> (<em>str</em><em>, </em><em>optional</em>) – ‘particle’ for particle fluence, ‘energy’ for energy fluence</p></li>
+<li><p><strong>bins</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of bins per axis</p></li>
+<li><p><strong>normalize</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, normalize fluence map to max value</p></li>
+<li><p><strong>xlim</strong> (<em>tuple</em><em> or </em><em>list</em><em>, </em><em>optional</em>) – x-axis limits (tuple or list)</p></li>
+<li><p><strong>ylim</strong> (<em>tuple</em><em> or </em><em>list</em><em>, </em><em>optional</em>) – y-axis limits (tuple or list)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>fluence_map (2D numpy array), (xedges, yedges)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace._Plots.momentum_hist_1D">
 <span class="sig-name descname"><span class="pre">momentum_hist_1D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_bins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace._Plots.momentum_hist_1D" title="Link to this definition"></a></dt>
 <dd><p>plot a histogram of particle momentum in x, y, z.
@@ -570,6 +595,21 @@ histograms are overlaid.</p>
 <li><p><strong>n_bins</strong> – number of bins in histogram</p></li>
 <li><p><strong>alpha</strong> – controls transparency of each histogram.</p></li>
 <li><p><strong>grid</strong> (<em>bool</em><em>, </em><em>optional</em>) – turns grid on/off</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ParticlePhaseSpace._ParticlePhaseSpace._Plots.radial_energy_boxplot">
+<span class="sig-name descname"><span class="pre">radial_energy_boxplot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam_direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'z'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rlim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ParticlePhaseSpace._ParticlePhaseSpace._Plots.radial_energy_boxplot" title="Link to this definition"></a></dt>
+<dd><p>Plots boxplots of kinetic energy distribution per radial bin</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_bins</strong> (<em>int</em>) – Number of radial bins (boxplots)</p></li>
+<li><p><strong>beam_direction</strong> (<em>str</em>) – Direction of beam (‘z’, ‘x’, or ‘y’); default ‘z’</p></li>
+<li><p><strong>rlim</strong> (<em>list</em><em> or </em><em>None</em>) – Tuple (r_min, r_max); if None, uses full range</p></li>
 </ul>
 </dd>
 </dl>

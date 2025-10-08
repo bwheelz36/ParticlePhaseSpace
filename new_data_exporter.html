@@ -5,9 +5,9 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Writing a new data exporter &mdash; Particle Phase Space  documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
-      <link rel="stylesheet" type="text/css" href="_static/nbsphinx-code-cells.css" />
+      <link rel="stylesheet" type="text/css" href="_static/nbsphinx-code-cells.css?v=2aa19091" />
 
   
   <!--[if lt IE 9]>
@@ -25,7 +25,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Transformation of phase space data" href="transform.html" />
+    <link rel="next" title="Plotting" href="plotting.html" />
     <link rel="prev" title="Reading IAEA phase space" href="IAEA.html" /> 
 </head>
 
@@ -58,6 +58,17 @@
 <li class="toctree-l3"><a class="reference internal" href="#Testing-the-data-export">Testing the data export</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html">Plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#energy_hist_1D">energy_hist_1D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#position_hist_1D">position_hist_1D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#momentum_hist_1D">momentum_hist_1D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#particle_positions_scatter_2D">particle_positions_scatter_2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#particle_positions_hist_2D">particle_positions_hist_2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#transverse_trace_space_scatter_2D">transverse_trace_space_scatter_2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#transverse_trace_space_hist_2D">transverse_trace_space_hist_2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#n_particles_v_time">n_particles_v_time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#radial_energy_boxplot">radial_energy_boxplot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#fluence_map_2D">fluence_map_2D</a></li>
 <li class="toctree-l2"><a class="reference internal" href="transform.html">Transformation of phase space data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="units.html">Working with different units</a></li>
 <li class="toctree-l2"><a class="reference internal" href="grid_merge.html">Compress phase space via regrid/merge operations</a></li>
@@ -109,25 +120,25 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">import</span> <span class="nn">sys</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;../&#39;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">ParticlePhaseSpace.DataExporters</span> <span class="kn">import</span> <span class="n">_DataExportersBase</span>
-<span class="kn">from</span> <span class="nn">ParticlePhaseSpace</span> <span class="kn">import</span> <span class="n">DataLoaders</span>
-<span class="kn">from</span> <span class="nn">ParticlePhaseSpace._ParticlePhaseSpace</span> <span class="kn">import</span> <span class="n">PhaseSpace</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">ParticlePhaseSpace.__particle_config__</span> <span class="k">as</span> <span class="nn">particle_cfg</span>
-<span class="kn">from</span> <span class="nn">ParticlePhaseSpace</span> <span class="kn">import</span> <span class="n">ParticlePhaseSpaceUnits</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ParticlePhaseSpace.DataExporters</span><span class="w"> </span><span class="kn">import</span> <span class="n">_DataExportersBase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ParticlePhaseSpace</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoaders</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ParticlePhaseSpace._ParticlePhaseSpace</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhaseSpace</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ParticlePhaseSpace.__particle_config__</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">particle_cfg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ParticlePhaseSpace</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParticlePhaseSpaceUnits</span>
 
-<span class="k">class</span> <span class="nc">NewDataExporter</span><span class="p">(</span><span class="n">_DataExportersBase</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">NewDataExporter</span><span class="p">(</span><span class="n">_DataExportersBase</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">_define_required_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_define_required_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">_export_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_export_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">_set_expected_units</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_expected_units</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span>
 </pre></div>
 </div>
@@ -143,16 +154,16 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">NewDataExporter</span><span class="p">(</span><span class="n">_DataExportersBase</span><span class="p">):</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">NewDataExporter</span><span class="p">(</span><span class="n">_DataExportersBase</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">_define_required_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_define_required_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_required_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="s1">&#39;px&#39;</span><span class="p">,</span> <span class="s1">&#39;py&#39;</span><span class="p">,</span> <span class="s1">&#39;pz&#39;</span><span class="p">,</span> <span class="s1">&#39;Ek&#39;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">_set_expected_units</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_expected_units</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_expected_units</span> <span class="o">=</span> <span class="n">ParticlePhaseSpaceUnits</span><span class="p">()(</span><span class="s1">&#39;mm_MeV&#39;</span><span class="p">)</span>
 
 
-    <span class="k">def</span> <span class="nf">_export_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_export_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_output_name</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s1">&#39;.dat&#39;</span><span class="p">:</span>
             <span class="n">_output_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_output_name</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.dat&#39;</span>
@@ -196,7 +207,7 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;__main__.NewDataExporter at 0x7f6bb9692340&gt;
+&lt;__main__.NewDataExporter at 0x7806d1df2b00&gt;
 </pre></div></div>
 </div>
 <p>To verify that this worked, we can recycle the <a href="#id1"><span class="problematic" id="id2">`data loader &lt;&gt;`__</span></a> we wrote to read this data and check if it works</p>
@@ -204,11 +215,11 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ParticlePhaseSpace.DataLoaders</span> <span class="kn">import</span> <span class="n">_DataLoadersBase</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ParticlePhaseSpace.DataLoaders</span><span class="w"> </span><span class="kn">import</span> <span class="n">_DataLoadersBase</span>
 
-<span class="k">class</span> <span class="nc">NewDataLoader</span><span class="p">(</span><span class="n">_DataLoadersBase</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">NewDataLoader</span><span class="p">(</span><span class="n">_DataLoadersBase</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">_import_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_import_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">Data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_input_data</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;x [mm]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;y [mm]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
@@ -229,7 +240,7 @@
         <span class="n">E</span> <span class="o">=</span> <span class="n">Data</span><span class="p">[:,</span> <span class="mi">6</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_energy_consistency</span><span class="p">(</span><span class="n">Ek</span><span class="o">=</span><span class="n">E</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_check_input_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_input_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># is the input a file?</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_input_data</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;input data file </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_import_data</span><span class="p">()</span><span class="si">}</span><span class="s1"> does not exist&#39;</span><span class="p">)</span>
@@ -273,7 +284,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="IAEA.html" class="btn btn-neutral float-left" title="Reading IAEA phase space" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="transform.html" class="btn btn-neutral float-right" title="Transformation of phase space data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="plotting.html" class="btn btn-neutral float-right" title="Plotting" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -5,9 +5,9 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Reading IAEA phase space &mdash; Particle Phase Space  documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
-      <link rel="stylesheet" type="text/css" href="_static/nbsphinx-code-cells.css" />
+      <link rel="stylesheet" type="text/css" href="_static/nbsphinx-code-cells.css?v=2aa19091" />
 
   
   <!--[if lt IE 9]>
@@ -61,6 +61,17 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="new_data_exporter.html">Writing a new data exporter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html">Plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#energy_hist_1D">energy_hist_1D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#position_hist_1D">position_hist_1D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#momentum_hist_1D">momentum_hist_1D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#particle_positions_scatter_2D">particle_positions_scatter_2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#particle_positions_hist_2D">particle_positions_hist_2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#transverse_trace_space_scatter_2D">transverse_trace_space_scatter_2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#transverse_trace_space_hist_2D">transverse_trace_space_hist_2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#n_particles_v_time">n_particles_v_time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#radial_energy_boxplot">radial_energy_boxplot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#fluence_map_2D">fluence_map_2D</a></li>
 <li class="toctree-l2"><a class="reference internal" href="transform.html">Transformation of phase space data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="units.html">Working with different units</a></li>
 <li class="toctree-l2"><a class="reference internal" href="grid_merge.html">Compress phase space via regrid/merge operations</a></li>
@@ -111,7 +122,7 @@ read an IAEA phase space file into this code.</p>
 <li><p>The phasespace file (typical extension <code class="docutils literal notranslate"><span class="pre">.phsp</span></code> of <code class="docutils literal notranslate"><span class="pre">.IAEAphsp</span></code>. This is a file in binary format: to read it correctly, we need to understand exactly what order different quantities are described and how many bytes of data are used to describe them. In principle, such information should be available in the header!</p></li>
 </ol>
 <p>The IAEA report provides the following table describing their phase space format:</p>
-<p><img alt="image0" src="_images/IAEA_phase_space.png" /></p>
+<img alt="_images/IAEA_phase_space.png" src="_images/IAEA_phase_space.png" />
 <p>However, any of these quantities can also be described as constants, which means that the byte order of an IAEA file is essentially arbitrary. In principle, it should be possible to dervice this information from the header file, but it’s not yet clear to me whether they are consistent enough to always allow that in practice.</p>
 </section>
 <section id="Reading-an-IAEA-phase-space-file">
@@ -133,11 +144,11 @@ momentum direction in X (4); Component of momentum direction vector in Y (4)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;../&#39;</span><span class="p">)</span> <span class="c1"># not necessary when code is installed</span>
-<span class="kn">from</span> <span class="nn">ParticlePhaseSpace</span> <span class="kn">import</span> <span class="n">PhaseSpace</span><span class="p">,</span> <span class="n">DataLoaders</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ParticlePhaseSpace</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhaseSpace</span><span class="p">,</span> <span class="n">DataLoaders</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="c1"># get data file:</span>
 <span class="n">file_name</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;/home/brendan/Dropbox (Sydney Uni)/abstracts,presentations etc/temp/TrueBeam_v2_6X_00.phsp&#39;</span><span class="p">)</span>
@@ -211,7 +222,7 @@ momentum direction in X (4); Component of momentum direction vector in Y (4)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ParticlePhaseSpace</span> <span class="kn">import</span> <span class="n">ParticlePhaseSpaceUnits</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ParticlePhaseSpace</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParticlePhaseSpaceUnits</span>
 <span class="n">available_units</span> <span class="o">=</span> <span class="n">ParticlePhaseSpaceUnits</span><span class="p">()</span>
 
 <span class="n">ps_data</span> <span class="o">=</span> <span class="n">DataLoaders</span><span class="o">.</span><span class="n">Load_IAEA</span><span class="p">(</span><span class="n">data_schema</span><span class="o">=</span><span class="n">data_schema</span><span class="p">,</span>
@@ -479,9 +490,9 @@ File <span class="ansi-green-fg">~/Documents/python/ParticlePhaseSpace/examples/
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ParticlePhaseSpace</span> <span class="kn">import</span> <span class="n">PhaseSpace</span><span class="p">,</span> <span class="n">DataLoaders</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ParticlePhaseSpace</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhaseSpace</span><span class="p">,</span> <span class="n">DataLoaders</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="c1"># get data file:</span>
 <span class="n">file_name</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;/home/brendan/Dropbox (Sydney Uni)/abstracts,presentations etc/temp/TrueBeam_v2_6X_00.phsp&#39;</span><span class="p">)</span>
